@@ -12,9 +12,9 @@ layout:
 | :---: | :---: | :---: | :---: |
 | ![Torrent list](docs/screenshots/torrents.png) | ![Menu](docs/screenshots/menu.png) | ![Filters drawer](docs/screenshots/filters.png) | ![Torrent actions](docs/screenshots/actions.png) |
 
-| Details | Options |
-| :---: | :---: |
-| ![Torrent details](docs/screenshots/details.png) | ![Options](docs/screenshots/options.png) |
+| Details | Selecting torrents | Options |
+| :---: | :---: | :---: |
+| ![Torrent details](docs/screenshots/details.png) | ![Selecting several torrents](docs/screenshots/select.png) | ![Options](docs/screenshots/options.png) |
 
 What changes on a phone:
 
@@ -28,6 +28,10 @@ What changes on a phone:
   reverse.
 * **Long press** a torrent (or a filter, tracker, peer, file, RSS item, ...) for its
   context menu, shown as a bottom sheet. Entries with a ▾ expand in place.
+* **Select several torrents**: the ☑ button next to the torrent filter turns on the
+  selection mode (on every touch screen, as there are no CTRL/SHIFT keys). Tap
+  torrents to tick them, or use *Select All* / *Clear*; the toolbar buttons and the
+  long press menu then act on all ticked torrents. ✕ leaves the selection mode.
 * Tap a torrent, then tap **General / Trackers / Peers / HTTP Sources / Content** to
   open its details. Tap the open tab again (or the arrow on the right) to close them.
 * Every dialog fits the screen: big ones (Options, Add torrent, RSS Downloader, ...)
@@ -101,8 +105,9 @@ The first commit of this repository is the unmodified WebUI of qBittorrent v5.2.
 (`src/webui/www`), so `git diff` against it shows every change. In short:
 
 * `private/css/mobile.css` (new): all responsive styles.
-* `private/scripts/mobile.js` (new): menu button, filters drawer, fitting MochaUI
-  windows into the screen, card row height for the virtual list option.
+* `private/scripts/mobile.js` (new): menu button, filters drawer, selection mode,
+  fitting MochaUI windows into the screen, card row height for the virtual list
+  option.
 * `private/index.html`: menu/filter buttons, a wrapper around the toolbar buttons,
   loads `mobile.css` and `mobile.js`.
 * `private/*.html` dialog pages: load `mobile.css`.
@@ -110,11 +115,13 @@ The first commit of this repository is the unmodified WebUI of qBittorrent v5.2.
   long-press menus on touch screens (touch events have no `pageX`/`pageY`).
 * `private/scripts/dynamicTable.js`: cells get a `data-column` attribute (used by the
   card layouts); a row is selected on long press instead of on every touch, so
-  scrolling the list no longer changes the selection.
+  scrolling the list no longer changes the selection; a `multiSelect` flag lets a
+  tap toggle a row like CTRL+click (selection mode).
 * `private/scripts/client.js`: the details panel starts collapsed on phones, panel
   sizes of the phone layout are not saved over the desktop ones.
 * `public/css/login.css`: responsive login page.
-* `private/images/mobile-menu.svg`, `private/images/mobile-filter.svg` (new).
+* `private/images/mobile-menu.svg`, `private/images/mobile-filter.svg`,
+  `private/images/mobile-select.svg` (new).
 * `translations/*.qm` (new): compiled translations, built from the unchanged
   `translations/*.ts` sources with `tools/build-translations.py`.
 

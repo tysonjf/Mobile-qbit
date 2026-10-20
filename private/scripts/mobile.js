@@ -202,6 +202,61 @@ window.qBittorrent.Mobile ??= (() => {
         });
     };
 
+    /* Selecting several torrents without CTRL/SHIFT keys */
+
+    const setupTorrentSelection = () => {
+        const selectButton = document.getElementById("mobileSelectButton");
+        const count = document.getElementById("mobileSelectionCount");
+        let selectionObserver = null;
+
+        const updateCount = () => {
+            count.textContent = `✓ ${window.torrentsTable.selectedRowsIds().length}`;
+        };
+
+        const setSelectMode = (enabled) => {
+            const table = window.torrentsTable;
+            if (table?.tableBody === undefined)
+                return;
+
+            table.multiSelect = enabled;
+            document.getElementById("desktopHeader").classList.toggle("torrentSelectMode", enabled);
+            table.dynamicTableDiv.classList.toggle("selectMode", enabled);
+            selectButton.setAttribute("aria-pressed", enabled.toString());
+
+            if (enabled) {
+                updateCount();
+                // rows change class when they get (de)selected, also by the table itself
+                selectionObserver ??= new MutationObserver(updateCount);
+                selectionObserver.observe(table.tableBody, { attributeFilter: ["class"], childList: true, subtree: true });
+            }
+            else {
+                selectionObserver?.disconnect();
+            }
+        };
+
+        selectButton.addEventListener("click", (event) => {
+            setSelectMode(!window.torrentsTable.multiSelect);
+        });
+        document.getElementById("mobileSelectionClose").addEventListener("click", (event) => {
+            setSelectMode(false);
+        });
+        document.getElementById("mobileSelectAll").addEventListener("click", (event) => {
+            window.torrentsTable.selectAll();
+            updateCount();
+        });
+        document.getElementById("mobileSelectNone").addEventListener("click", (event) => {
+            window.torrentsTable.deselectAll();
+            window.torrentsTable.setRowClass();
+            updateCount();
+        });
+
+        // leave the selection mode with the Transfers tab or the layout
+        document.getElementById("mainWindowTabsList").addEventListener("click", (event) => {
+            setSelectMode(false);
+        });
+        onLayoutChange(() => setSelectMode(false));
+    };
+
     /* MochaUI windows */
 
     const getWindowChromeHeight = (instance) => {
@@ -403,6 +458,7 @@ window.qBittorrent.Mobile ??= (() => {
                 setupMenus();
                 setupFiltersDrawer();
                 setupDetailsPanel();
+                setupTorrentSelection();
             });
         }
     };

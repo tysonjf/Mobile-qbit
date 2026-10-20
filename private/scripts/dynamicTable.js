@@ -85,6 +85,8 @@ window.qBittorrent.DynamicTable ??= (() => {
             this.rows = new Map();
             this.cachedElements = [];
             this.selectedRows = [];
+            // when enabled, clicks toggle the selection of a row like with the CTRL key (touch screens)
+            this.multiSelect = false;
             this.columns = [];
             this.contextMenu = contextMenu;
             this.sortedColumn = localPreferences.get(`sorted_column_${this.dynamicTableDivId}`, 0);
@@ -134,13 +136,16 @@ window.qBittorrent.DynamicTable ??= (() => {
             this.dynamicTableDiv.addEventListener("click", (e) => {
                 const tr = e.target.closest("tr");
                 if (!tr) {
+                    if (this.multiSelect)
+                        return;
+
                     // clicking on the table body deselects all rows
                     this.deselectAll();
                     this.setRowClass();
                     return;
                 }
 
-                if (e.ctrlKey || e.metaKey) {
+                if (e.ctrlKey || e.metaKey || this.multiSelect) {
                     // CTRL/CMD ⌘ key was pressed
                     if (this.isRowSelected(tr.rowId))
                         this.deselectRow(tr.rowId);
@@ -1857,7 +1862,7 @@ window.qBittorrent.DynamicTable ??= (() => {
             super.setupCommonEvents();
             this.dynamicTableDiv.addEventListener("dblclick", (e) => {
                 const tr = e.target.closest("tr");
-                if (!tr)
+                if (!tr || this.multiSelect)
                     return;
 
                 this.deselectAll();
