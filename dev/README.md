@@ -124,28 +124,44 @@ moment (`update-restore` points it back at the repository).
 Making a release
 ---
 
-1. Set `"version"` in [`private/version.json`](../private/version.json) (for example
-   `1.1.0`). If the release needs a different qBittorrent version, also update
-   `"qbittorrent"` (major.minor, e.g. `5.3`); the updater only installs releases made
-   for the running qBittorrent.
-2. Commit, then tag and push:
+Releases are made automatically: merging a pull request into `master` releases it,
+if it changes what a release ships (`private/`, `public/` or `translations/`).
+Changes to `dev/`, `tools/`, the workflows or the documentation alone make no
+release. For a release, the [release workflow](../.github/workflows/release.yml)
+raises the version, commits it to [`private/version.json`](../private/version.json)
+as *Release vX.Y.Z*, tags that commit and publishes the release. Which version
+([`tools/bump-version.py`](../tools/bump-version.py)):
 
-   ```sh
-   git tag v1.1.0
-   git push origin v1.1.0
-   ```
+* **patch** (1.2.3 → 1.2.4) by default: fixes and small changes,
+* **minor** (→ 1.3.0) if a pull request merged since the last release has the label
+  `minor`: new features,
+* **major** (→ 2.0.0) with the label `major`: big changes, e.g. the port to a new
+  qBittorrent version,
+* a version set by hand in `version.json` in the pull request, if it is higher than
+  the last release.
 
-The [release workflow](../.github/workflows/release.yml) runs
-[`tools/make-release.py`](../tools/make-release.py) and publishes a GitHub release
-with:
+Several pull requests merged in a row make one release if they are merged while a
+release is being made; otherwise each makes its own. *Actions → Release → Run
+workflow* makes a release by hand (with the bump chosen there), and a version tag
+pushed by hand (`git tag v1.4.0 && git push origin v1.4.0`, matching `version.json`)
+is published as well.
+
+If a release needs a different qBittorrent version, also update `"qbittorrent"` in
+`version.json` (major.minor, e.g. `5.3`) in that pull request; the updater only
+installs releases made for the running qBittorrent.
+
+The workflow runs [`tools/make-release.py`](../tools/make-release.py) and publishes
+a GitHub release with:
 
 * `mobile-qbit-v1.1.0.zip`: the WebUI folder, for installing by hand,
 * `mobile-qbit-v1.1.0.torrent`: the same files for the updater. Its only source is a
   web seed on `raw.githubusercontent.com`, so the files are served straight from the
   tagged commit and qBittorrent verifies them against the torrent.
 
-The workflow fails if the tag doesn't match `version.json`. Tags with a hyphen
-(`v1.1.0-rc1`) become pre-releases, which the updater ignores. A fork must change
+The workflow fails if a tag doesn't match `version.json`. Tags with a hyphen
+(`v1.1.0-rc1`, only by hand) become pre-releases, which the updater ignores.
+The workflow pushes the version commit to `master` itself, so if `master` gets a
+branch protection rule, GitHub Actions has to be allowed to bypass it. A fork must change
 `"repository"` in `version.json`, as the updater looks for releases there.
 
 Things to know before changing the WebUI
