@@ -304,6 +304,43 @@ window.qBittorrent.DynamicTable ??= (() => {
                 resetElementBorderStyle(e.target);
             };
 
+            // On touch screens a tap fires "touchend" and then emulated mouse events, and
+            // MooTools' Drag reacts to both. Make sure a tap sorts once, and that scrolling
+            // the header or a long press (which opens the columns menu) doesn't sort.
+            // Reordering and resizing columns by dragging needs a mouse.
+            let headerTouch = null;
+            const isTouchGesture = () => {
+                return (headerTouch !== null)
+                    && ((headerTouch.endAt === undefined) || ((performance.now() - headerTouch.endAt) < 1000));
+            };
+
+            const sortByHeader = function(columnName) {
+                if (isTouchGesture()) {
+                    if (headerTouch.handled)
+                        return;
+                    headerTouch.handled = true;
+
+                    const duration = (headerTouch.endAt ?? performance.now()) - headerTouch.startAt;
+                    if (headerTouch.moved || (duration >= 500))
+                        return;
+                }
+                this.setSortedColumn(columnName);
+            }.bind(this);
+
+            const onTouchStart = (e) => {
+                const touch = e.touches[0];
+                headerTouch = { startAt: performance.now(), x: touch.clientX, y: touch.clientY, handled: false, moved: false };
+            };
+
+            const onTouchMove = (e) => {
+                if (headerTouch === null)
+                    return;
+
+                const touch = e.touches[0];
+                if ((Math.abs(touch.clientX - headerTouch.x) > 10) || (Math.abs(touch.clientY - headerTouch.y) > 10))
+                    headerTouch.moved = true;
+            };
+
             const onBeforeStart = function(el) {
                 this.clickedTh = el;
                 this.currentHeaderAction = "start";
@@ -312,6 +349,11 @@ window.qBittorrent.DynamicTable ??= (() => {
             }.bind(this);
 
             const onStart = function(el, event) {
+                if (isTouchGesture()) {
+                    this.currentHeaderAction = "touch";
+                    return;
+                }
+
                 if (this.canResize) {
                     this.currentHeaderAction = "resize";
                     this.startWidth = Number.parseInt(this.resizeTh.style.width, 10);
@@ -333,6 +375,11 @@ window.qBittorrent.DynamicTable ??= (() => {
             }.bind(this);
 
             const onComplete = function(el, event) {
+                if (this.currentHeaderAction === "touch") {
+                    this.currentHeaderAction = "";
+                    return;
+                }
+
                 resetElementBorderStyle(this.lastHoverTh);
                 el.style.backgroundColor = "";
                 if (this.currentHeaderAction === "resize")
@@ -373,13 +420,16 @@ window.qBittorrent.DynamicTable ??= (() => {
 
                 // ignore click/touch events performed when on the column's resize area
                 if (!this.canResize)
-                    this.setSortedColumn(el.columnName);
+                    sortByHeader(el.columnName);
             }.bind(this);
 
             const onTouch = function(e) {
+                if (headerTouch !== null)
+                    headerTouch.endAt = performance.now();
+
                 const column = e.target.columnName;
                 this.currentHeaderAction = "";
-                this.setSortedColumn(column);
+                sortByHeader(column);
             }.bind(this);
 
             const onDoubleClick = function(e) {
@@ -397,6 +447,8 @@ window.qBittorrent.DynamicTable ??= (() => {
             for (const th of this.getRowCells(this.fixedTableHeader)) {
                 th.addEventListener("mousemove", mouseMoveFn);
                 th.addEventListener("mouseout", mouseOutFn);
+                th.addEventListener("touchstart", onTouchStart, { passive: true });
+                th.addEventListener("touchmove", onTouchMove, { passive: true });
                 th.addEventListener("touchend", onTouch, { passive: true });
                 th.addEventListener("dblclick", onDoubleClick);
                 th.makeResizable({
