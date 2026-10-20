@@ -99,6 +99,23 @@ curl -X POST http://127.0.0.1:8080/api/v2/app/setPreferences --data-urlencode 'j
 Then compare the two folders (e.g. with Pillow's `ImageChops.difference`). Only
 live numbers (speeds, free space) may differ.
 
+Continuous integration
+---
+
+[`.github/workflows/ci.yml`](../.github/workflows/ci.yml) checks every pull request
+(and every push to `master`) on GitHub Actions:
+
+* **Linters and unit tests**: the checks of *Checks before a PR* below, plus the
+  formatting (`js-beautify` must not change anything).
+* **Screenshot tours**: `start-qbittorrent.sh` with the peer, `make-test-data.py`,
+  then every scenario file at `390x844` and `844x390`, `tablet.json` at tablet sizes,
+  and `update.json` with `fake-github.py`. A failed step, a page error or sideways
+  scrolling fails the run.
+
+The screenshots and the logs of qBittorrent and `fake-github.py` are attached to the
+run as the *screenshots* artifact (*Actions* → the run → *Artifacts*). A new
+scenario file in `scenarios/` is picked up without changing the workflow.
+
 Testing the updater
 ---
 
