@@ -51,6 +51,9 @@ What changes on a phone:
 * The Options window, Search, RSS, RSS Downloader, Log and all other dialogs reflow
   for narrow screens; text fields use a 16px font so iOS doesn't zoom in. The Torrent
   Creator shows its tasks as cards.
+* **RSS**: the feeds fill the tab. Tap a feed for its articles and an article to read
+  it; the ‹ button goes back. An article has a *Download torrent* button, as a double
+  tap on it would open it instead.
 * Search results, log messages and blocked IPs are cards too; light and dark themes
   both work. A search result's download button opens the download window (like a
   double tap), its **⋮** button the result's menu.
@@ -134,9 +137,9 @@ The first commit of this repository is the unmodified WebUI of qBittorrent v5.2.
 
 * `private/css/mobile.css` (new): all responsive styles.
 * `private/scripts/mobile.js` (new): menu button, filters drawer, selection mode,
-  the ⋮ button of torrent cards, no browser menus for buttons and icons on a long
-  press, fitting MochaUI windows into the screen, card row height for the virtual
-  list option.
+  RSS pages, the ⋮ button of torrent cards, no browser menus for buttons and icons
+  on a long press, fitting MochaUI windows into the screen, card row height for the
+  virtual list option.
 * `private/index.html`: menu/filter buttons, a wrapper around the toolbar buttons,
   loads `mobile.css` and `mobile.js`.
 * `private/*.html` dialog pages: load `mobile.css`.
@@ -157,7 +160,7 @@ The first commit of this repository is the unmodified WebUI of qBittorrent v5.2.
   `theme-color`, which `mobile.js` keeps in line with the color scheme chosen in the
   options.
 * `private/images/mobile-menu.svg`, `private/images/mobile-filter.svg`,
-  `private/images/mobile-select.svg` (new).
+  `private/images/mobile-select.svg`, `private/images/mobile-back.svg` (new).
 * `private/version.json` (new): the version of Mobile-qbit, the qBittorrent version
   it is made for and the GitHub repository its releases come from.
 * `private/scripts/mobile-update.js`, `private/views/mobileupdate.html` (new): the

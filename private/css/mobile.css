@@ -18,6 +18,7 @@
 /* Elements that only exist for the phone layout and touch screens */
 #mobileBar,
 #mobileBackdrop,
+#mobileRssBar,
 #mobileSelectButton,
 #mobileSelectionBar,
 .mobileMoreCell,
@@ -2350,7 +2351,7 @@
         padding: 6px 0 !important;
     }
 
-    /* RSS tab: feeds, articles and details stacked ------------------------------ */
+    /* RSS tab: feeds, articles and the article as pages (stacked without them) --- */
 
     :root #rssView {
         height: 100%;
@@ -2420,6 +2421,143 @@
 
     :root #rssDescription {
         min-height: 50dvh;
+    }
+
+    /*
+     * Pages (mobile.js sets data-mobile-page): the feeds, the articles of the feed
+     * that was tapped, the article that was tapped; each fills the tab
+     */
+    :root #rssView[data-mobile-page] #rssContentView {
+        gap: 0;
+        overflow: hidden;
+    }
+
+    :root
+        #rssView[data-mobile-page]
+        :is(#leftRssColumn, #centerRssColumn, #rightRssColumn) {
+        display: flex;
+        flex: 1 1 0;
+        flex-direction: column;
+        min-height: 0;
+    }
+
+    :root
+        #rssView[data-mobile-page="feeds"]
+        :is(#centerRssColumn, #rightRssColumn),
+    :root
+        #rssView[data-mobile-page="articles"]
+        :is(#leftRssColumn, #rightRssColumn),
+    :root
+        #rssView[data-mobile-page="article"]
+        :is(#rssTopBar, #leftRssColumn, #centerRssColumn),
+    :root #rssView[data-mobile-page] #rssArticleFixedHeaderDiv,
+    :root #mobileRssDownload[hidden] {
+        display: none;
+    }
+
+    :root
+        #rssView[data-mobile-page]
+        :is(#rssFeedTableDiv, #rssArticleTableDiv, #rssDetailsView) {
+        flex: 1 1 0;
+        height: auto;
+        min-height: 0;
+    }
+
+    :root #rssView[data-mobile-page] #rssDescription {
+        flex: 1 0 auto;
+    }
+
+    /* rows big enough for a finger, with an arrow to the next page */
+    :root
+        #rssView[data-mobile-page]
+        :is(#rssFeedTableDiv, #rssArticleTableDiv):not(.virtualList)
+        td {
+        padding: 10px 30px 10px 8px;
+        position: relative;
+    }
+
+    :root
+        #rssView[data-mobile-page]
+        :is(#rssFeedTableDiv, #rssArticleTableDiv):not(.virtualList)
+        td::after {
+        background: url("../images/mobile-back.svg") center / contain no-repeat;
+        content: "";
+        height: 14px;
+        opacity: 0.6;
+        position: absolute;
+        right: 10px;
+        top: calc(50% - 7px);
+        transform: scaleX(-1);
+        width: 14px;
+    }
+
+    :root #rssView[data-mobile-page] #rssTorrentDetailsName {
+        font-size: 16px;
+        line-height: 1.3;
+        margin: 0 0 6px;
+        padding: 8px 10px;
+    }
+
+    :root
+        #rssView[data-mobile-page]
+        :is(
+            #rssTorrentDetailsDate,
+            #rssTorrentDetailsAuthor,
+            #rssTorrentDetailsLink
+        ) {
+        padding: 2px 10px;
+    }
+
+    :root #rssView[data-mobile-page] #rssTorrentDetailsLink {
+        padding-bottom: 8px;
+    }
+
+    /* back button (to the feeds or the articles), the feed's name, download */
+    :root #rssView:not([data-mobile-page="feeds"]) #mobileRssBar {
+        align-items: center;
+        display: flex;
+        flex: none;
+        gap: 8px;
+        margin: -4px 0 4px;
+        min-height: 40px;
+    }
+
+    #mobileRssBack {
+        align-items: center;
+        background: none;
+        border: none;
+        color: var(--color-text-blue);
+        display: flex;
+        flex: 0 1 auto;
+        font-size: 15px;
+        gap: 2px;
+        min-height: 40px;
+        min-width: 0;
+        padding: 0 8px 0 0;
+    }
+
+    #mobileRssBack span,
+    #mobileRssTitle {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    #mobileRssTitle {
+        flex: 1 1 auto;
+        font-size: 15px;
+        font-weight: bold;
+        min-width: 0;
+        text-align: right;
+    }
+
+    #mobileRssDownload {
+        align-items: center;
+        display: flex;
+        flex: none;
+        gap: 6px;
+        margin-left: auto;
+        min-height: 36px;
     }
 
     /* RSS Downloader window ---------------------------------------------------- */
