@@ -31,6 +31,8 @@
  *                               touch drag by dx, dy, starting in the middle of
  *                               the element, moved by ox, oy (optional)
  *   { "longpress": selector }   touch and hold for 800ms
+ *   "frame": selector           in a "tap" or "longpress" step: the element is in
+ *                               this iframe, e.g. "iframe[src*='addtorrent.html']"
  *   { "js": "code" }            run code in the page
  *   { "eval": "code" }          run code and print its result
  *   { "fill": [selector, text] }
@@ -109,11 +111,12 @@ const loadPlaywright = () => {
             await page.waitForTimeout(scenario.initialWait ?? 2000);
 
             for (const step of scenario.steps) {
+                const locate = (selector) => (step.frame ? page.frameLocator(step.frame) : page).locator(selector).first();
                 try {
                     if (step.click)
                         await page.click(step.click, { timeout: 4000 });
                     if (step.tap)
-                        await page.tap(step.tap, { timeout: 4000 });
+                        await locate(step.tap).tap({ timeout: 4000 });
                     if (step.tapxy)
                         await page.touchscreen.tap(step.tapxy[0], step.tapxy[1]);
                     if (step.js)
@@ -127,8 +130,10 @@ const loadPlaywright = () => {
                     if (step.longpress) {
                         // lists that refresh (e.g. the Torrent Creator) can replace the element meanwhile
                         let box = null;
-                        for (let attempt = 0; (box === null) && (attempt < 3); ++attempt)
-                            box = await page.locator(step.longpress).first().boundingBox({ timeout: 4000 });
+                        for (let attempt = 0; (box === null) && (attempt < 3); ++attempt) {
+                            await locate(step.longpress).scrollIntoViewIfNeeded({ timeout: 4000 }).catch(() => {});
+                            box = await locate(step.longpress).boundingBox({ timeout: 4000 });
+                        }
                         if (box === null)
                             throw new Error(`${step.longpress} is not visible`);
                         const x = box.x + Math.min(box.width / 2, 60);
