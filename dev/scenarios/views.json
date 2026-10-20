@@ -1,0 +1,206 @@
+[
+    {
+        "name": "search",
+        "steps": [
+            {
+                "js": "document.getElementById('searchTabLink').click()"
+            },
+            {
+                "wait": 1500
+            },
+            {
+                "js": "document.getElementById('searchPattern').value = 'ubuntu'; qBittorrent.Search.startStopSearch()"
+            },
+            {
+                "wait": 5000
+            },
+            {
+                "shot": true
+            },
+            {
+                "longpress": "#searchResultsTableDiv tbody tr:nth-child(2)"
+            },
+            {
+                "wait": 500
+            },
+            {
+                "shot": "menu"
+            }
+        ]
+    },
+    {
+        "name": "searchplugins",
+        "steps": [
+            {
+                "js": "document.getElementById('searchTabLink').click()"
+            },
+            {
+                "wait": 1500
+            },
+            {
+                "js": "document.getElementById('manageSearchPlugins').click()"
+            },
+            {
+                "wait": 2000
+            },
+            {
+                "shot": true
+            }
+        ]
+    },
+    {
+        "name": "installplugin",
+        "steps": [
+            {
+                "js": "document.getElementById('searchTabLink').click()"
+            },
+            {
+                "wait": 1500
+            },
+            {
+                "js": "document.getElementById('manageSearchPlugins').click()"
+            },
+            {
+                "wait": 2000
+            },
+            {
+                "shot": "list"
+            },
+            {
+                "js": "qBittorrent.SearchPlugins.installPlugin()"
+            },
+            {
+                "wait": 2000
+            },
+            {
+                "shot": true
+            }
+        ]
+    },
+    {
+        "name": "rss",
+        "steps": [
+            {
+                "js": "document.getElementById('rssTabLink').click()"
+            },
+            {
+                "wait": 1500
+            },
+            {
+                "shot": true
+            }
+        ]
+    },
+    {
+        "name": "rssnewfeed",
+        "steps": [
+            {
+                "js": "document.getElementById('rssTabLink').click()"
+            },
+            {
+                "wait": 1500
+            },
+            {
+                "js": "qBittorrent.Rss.addRSSFeed()"
+            },
+            {
+                "wait": 2000
+            },
+            {
+                "shot": true
+            }
+        ]
+    },
+    {
+        "name": "rssdownloader",
+        "steps": [
+            {
+                "js": "document.getElementById('rssTabLink').click()"
+            },
+            {
+                "wait": 1500
+            },
+            {
+                "js": "document.querySelector('#rssButtonBar button[onclick*=Downloader], #rssDownloaderButton')?.click()"
+            },
+            {
+                "wait": 2000
+            },
+            {
+                "shot": true
+            }
+        ]
+    },
+    {
+        "name": "rssnewrule",
+        "steps": [
+            {
+                "js": "document.getElementById('rssTabLink').click()"
+            },
+            {
+                "wait": 1500
+            },
+            {
+                "js": "qBittorrent.Rss.openRssDownloader()"
+            },
+            {
+                "wait": 2000
+            },
+            {
+                "js": "qBittorrent.RssDownloader.addRule()"
+            },
+            {
+                "wait": 2000
+            },
+            {
+                "shot": true
+            }
+        ]
+    },
+    {
+        "name": "newfolder",
+        "steps": [
+            {
+                "js": "document.getElementById('rssTabLink').click()"
+            },
+            {
+                "wait": 1500
+            },
+            {
+                "js": "document.querySelector('#rssFeedMenu a[href=\"#newFolder\"]').click()"
+            },
+            {
+                "wait": 2000
+            },
+            {
+                "shot": true
+            }
+        ]
+    },
+    {
+        "name": "log",
+        "steps": [
+            {
+                "js": "document.getElementById('showLogViewerLink').click()"
+            },
+            {
+                "wait": 500
+            },
+            {
+                "js": "document.getElementById('logTabLink').click()"
+            },
+            {
+                "wait": 2000
+            },
+            {
+                "shot": true
+            },
+            {
+                "js": "document.getElementById('showLogViewerLink').click()"
+            },
+            {
+                "wait": 300
+            }
+        ]
+    }
+]

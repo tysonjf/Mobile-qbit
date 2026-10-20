@@ -131,6 +131,10 @@ The first commit of this repository is the unmodified WebUI of qBittorrent v5.2.
 Development
 ---
 
+[`dev/`](dev/README.md) has a complete local test environment: a script that starts
+a real `qbittorrent-nox` serving this folder, test data, and screenshot tours of every
+screen at phone, tablet and desktop sizes. Read its notes before changing the WebUI.
+
 The lint setup is the one of qBittorrent's WebUI:
 
 ```sh

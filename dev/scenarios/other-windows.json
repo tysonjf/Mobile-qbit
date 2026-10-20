@@ -1,0 +1,225 @@
+[
+    {
+        "name": "prefs-behavior",
+        "steps": [
+            {
+                "js": "(() => { const trs = document.querySelectorAll('#torrentsTableDiv tbody tr'); const tr = trs[3]; torrentsTable.deselectAll(); torrentsTable.selectRow(tr.rowId); })()"
+            },
+            {
+                "wait": 300
+            },
+            {
+                "js": "document.getElementById('preferencesButton').click()"
+            },
+            {
+                "wait": 2500
+            },
+            {
+                "shot": true
+            }
+        ]
+    },
+    {
+        "name": "about",
+        "steps": [
+            {
+                "js": "(() => { const trs = document.querySelectorAll('#torrentsTableDiv tbody tr'); const tr = trs[3]; torrentsTable.deselectAll(); torrentsTable.selectRow(tr.rowId); })()"
+            },
+            {
+                "wait": 300
+            },
+            {
+                "js": "document.getElementById('aboutLink').click()"
+            },
+            {
+                "wait": 2000
+            },
+            {
+                "shot": true
+            }
+        ]
+    },
+    {
+        "name": "about-license",
+        "steps": [
+            {
+                "js": "document.getElementById('aboutLink').click()"
+            },
+            {
+                "wait": 2000
+            },
+            {
+                "js": "document.getElementById('aboutLicenseLink')?.click() ?? [...document.querySelectorAll('#aboutTabs li')].at(-2).click()"
+            },
+            {
+                "wait": 600
+            },
+            {
+                "shot": true
+            }
+        ]
+    },
+    {
+        "name": "about-software",
+        "steps": [
+            {
+                "js": "document.getElementById('aboutLink').click()"
+            },
+            {
+                "wait": 2000
+            },
+            {
+                "js": "[...document.querySelectorAll('#aboutSoftwareUsedLink')][0].click()"
+            },
+            {
+                "wait": 600
+            },
+            {
+                "shot": true
+            }
+        ]
+    },
+    {
+        "name": "statistics",
+        "steps": [
+            {
+                "js": "StatisticsLinkFN()"
+            },
+            {
+                "wait": 2000
+            },
+            {
+                "shot": true
+            }
+        ]
+    },
+    {
+        "name": "creator",
+        "steps": [
+            {
+                "js": "(() => { const trs = document.querySelectorAll('#torrentsTableDiv tbody tr'); const tr = trs[3]; torrentsTable.deselectAll(); torrentsTable.selectRow(tr.rowId); })()"
+            },
+            {
+                "wait": 300
+            },
+            {
+                "js": "document.getElementById('torrentCreatorButton').click()"
+            },
+            {
+                "wait": 2500
+            },
+            {
+                "shot": true
+            }
+        ]
+    },
+    {
+        "name": "createtorrent",
+        "steps": [
+            {
+                "js": "document.getElementById('torrentCreatorButton').click()"
+            },
+            {
+                "wait": 2000
+            },
+            {
+                "js": "document.getElementById('addTaskButton').click()"
+            },
+            {
+                "wait": 2500
+            },
+            {
+                "shot": true
+            }
+        ]
+    },
+    {
+        "name": "cookies",
+        "steps": [
+            {
+                "js": "(() => { const trs = document.querySelectorAll('#torrentsTableDiv tbody tr'); const tr = trs[3]; torrentsTable.deselectAll(); torrentsTable.selectRow(tr.rowId); })()"
+            },
+            {
+                "wait": 300
+            },
+            {
+                "js": "document.getElementById('manageCookiesLink').click()"
+            },
+            {
+                "wait": 2000
+            },
+            {
+                "shot": true
+            }
+        ]
+    },
+    {
+        "name": "cookies-row",
+        "steps": [
+            {
+                "js": "document.getElementById('manageCookiesLink').click()"
+            },
+            {
+                "wait": 2000
+            },
+            {
+                "js": "document.querySelector('#cookiesPage_content .addCookie').dispatchEvent(new MouseEvent('click', {bubbles: true})); document.querySelector('#cookiesPage_content .addCookie').dispatchEvent(new MouseEvent('click', {bubbles: true}))"
+            },
+            {
+                "wait": 500
+            },
+            {
+                "shot": true
+            },
+            {
+                "eval": "(() => { const c = document.getElementById('cookiesPage_contentWrapper'); return [c.scrollWidth, c.clientWidth]; })()"
+            }
+        ]
+    },
+    {
+        "name": "apikey",
+        "steps": [
+            {
+                "js": "document.getElementById('preferencesButton').click()"
+            },
+            {
+                "wait": 2500
+            },
+            {
+                "js": "document.getElementById('PrefWebUILink').click()"
+            },
+            {
+                "wait": 500
+            },
+            {
+                "js": "document.getElementById('webUIAPIKeyRotateButton').click()"
+            },
+            {
+                "wait": 1500
+            },
+            {
+                "shot": true
+            }
+        ]
+    },
+    {
+        "name": "logout",
+        "steps": [
+            {
+                "js": "(() => { const trs = document.querySelectorAll('#torrentsTableDiv tbody tr'); const tr = trs[3]; torrentsTable.deselectAll(); torrentsTable.selectRow(tr.rowId); })()"
+            },
+            {
+                "wait": 300
+            },
+            {
+                "js": "document.getElementById('logoutLink').click()"
+            },
+            {
+                "wait": 2000
+            },
+            {
+                "shot": true
+            }
+        ]
+    }
+]

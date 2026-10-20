@@ -1,0 +1,13 @@
+{
+    "name": "mobile-qbit-dev",
+    "private": true,
+    "description": "Local test environment for Mobile-qbit: a real qbittorrent-nox serving this repository plus screenshot tours",
+    "scripts": {
+        "server": "sh start-qbittorrent.sh",
+        "data": "python3 make-test-data.py",
+        "tour": "node tour.js"
+    },
+    "devDependencies": {
+        "playwright": "1.56.1"
+    }
+}

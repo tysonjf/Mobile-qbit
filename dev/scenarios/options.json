@@ -1,0 +1,234 @@
+[
+    {
+        "name": "options-behavior",
+        "steps": [
+            {
+                "js": "document.getElementById('preferencesButton').click()"
+            },
+            {
+                "wait": 2500
+            },
+            {
+                "js": "document.getElementById('PrefBehaviorLink').click()"
+            },
+            {
+                "wait": 700
+            },
+            {
+                "shot": true
+            },
+            {
+                "js": "document.getElementById('preferencesPage_contentWrapper').scrollTop = 800"
+            },
+            {
+                "wait": 300
+            },
+            {
+                "shot": "scrolled"
+            }
+        ]
+    },
+    {
+        "name": "options-downloads",
+        "steps": [
+            {
+                "js": "document.getElementById('preferencesButton').click()"
+            },
+            {
+                "wait": 2500
+            },
+            {
+                "js": "document.getElementById('PrefDownloadsLink').click()"
+            },
+            {
+                "wait": 700
+            },
+            {
+                "shot": true
+            },
+            {
+                "js": "document.getElementById('preferencesPage_contentWrapper').scrollTop = 800"
+            },
+            {
+                "wait": 300
+            },
+            {
+                "shot": "scrolled"
+            }
+        ]
+    },
+    {
+        "name": "options-connection",
+        "steps": [
+            {
+                "js": "document.getElementById('preferencesButton').click()"
+            },
+            {
+                "wait": 2500
+            },
+            {
+                "js": "document.getElementById('PrefConnectionLink').click()"
+            },
+            {
+                "wait": 700
+            },
+            {
+                "shot": true
+            },
+            {
+                "js": "document.getElementById('preferencesPage_contentWrapper').scrollTop = 800"
+            },
+            {
+                "wait": 300
+            },
+            {
+                "shot": "scrolled"
+            }
+        ]
+    },
+    {
+        "name": "options-speed",
+        "steps": [
+            {
+                "js": "document.getElementById('preferencesButton').click()"
+            },
+            {
+                "wait": 2500
+            },
+            {
+                "js": "document.getElementById('PrefSpeedLink').click()"
+            },
+            {
+                "wait": 700
+            },
+            {
+                "shot": true
+            },
+            {
+                "js": "document.getElementById('preferencesPage_contentWrapper').scrollTop = 800"
+            },
+            {
+                "wait": 300
+            },
+            {
+                "shot": "scrolled"
+            }
+        ]
+    },
+    {
+        "name": "options-bittorrent",
+        "steps": [
+            {
+                "js": "document.getElementById('preferencesButton').click()"
+            },
+            {
+                "wait": 2500
+            },
+            {
+                "js": "document.getElementById('PrefBittorrentLink').click()"
+            },
+            {
+                "wait": 700
+            },
+            {
+                "shot": true
+            },
+            {
+                "js": "document.getElementById('preferencesPage_contentWrapper').scrollTop = 800"
+            },
+            {
+                "wait": 300
+            },
+            {
+                "shot": "scrolled"
+            }
+        ]
+    },
+    {
+        "name": "options-rss",
+        "steps": [
+            {
+                "js": "document.getElementById('preferencesButton').click()"
+            },
+            {
+                "wait": 2500
+            },
+            {
+                "js": "document.getElementById('PrefRSSLink').click()"
+            },
+            {
+                "wait": 700
+            },
+            {
+                "shot": true
+            },
+            {
+                "js": "document.getElementById('preferencesPage_contentWrapper').scrollTop = 800"
+            },
+            {
+                "wait": 300
+            },
+            {
+                "shot": "scrolled"
+            }
+        ]
+    },
+    {
+        "name": "options-webui",
+        "steps": [
+            {
+                "js": "document.getElementById('preferencesButton').click()"
+            },
+            {
+                "wait": 2500
+            },
+            {
+                "js": "document.getElementById('PrefWebUILink').click()"
+            },
+            {
+                "wait": 700
+            },
+            {
+                "shot": true
+            },
+            {
+                "js": "document.getElementById('preferencesPage_contentWrapper').scrollTop = 800"
+            },
+            {
+                "wait": 300
+            },
+            {
+                "shot": "scrolled"
+            }
+        ]
+    },
+    {
+        "name": "options-advanced",
+        "steps": [
+            {
+                "js": "document.getElementById('preferencesButton').click()"
+            },
+            {
+                "wait": 2500
+            },
+            {
+                "js": "document.getElementById('PrefAdvancedLink').click()"
+            },
+            {
+                "wait": 700
+            },
+            {
+                "shot": true
+            },
+            {
+                "js": "document.getElementById('preferencesPage_contentWrapper').scrollTop = 800"
+            },
+            {
+                "wait": 300
+            },
+            {
+                "shot": "scrolled"
+            }
+        ]
+    }
+]

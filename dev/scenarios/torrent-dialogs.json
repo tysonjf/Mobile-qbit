@@ -1,0 +1,418 @@
+[
+    {
+        "name": "download",
+        "steps": [
+            {
+                "js": "(() => { const trs = document.querySelectorAll('#torrentsTableDiv tbody tr'); const tr = trs[3]; torrentsTable.deselectAll(); torrentsTable.selectRow(tr.rowId); })()"
+            },
+            {
+                "wait": 300
+            },
+            {
+                "js": "document.getElementById('downloadButton').click()"
+            },
+            {
+                "wait": 2000
+            },
+            {
+                "shot": true
+            }
+        ]
+    },
+    {
+        "name": "addtorrent",
+        "steps": [
+            {
+                "files": [
+                    "#fileselectButton",
+                    "$TORRENTS/extra-series.torrent"
+                ]
+            },
+            {
+                "wait": 3000
+            },
+            {
+                "shot": true
+            }
+        ]
+    },
+    {
+        "name": "addtorrent-multi",
+        "steps": [
+            {
+                "files": [
+                    "#fileselectButton",
+                    "$TORRENTS/extra-series.torrent",
+                    "$TORRENTS/Debian 13 netinst.torrent"
+                ]
+            },
+            {
+                "wait": 2000
+            },
+            {
+                "shot": true
+            }
+        ]
+    },
+    {
+        "name": "delete",
+        "steps": [
+            {
+                "js": "(() => { const trs = document.querySelectorAll('#torrentsTableDiv tbody tr'); const tr = trs[3]; torrentsTable.deselectAll(); torrentsTable.selectRow(tr.rowId); })()"
+            },
+            {
+                "wait": 300
+            },
+            {
+                "js": "deleteSelectedTorrentsFN()"
+            },
+            {
+                "wait": 2000
+            },
+            {
+                "shot": true
+            }
+        ]
+    },
+    {
+        "name": "speedlimit-global",
+        "steps": [
+            {
+                "js": "(() => { const trs = document.querySelectorAll('#torrentsTableDiv tbody tr'); const tr = trs[3]; torrentsTable.deselectAll(); torrentsTable.selectRow(tr.rowId); })()"
+            },
+            {
+                "wait": 300
+            },
+            {
+                "js": "globalDownloadLimitFN()"
+            },
+            {
+                "wait": 2000
+            },
+            {
+                "shot": true
+            }
+        ]
+    },
+    {
+        "name": "speedlimit-torrent",
+        "steps": [
+            {
+                "js": "(() => { const trs = document.querySelectorAll('#torrentsTableDiv tbody tr'); const tr = trs[3]; torrentsTable.deselectAll(); torrentsTable.selectRow(tr.rowId); })()"
+            },
+            {
+                "wait": 300
+            },
+            {
+                "js": "downloadLimitFN()"
+            },
+            {
+                "wait": 2000
+            },
+            {
+                "shot": true
+            }
+        ]
+    },
+    {
+        "name": "shareratio",
+        "steps": [
+            {
+                "js": "(() => { const trs = document.querySelectorAll('#torrentsTableDiv tbody tr'); const tr = trs[3]; torrentsTable.deselectAll(); torrentsTable.selectRow(tr.rowId); })()"
+            },
+            {
+                "wait": 300
+            },
+            {
+                "js": "shareRatioFN()"
+            },
+            {
+                "wait": 2000
+            },
+            {
+                "shot": true
+            }
+        ]
+    },
+    {
+        "name": "setlocation",
+        "steps": [
+            {
+                "js": "(() => { const trs = document.querySelectorAll('#torrentsTableDiv tbody tr'); const tr = trs[3]; torrentsTable.deselectAll(); torrentsTable.selectRow(tr.rowId); })()"
+            },
+            {
+                "wait": 300
+            },
+            {
+                "js": "setLocationFN()"
+            },
+            {
+                "wait": 2000
+            },
+            {
+                "shot": true
+            }
+        ]
+    },
+    {
+        "name": "rename",
+        "steps": [
+            {
+                "js": "(() => { const trs = document.querySelectorAll('#torrentsTableDiv tbody tr'); const tr = trs[3]; torrentsTable.deselectAll(); torrentsTable.selectRow(tr.rowId); })()"
+            },
+            {
+                "wait": 300
+            },
+            {
+                "js": "renameFN()"
+            },
+            {
+                "wait": 2000
+            },
+            {
+                "shot": true
+            }
+        ]
+    },
+    {
+        "name": "renamefiles",
+        "steps": [
+            {
+                "js": "(() => { const trs = document.querySelectorAll('#torrentsTableDiv tbody tr'); const tr = trs[3]; torrentsTable.deselectAll(); torrentsTable.selectRow(tr.rowId); })()"
+            },
+            {
+                "wait": 300
+            },
+            {
+                "js": "renameFilesFN()"
+            },
+            {
+                "wait": 2500
+            },
+            {
+                "shot": true
+            }
+        ]
+    },
+    {
+        "name": "renamefile",
+        "steps": [
+            {
+                "js": "(() => { const trs = document.querySelectorAll('#torrentsTableDiv tbody tr'); for (const tr of trs) if (tr.textContent.includes('Sintel')) { torrentsTable.deselectAll(); torrentsTable.selectRow(tr.rowId); } })()"
+            },
+            {
+                "js": "document.getElementById('propFilesLink').click()"
+            },
+            {
+                "wait": 1500
+            },
+            {
+                "js": "document.querySelectorAll('#torrentFilesTableDiv tbody tr')[1].click()"
+            },
+            {
+                "wait": 300
+            },
+            {
+                "js": "document.querySelector('#torrentFilesMenu a[href=\"#Rename\"]').click()"
+            },
+            {
+                "wait": 2000
+            },
+            {
+                "shot": true
+            }
+        ]
+    },
+    {
+        "name": "newcategory",
+        "steps": [
+            {
+                "js": "(() => { const trs = document.querySelectorAll('#torrentsTableDiv tbody tr'); const tr = trs[3]; torrentsTable.deselectAll(); torrentsTable.selectRow(tr.rowId); })()"
+            },
+            {
+                "wait": 300
+            },
+            {
+                "js": "createCategoryFN()"
+            },
+            {
+                "wait": 2000
+            },
+            {
+                "shot": true
+            }
+        ]
+    },
+    {
+        "name": "newtag",
+        "steps": [
+            {
+                "js": "(() => { const trs = document.querySelectorAll('#torrentsTableDiv tbody tr'); const tr = trs[3]; torrentsTable.deselectAll(); torrentsTable.selectRow(tr.rowId); })()"
+            },
+            {
+                "wait": 300
+            },
+            {
+                "js": "torrentAddTagsFN()"
+            },
+            {
+                "wait": 2000
+            },
+            {
+                "shot": true
+            }
+        ]
+    },
+    {
+        "name": "recheck",
+        "steps": [
+            {
+                "js": "(() => { const trs = document.querySelectorAll('#torrentsTableDiv tbody tr'); const tr = trs[3]; torrentsTable.deselectAll(); torrentsTable.selectRow(tr.rowId); })()"
+            },
+            {
+                "wait": 300
+            },
+            {
+                "js": "recheckFN()"
+            },
+            {
+                "wait": 2000
+            },
+            {
+                "shot": true
+            }
+        ]
+    },
+    {
+        "name": "autotmm",
+        "steps": [
+            {
+                "js": "(() => { const trs = document.querySelectorAll('#torrentsTableDiv tbody tr'); const tr = trs[3]; torrentsTable.deselectAll(); torrentsTable.selectRow(tr.rowId); })()"
+            },
+            {
+                "wait": 300
+            },
+            {
+                "js": "autoTorrentManagementFN()"
+            },
+            {
+                "wait": 2000
+            },
+            {
+                "shot": true
+            }
+        ]
+    },
+    {
+        "name": "addtrackers",
+        "steps": [
+            {
+                "js": "(() => { const trs = document.querySelectorAll('#torrentsTableDiv tbody tr'); for (const tr of trs) if (tr.textContent.includes('Sintel')) { torrentsTable.deselectAll(); torrentsTable.selectRow(tr.rowId); } })()"
+            },
+            {
+                "js": "document.getElementById('propTrackersLink').click()"
+            },
+            {
+                "wait": 1200
+            },
+            {
+                "js": "document.querySelector('#torrentTrackersMenu a[href=\"#AddTracker\"]').click()"
+            },
+            {
+                "wait": 2000
+            },
+            {
+                "shot": true
+            }
+        ]
+    },
+    {
+        "name": "edittracker",
+        "steps": [
+            {
+                "js": "(() => { const trs = document.querySelectorAll('#torrentsTableDiv tbody tr'); for (const tr of trs) if (tr.textContent.includes('Sintel')) { torrentsTable.deselectAll(); torrentsTable.selectRow(tr.rowId); } })()"
+            },
+            {
+                "js": "document.getElementById('propTrackersLink').click()"
+            },
+            {
+                "wait": 1500
+            },
+            {
+                "js": "[...document.querySelectorAll('#torrentTrackersTableDiv tbody tr')].find(t => t.textContent.includes('example.org')).click()"
+            },
+            {
+                "wait": 300
+            },
+            {
+                "js": "document.querySelector('#torrentTrackersMenu a[href=\"#EditTracker\"]').click()"
+            },
+            {
+                "wait": 2000
+            },
+            {
+                "shot": true
+            }
+        ]
+    },
+    {
+        "name": "addpeers",
+        "steps": [
+            {
+                "js": "(() => { const trs = document.querySelectorAll('#torrentsTableDiv tbody tr'); for (const tr of trs) if (tr.textContent.includes('Sintel')) { torrentsTable.deselectAll(); torrentsTable.selectRow(tr.rowId); } })()"
+            },
+            {
+                "js": "document.getElementById('propPeersLink').click()"
+            },
+            {
+                "wait": 1200
+            },
+            {
+                "js": "document.querySelector('#torrentPeersMenu a[href=\"#addPeer\"]').click()"
+            },
+            {
+                "wait": 2000
+            },
+            {
+                "shot": true
+            }
+        ]
+    },
+    {
+        "name": "addwebseeds",
+        "steps": [
+            {
+                "js": "(() => { const trs = document.querySelectorAll('#torrentsTableDiv tbody tr'); for (const tr of trs) if (tr.textContent.includes('Sintel')) { torrentsTable.deselectAll(); torrentsTable.selectRow(tr.rowId); } })()"
+            },
+            {
+                "js": "document.getElementById('propWebSeedsLink').click()"
+            },
+            {
+                "wait": 1200
+            },
+            {
+                "js": "document.querySelector('#torrentWebseedsMenu a[href=\"#AddWebSeeds\"]').click()"
+            },
+            {
+                "wait": 2000
+            },
+            {
+                "shot": true
+            }
+        ]
+    },
+    {
+        "name": "deltracker",
+        "steps": [
+            {
+                "js": "deleteTrackerFN('tracker.example.org')"
+            },
+            {
+                "wait": 2000
+            },
+            {
+                "shot": true
+            }
+        ]
+    }
+]

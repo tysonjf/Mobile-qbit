@@ -1,0 +1,222 @@
+[
+    {
+        "name": "main",
+        "steps": [
+            {
+                "shot": true
+            }
+        ]
+    },
+    {
+        "name": "menu",
+        "steps": [
+            {
+                "tap": "#mobileMenuButton"
+            },
+            {
+                "tap": "#desktopNavbar > ul > li:nth-child(2) > a"
+            },
+            {
+                "wait": 300
+            },
+            {
+                "shot": true
+            }
+        ]
+    },
+    {
+        "name": "filters-drawer",
+        "steps": [
+            {
+                "tap": "#mobileFiltersButton"
+            },
+            {
+                "wait": 500
+            },
+            {
+                "shot": true
+            },
+            {
+                "tap": "#seeding_filter span.link"
+            },
+            {
+                "wait": 800
+            },
+            {
+                "shot": "seeding"
+            }
+        ]
+    },
+    {
+        "name": "torrent-menu",
+        "steps": [
+            {
+                "longpress": "#torrentsTableDiv tbody tr:nth-child(3)"
+            },
+            {
+                "wait": 500
+            },
+            {
+                "shot": true
+            },
+            {
+                "tap": "#torrentsTableMenu a[href=\"#Category\"]"
+            },
+            {
+                "wait": 300
+            },
+            {
+                "shot": "category"
+            }
+        ]
+    },
+    {
+        "name": "select-mode",
+        "steps": [
+            {
+                "tap": "#mobileSelectButton"
+            },
+            {
+                "wait": 300
+            },
+            {
+                "tap": "#torrentsTableDiv tbody tr:nth-child(2)"
+            },
+            {
+                "tap": "#torrentsTableDiv tbody tr:nth-child(4)"
+            },
+            {
+                "wait": 300
+            },
+            {
+                "eval": "document.getElementById('mobileSelectionCount').textContent"
+            },
+            {
+                "shot": true
+            }
+        ]
+    },
+    {
+        "name": "sort-chips",
+        "steps": [
+            {
+                "tap": "#torrentsTableFixedHeaderDiv th.column_size"
+            },
+            {
+                "wait": 300
+            },
+            {
+                "eval": "[torrentsTable.sortedColumn, torrentsTable.reverseSort]"
+            },
+            {
+                "tap": "#torrentsTableFixedHeaderDiv th.column_size"
+            },
+            {
+                "wait": 300
+            },
+            {
+                "eval": "[torrentsTable.sortedColumn, torrentsTable.reverseSort]"
+            },
+            {
+                "shot": true
+            }
+        ]
+    },
+    {
+        "name": "prop-general",
+        "steps": [
+            {
+                "js": "(() => { const trs = document.querySelectorAll('#torrentsTableDiv tbody tr'); const tr = trs[3]; torrentsTable.deselectAll(); torrentsTable.selectRow(tr.rowId); })()"
+            },
+            {
+                "js": "document.getElementById('propGeneralLink').click()"
+            },
+            {
+                "wait": 1500
+            },
+            {
+                "shot": true
+            }
+        ]
+    },
+    {
+        "name": "prop-trackers",
+        "steps": [
+            {
+                "js": "(() => { const trs = document.querySelectorAll('#torrentsTableDiv tbody tr'); const tr = trs[3]; torrentsTable.deselectAll(); torrentsTable.selectRow(tr.rowId); })()"
+            },
+            {
+                "js": "document.getElementById('propTrackersLink').click()"
+            },
+            {
+                "wait": 1500
+            },
+            {
+                "shot": true
+            }
+        ]
+    },
+    {
+        "name": "prop-peers",
+        "steps": [
+            {
+                "js": "(() => { const trs = document.querySelectorAll('#torrentsTableDiv tbody tr'); const tr = trs[3]; torrentsTable.deselectAll(); torrentsTable.selectRow(tr.rowId); })()"
+            },
+            {
+                "js": "document.getElementById('propPeersLink').click()"
+            },
+            {
+                "wait": 1500
+            },
+            {
+                "shot": true
+            }
+        ]
+    },
+    {
+        "name": "prop-files",
+        "steps": [
+            {
+                "js": "(() => { const trs = document.querySelectorAll('#torrentsTableDiv tbody tr'); for (const tr of trs) if (tr.textContent.includes('Sintel')) { torrentsTable.deselectAll(); torrentsTable.selectRow(tr.rowId); } })()"
+            },
+            {
+                "js": "document.getElementById('propFilesLink').click()"
+            },
+            {
+                "wait": 1500
+            },
+            {
+                "shot": true
+            }
+        ]
+    },
+    {
+        "name": "prop-files-expanded",
+        "steps": [
+            {
+                "js": "(() => { const trs = document.querySelectorAll('#torrentsTableDiv tbody tr'); for (const tr of trs) if (tr.textContent.includes('Sintel')) { torrentsTable.deselectAll(); torrentsTable.selectRow(tr.rowId); } })()"
+            },
+            {
+                "js": "document.getElementById('propFilesLink').click()"
+            },
+            {
+                "wait": 1500
+            },
+            {
+                "js": "document.querySelectorAll('#torrentFilesTableDiv .filesTableCollapseIcon').forEach(e => e.click())"
+            },
+            {
+                "wait": 500
+            },
+            {
+                "js": "document.querySelectorAll('#torrentFilesTableDiv .filesTableCollapseIcon').forEach(e => e.click())"
+            },
+            {
+                "wait": 800
+            },
+            {
+                "shot": true
+            }
+        ]
+    }
+]
