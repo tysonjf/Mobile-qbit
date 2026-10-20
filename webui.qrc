@@ -454,9 +454,14 @@
         <file>private/views/transferlist.html</file>
         <file>public/css/login.css</file>
         <file>public/css/noscript.css</file>
+        <file>public/images/mobile-apple-touch-icon.png</file>
+        <file>public/images/mobile-icon-192.png</file>
+        <file>public/images/mobile-icon-512.png</file>
+        <file>public/images/mobile-icon-maskable-512.png</file>
         <file>public/images/qbittorrent-tray.svg</file>
         <file>public/images/qbittorrent32.png</file>
         <file>public/index.html</file>
+        <file>public/manifest.webmanifest</file>
         <file>public/robots.txt</file>
         <file>public/scripts/login.js</file>
     </qresource>

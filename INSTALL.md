@@ -141,8 +141,11 @@ Step 3: open it on your phone
    * Linux: run `hostname -I`.
 2. With the phone on the same Wi-Fi, open `http://192.168.1.20:8080` (your address
    and port) and log in.
-3. Optional: add it to the home screen so it opens like an app. Safari: *Share →
-   Add to Home Screen*. Chrome: *⋮ → Add to Home screen*.
+3. Optional: add it to the home screen so it opens like an app, with the qBittorrent
+   icon and without the browser's address bar. Safari: *Share → Add to Home Screen*.
+   Chrome: *⋮ → Add to Home screen* (Chrome opens it without the address bar only
+   when the WebUI uses HTTPS; over plain HTTP the icon opens a browser tab). On an
+   iPhone the home screen app keeps its own login, so log in once more there.
 
 If the page doesn't load, check that the WebUI's **IP address** setting is `*` (all
 addresses) and that the computer's firewall allows the port.
