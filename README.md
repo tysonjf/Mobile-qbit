@@ -135,6 +135,10 @@ Development
 a real `qbittorrent-nox` serving this folder, test data, and screenshot tours of every
 screen at phone, tablet and desktop sizes. Read its notes before changing the WebUI.
 
+Open work (polish and nice-to-haves) is tracked as a checklist in
+[issue #1](https://github.com/tysonjf/Mobile-qbit/issues/1), including how to pick up
+an item and send a pull request for it.
+
 The lint setup is the one of qBittorrent's WebUI:
 
 ```sh
