@@ -1,0 +1,97 @@
+[
+    {
+        "name": "tablet-splitters",
+        "steps": [
+            {
+                "js": "(() => { const trs = document.querySelectorAll('#torrentsTableDiv tbody tr'); torrentsTable.deselectAll(); torrentsTable.selectRow(trs[3].rowId); window.mobileTest = { filters: document.getElementById('filtersColumn').offsetWidth, list: document.getElementById('transferList').offsetHeight }; })()"
+            },
+            {
+                "wait": 1000
+            },
+            {
+                "eval": "(() => { if (!matchMedia('(pointer: coarse)').matches) throw new Error('no touch screen, use TOUCH=1'); const at = (x, y) => document.elementFromPoint(x, y)?.id || document.elementFromPoint(x, y)?.tagName; const column = document.getElementById('filtersColumn_handle').getBoundingClientRect(); const horizontal = document.getElementById('transferList_handle').getBoundingClientRect(); const tab = document.getElementById('propGeneralLink').getBoundingClientRect(); const hits = { besideColumnHandle: at(column.left - 8, column.top + 200), aboveListHandle: at(horizontal.left + 200, horizontal.top - 10), tabTop: document.elementFromPoint(tab.left + (tab.width / 2), tab.top + 2)?.closest('#propGeneralLink')?.id }; if ((hits.besideColumnHandle !== 'filtersColumn_handle') || (hits.aboveListHandle !== 'transferList_handle') || (hits.tabTop !== 'propGeneralLink')) throw new Error(JSON.stringify(hits)); return hits; })()"
+            },
+            {
+                "drag": [
+                    "#filtersColumn_handle",
+                    60,
+                    0,
+                    -8,
+                    0
+                ]
+            },
+            {
+                "wait": 400
+            },
+            {
+                "eval": "(() => { const now = document.getElementById('filtersColumn').offsetWidth; if (now !== window.mobileTest.filters + 60) throw new Error(`filters ${window.mobileTest.filters}px → ${now}px, expected +60px`); return `filters ${window.mobileTest.filters}px → ${now}px`; })()"
+            },
+            {
+                "drag": [
+                    "#transferList_handle",
+                    0,
+                    -60,
+                    0,
+                    -10
+                ]
+            },
+            {
+                "wait": 400
+            },
+            {
+                "eval": "(() => { const now = document.getElementById('transferList').offsetHeight; if (now !== window.mobileTest.list - 60) throw new Error(`list ${window.mobileTest.list}px → ${now}px, expected -60px`); return `list ${window.mobileTest.list}px → ${now}px`; })()"
+            },
+            {
+                "shot": true
+            }
+        ]
+    },
+    {
+        "name": "tablet-window",
+        "steps": [
+            {
+                "js": "document.getElementById('aboutLink').click()"
+            },
+            {
+                "wait": 2000
+            },
+            {
+                "js": "(() => { const box = document.getElementById('aboutpage').getBoundingClientRect(); window.mobileTest = { left: box.left, top: box.top, width: box.width, height: box.height }; })()"
+            },
+            {
+                "drag": [
+                    "#aboutpage_titleBar",
+                    60,
+                    40,
+                    -100,
+                    0
+                ]
+            },
+            {
+                "wait": 400
+            },
+            {
+                "eval": "(() => { const box = document.getElementById('aboutpage').getBoundingClientRect(); const start = window.mobileTest; if ((Math.round(box.left - start.left) !== 60) || (Math.round(box.top - start.top) !== 40)) throw new Error(`window moved by ${box.left - start.left}, ${box.top - start.top}`); return 'moved by its title bar'; })()"
+            },
+            {
+                "drag": [
+                    "#aboutpage_resizeHandle_se",
+                    50,
+                    30
+                ]
+            },
+            {
+                "wait": 400
+            },
+            {
+                "eval": "(() => { const box = document.getElementById('aboutpage').getBoundingClientRect(); const start = window.mobileTest; if ((Math.round(box.width - start.width) !== 50) || (Math.round(box.height - start.height) !== 30)) throw new Error(`window resized by ${box.width - start.width}, ${box.height - start.height}`); return 'resized by its corner'; })()"
+            },
+            {
+                "eval": "(() => { const styles = ['aboutpage_titleBar', 'aboutpage_resizeHandle_se', 'filtersColumn_handle', 'transferList_handle'].map((id) => getComputedStyle(document.getElementById(id)).touchAction); if (styles.some((style) => style !== 'none')) throw new Error(`touch-action: ${styles}`); return 'no scrolling or zooming while dragging'; })()"
+            },
+            {
+                "shot": true
+            }
+        ]
+    }
+]

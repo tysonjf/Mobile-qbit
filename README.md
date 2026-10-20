@@ -63,6 +63,11 @@ Mobile-qbit release exists and installs it with one tap (see
 it like an app (see [Step 3](INSTALL.md#step-3-open-it-on-your-phone) of the
 installation guide).
 
+On **touch tablets**, which keep the desktop layout, the splitters between the
+filters, the torrent list and the details can be dragged with a finger: their touch
+area is wider than the thin line. Windows are moved by their title bar and resized by
+their bottom right corner.
+
 Installing
 ---
 
@@ -120,7 +125,7 @@ which is loaded last by the main page and by every dialog page:
 | `(600px <= width) and (height <= 500px)` (within the phone layout) | phones in landscape | toolbar shares the top row with the tabs; the Search tab scrolls as a whole |
 | `(width <= 479px)` | small phones | only the selected main tab shows its name |
 | `(width <= 1100px)` | tablets, small laptops | narrower filter box and status bar |
-| `(pointer: coarse)` | any touch screen | bigger menu, list and tab hit targets; a long press doesn't select text, a double tap doesn't zoom |
+| `(pointer: coarse)` | any touch screen | bigger menu, list, tab and splitter hit targets; a long press doesn't select text, a double tap doesn't zoom |
 | `(hover: none)` | touch-only screens | no "sticky" hover highlight after a tap |
 | `(prefers-reduced-motion: reduce)` | *reduce motion* set in the system | the filters drawer and the menu don't animate |
 
