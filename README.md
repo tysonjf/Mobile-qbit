@@ -33,6 +33,8 @@ What changes on a phone:
   selection mode (on every touch screen, as there are no CTRL/SHIFT keys). Tap
   torrents to tick them, or use *Select All* / *Clear*; the toolbar buttons and the
   long press and ⋮ menus then act on all ticked torrents. ✕ leaves the selection mode.
+* In **Search → Search plugins...** every plugin is a card with a switch that enables
+  or disables it with a tap.
 * Tap a torrent, then tap **General / Trackers / Peers / HTTP Sources / Content** to
   open its details. Tap the open tab again (or the arrow on the right) to close them.
 * Every dialog fits the screen: big ones (Options, Add torrent, RSS Downloader, ...)
