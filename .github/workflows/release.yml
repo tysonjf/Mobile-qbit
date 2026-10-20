@@ -1,17 +1,45 @@
 name: Release
 
-# Publishes a GitHub release when a version tag (v1.2.3) is pushed. It contains
-# the WebUI as a ZIP file and as the .torrent the updater in the WebUI uses
-# (Help → Check for WebUI updates). See tools/make-release.py and the
-# "Making a release" section of dev/README.md.
+# Publishes the releases of Mobile-qbit: the WebUI as a ZIP file and as the
+# .torrent the updater in the WebUI uses (Help → Check for WebUI updates), see
+# tools/make-release.py and the "Making a release" section of dev/README.md.
+#
+# - Every push to master (every merged pull request) that changes what a
+#   release ships (private/, public/, translations/) makes a release. The
+#   version goes up (tools/bump-version.py), and the workflow commits it to
+#   private/version.json and tags it (vX.Y.Z). It is a patch release, unless a
+#   pull request merged since the last release has the label "minor" or "major".
+#   A version set by hand in version.json is used as it is.
+# - Actions → Release → "Run workflow" makes a release by hand, with the bump
+#   chosen there, even if nothing that ships changed.
+# - Pushing a version tag by hand publishes that tag.
 
 on:
   push:
+    branches:
+      - master
     tags:
       - "v*"
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: Version bump
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+        default: patch
 
 permissions:
   contents: write
+  pull-requests: read
+
+# one release at a time; a push while one runs waits and then releases
+# everything merged meanwhile
+concurrency:
+  group: release
+  cancel-in-progress: false
 
 jobs:
   release:
@@ -21,16 +49,72 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          # the latest master, which also has the commits of earlier releases
+          ref: ${{ github.ref_type == 'tag' && github.ref || 'master' }}
 
-      - name: Build the release files
-        run: python3 tools/make-release.py "$GITHUB_REF_NAME" --out dist
-
-      - name: Publish the release
+      - name: Bump the version
+        id: version
+        if: github.ref_type != 'tag'
         env:
           GH_TOKEN: ${{ github.token }}
+          BUMP: ${{ inputs.bump || 'patch' }}
+          FORCE: ${{ github.event_name == 'workflow_dispatch' && '--force' || '' }}
+          BEFORE: ${{ github.event.before }}
+        run: |
+          # the labels of the pull requests merged since the last release (or,
+          # before the first one, by this push)
+          last=$(git tag --list 'v*' --merged HEAD --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1 || true)
+          if [ -n "$last" ]; then
+            range="$last..HEAD"
+          elif git cat-file -e "$BEFORE^{commit}" 2>/dev/null; then
+            range="$BEFORE..HEAD"
+          else
+            range="HEAD~1..HEAD"
+          fi
+          bumps="--bump $BUMP"
+          for sha in $(git log --format=%H "$range"); do
+            for label in $(gh api "repos/$GITHUB_REPOSITORY/commits/$sha/pulls" --jq '.[].labels[].name' | grep -xE 'major|minor' || true); do
+              bumps="$bumps --bump $label"
+            done
+          done
+          version=$(python3 tools/bump-version.py $bumps $FORCE --write)
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          if [ -n "$version" ]; then
+            echo "Releasing v$version (${bumps})"
+          else
+            echo "Nothing that a release ships changed since $last, no release"
+          fi
+
+      - name: Commit and tag the version
+        if: steps.version.outputs.version != ''
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if ! git diff --quiet; then
+            git commit -am "Release v$VERSION"
+          fi
+          git tag "v$VERSION"
+          git push --atomic origin HEAD:master "v$VERSION"
+
+      - name: Build the release files
+        id: build
+        if: github.ref_type == 'tag' || steps.version.outputs.version != ''
+        env:
+          TAG: ${{ github.ref_type == 'tag' && github.ref_name || format('v{0}', steps.version.outputs.version) }}
+        run: |
+          python3 tools/make-release.py "$TAG" --out dist
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Publish the release
+        if: steps.build.outputs.tag != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.build.outputs.tag }}
         run: |
           prerelease=""
-          case "$GITHUB_REF_NAME" in
+          case "$TAG" in
             *-*) prerelease="--prerelease" ;;
           esac
-          gh release create "$GITHUB_REF_NAME" dist/* --verify-tag --generate-notes --title "Mobile-qbit $GITHUB_REF_NAME" $prerelease
+          gh release create "$TAG" dist/* --verify-tag --generate-notes --title "Mobile-qbit $TAG" $prerelease

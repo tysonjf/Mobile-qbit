@@ -205,8 +205,10 @@ pnpm run test                     # vitest
 To try changes, point qBittorrent's *alternative WebUI* at your working copy; files
 are re-read when they change, so a page reload is enough.
 
-Releases are made by pushing a version tag; a GitHub Actions workflow publishes the
-ZIP and the torrent the updater uses. See *Making a release* in
+Merging a pull request into `master` makes a release when it changes the WebUI: a
+GitHub Actions workflow raises the version (a patch release, or minor / major with
+that label on the pull request), tags it and publishes the ZIP and the torrent the
+updater uses. See *Making a release* in
 [`dev/README.md`](dev/README.md#making-a-release).
 
 After updating the translation sources, rebuild the `.qm` files (no Qt tools needed;
