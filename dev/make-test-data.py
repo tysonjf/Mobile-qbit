@@ -2,16 +2,21 @@
 
 # Fills the qbittorrent-nox started by start-qbittorrent.sh with test data:
 # torrents in various states (seeding, stalled, stopped, partially downloaded),
-# categories, tags and a dummy search plugin that returns results offline.
+# categories, tags, blocked IPs in the log and a dummy search plugin that returns
+# results offline.
 # It also writes an extra torrent file that is not added, for "Add torrent" tests.
+# Running it again (e.g. after restarting qBittorrent, which forgets the log)
+# skips the torrents and categories that exist already.
 #
 # Usage: python3 make-test-data.py [WebUI URL, default http://127.0.0.1:8080]
 
 import hashlib
+import json
 import os
 import random
 import sys
 import time
+import urllib.error
 import urllib.parse
 import urllib.request
 import uuid
@@ -38,6 +43,10 @@ TORRENTS = [
     ("LibreOffice 25.8 Portable", [("lo/setup.exe", 250_000), ("lo/readme.txt", 2_000)], True, "", ""),
 ]
 STOPPED = {"Arch Linux 2026.10.01", "LibreOffice 25.8 Portable"}
+# Peers for the "Blocked IPs" log: banned addresses (documentation ranges) and
+# privileged ports, which qBittorrent refuses to connect to
+BANNED_IPS = ["203.0.113.7", "198.51.100.23", "2001:db8::42"]
+BLOCKED_PEERS = ["203.0.113.7:51413", "198.51.100.23:6881", "[2001:db8::42]:6881", "192.0.2.80:80", "192.0.2.81:443"]
 EXTRA_TORRENT = ("Example Series (2026) Complete 1080p WEB",
                  [(f"Season 1/Episode {i:02d} - A Fairly Long Episode Title.mkv", 300_000 + (i * 1000)) for i in range(1, 9)]
                  + [("Extras/Behind the scenes.mp4", 200_000), ("Subtitles/en.srt", 4_000), ("cover.jpg", 30_000)])
@@ -102,20 +111,47 @@ def post(endpoint, fields=None, files=None):
         return response.read().decode()
 
 
+def post_new(endpoint, fields=None, files=None) -> bool:
+    """post() for adding something; False if it exists already (409 Conflict)"""
+    try:
+        post(endpoint, fields, files)
+        return True
+    except urllib.error.HTTPError as error:
+        if error.code != 409:
+            raise
+        return False
+
+
+def get(endpoint):
+    with urllib.request.urlopen(API + endpoint) as response:
+        return json.loads(response.read())
+
+
+def add_blocked_peers() -> None:
+    post("/app/setPreferences", {"json": json.dumps({"banned_IPs": "\n".join(BANNED_IPS),
+                                                     "block_peers_on_privileged_ports": True})})
+    torrent = next(t for t in get("/torrents/info") if t["state"] not in ("stoppedDL", "stoppedUP"))
+    post("/torrents/addPeers", {"hashes": torrent["hash"], "peers": "|".join(BLOCKED_PEERS)})
+
+
 def main() -> None:
     random.seed(42)
     DOWNLOADS_DIR.mkdir(parents=True, exist_ok=True)
     TORRENTS_DIR.mkdir(parents=True, exist_ok=True)
 
     for category in ("Movies", "Linux ISOs", "Books"):
-        post("/torrents/createCategory", {"category": category})
+        post_new("/torrents/createCategory", {"category": category})
     post("/torrents/createTags", {"tags": "hd,favourite,archive"})
 
     for name, files, content, category, tags in TORRENTS:
         torrent_path = make_torrent(name, files, content)
-        post("/torrents/add", {"category": category, "tags": tags, "stopped": str(name in STOPPED).lower()},
-             {"torrents": torrent_path})
-        print(f"added {name}")
+        added = post_new("/torrents/add", {"category": category, "tags": tags, "stopped": str(name in STOPPED).lower()},
+                         {"torrents": torrent_path})
+        print(f"added {name}" if added else f"exists already: {name}")
+
+    time.sleep(1)
+    add_blocked_peers()
+    print(f"blocked {len(BLOCKED_PEERS)} peers (Log → Blocked IPs)")
 
     extra = make_torrent(*EXTRA_TORRENT, write_content=False, file_name="extra-series.torrent")
     print(f"not added, for the add torrent dialog: {extra}")

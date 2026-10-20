@@ -202,5 +202,64 @@
                 "wait": 300
             }
         ]
+    },
+    {
+        "name": "log-blocked-ips",
+        "steps": [
+            {
+                "js": "document.getElementById('showLogViewerLink').click()"
+            },
+            {
+                "wait": 500
+            },
+            {
+                "js": "document.getElementById('logTabLink').click()"
+            },
+            {
+                "wait": 1000
+            },
+            {
+                "js": "document.getElementById('logPeerLink').click()"
+            },
+            {
+                "wait": 2000
+            },
+            {
+                "eval": "document.querySelectorAll('#logPeerTableDiv tbody tr').length"
+            },
+            {
+                "shot": true
+            },
+            {
+                "longpress": "#logPeerTableDiv tbody tr:nth-child(2)"
+            },
+            {
+                "wait": 500
+            },
+            {
+                "eval": "document.getElementById('logTableMenu').classList.contains('visible')"
+            },
+            {
+                "shot": "menu"
+            },
+            {
+                "js": "document.getElementById('contextMenuBackdrop')?.click()"
+            },
+            {
+                "wait": 300
+            },
+            {
+                "js": "document.getElementById('logMessageLink').click()"
+            },
+            {
+                "wait": 300
+            },
+            {
+                "js": "document.getElementById('showLogViewerLink').click()"
+            },
+            {
+                "wait": 300
+            }
+        ]
     }
 ]

@@ -18,7 +18,7 @@ pnpm exec playwright install chromium   # not needed where browsers are preinsta
 # 1. start qbittorrent-nox 5.2.4 serving this repository (keep it running)
 sh start-qbittorrent.sh       # http://127.0.0.1:8080, no login from localhost
 
-# 2. in another shell: torrents, categories, tags and an offline search plugin
+# 2. in another shell: torrents, categories, tags, blocked IPs and an offline search plugin
 python3 make-test-data.py
 
 # 3. screenshot tours (exit code 1 if anything failed)
@@ -54,7 +54,7 @@ are documented at the top of [`tour.js`](tour.js). The groups:
 | --- | --- |
 | `main.json` | torrent list, menu, filters drawer, long press menu, ⋮ button, selection mode, sort chips, details tabs |
 | `torrent-dialogs.json` | add torrent (file / link), remove, limits, location, rename, categories, tags, trackers, peers, web seeds |
-| `views.json` | Search (with results), search plugins, RSS, RSS Downloader, Log |
+| `views.json` | Search (with results), search plugins, RSS, RSS Downloader, Log (General and Blocked IPs) |
 | `other-windows.json` | About, Statistics, Torrent Creator, Cookies, API key, logout |
 | `options.json` | every tab of the Options window |
 | `update.json` | the updater (*Help → Check for WebUI updates*), needs `fake-github.py`, see below |
