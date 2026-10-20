@@ -21,8 +21,9 @@ sh start-qbittorrent.sh       # http://127.0.0.1:8080, no login from localhost
 #    optional, in another shell: a second qbittorrent-nox, a peer for the Peers tab
 QBT_PROFILE=peer QBT_PORT=8081 QBT_BT_PORT=56882 sh start-qbittorrent.sh
 
-# 2. in another shell: torrents, categories, tags, web seeds, blocked IPs and an
-#    offline search plugin; the peer starts downloading a torrent from the first one
+# 2. in another shell: torrents, categories, tags, web seeds, blocked IPs, an
+#    offline search plugin and RSS feeds; the peer starts downloading a torrent
+#    from the first one
 python3 make-test-data.py
 
 # 3. screenshot tours (exit code 1 if anything failed)
@@ -53,6 +54,12 @@ The peer (`QBT_PROFILE=peer`, profile and downloads in `.cache/peer`) downloads
 that torrent has a peer with progress and speeds. Run `make-test-data.py` again to
 start over. Without the peer, the Peers tabs are empty.
 
+The RSS feeds come from a server on port 8099 that only runs while
+`make-test-data.py` does. qBittorrent keeps the articles it fetched; it marks a feed
+red when a later refresh fails (e.g. after a restart). Running the script again
+fetches them again. Opening articles marks them read, so the unread counts go down
+with every tour.
+
 Scenario files
 ---
 
@@ -61,9 +68,9 @@ are documented at the top of [`tour.js`](tour.js). The groups:
 
 | File | Covers |
 | --- | --- |
-| `main.json` | torrent list, menu, filters drawer, long press menu (and what a long press may select), ⋮ button, selection mode, sort chips, details tabs |
+| `main.json` | torrent list, menu, filters drawer, long press menu (and what a long press may select), ⋮ button, selection mode, sort chips, details tabs (also at full height) |
 | `torrent-dialogs.json` | add torrent (file / link, its file list as cards), remove, limits, location, rename, categories, tags, trackers, peers, web seeds |
-| `views.json` | Search (with results, their download and ⋮ buttons), search plugins, RSS, RSS Downloader, Log (General and Blocked IPs) |
+| `views.json` | Search (with results, their download and ⋮ buttons), search plugins, RSS (feeds → articles → article), RSS Downloader, Log (General and Blocked IPs) |
 | `other-windows.json` | About, Statistics, Torrent Creator, Cookies, API key, logout |
 | `options.json` | every tab of the Options window |
 | `update.json` | the updater (*Help → Check for WebUI updates*), needs `fake-github.py`, see below |
