@@ -35,6 +35,7 @@ What changes on a phone:
   long press and ⋮ menus then act on all ticked torrents. ✕ leaves the selection mode.
 * Tap a torrent, then tap **General / Trackers / Peers / HTTP Sources / Content** to
   open its details. Tap the open tab again (or the arrow on the right) to close them.
+  Trackers, peers and HTTP sources are cards with sort buttons, like the torrents.
 * Every dialog fits the screen: big ones (Options, Add torrent, RSS Downloader, ...)
   open full screen, small prompts are centered and grow to fit their content.
 * The Options window, Search, RSS, RSS Downloader, Log and all other dialogs reflow

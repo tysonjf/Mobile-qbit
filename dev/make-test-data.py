@@ -2,11 +2,14 @@
 
 # Fills the qbittorrent-nox started by start-qbittorrent.sh with test data:
 # torrents in various states (seeding, stalled, stopped, partially downloaded),
-# categories, tags, blocked IPs in the log and a dummy search plugin that returns
-# results offline.
+# categories, tags, web seeds, blocked IPs in the log and a dummy search plugin
+# that returns results offline.
+# If a second qbittorrent-nox runs on port 8081 (the "peer", see dev/README.md),
+# it slowly downloads a torrent from the first one, which then has a peer.
 # It also writes an extra torrent file that is not added, for "Add torrent" tests.
 # Running it again (e.g. after restarting qBittorrent, which forgets the log)
-# skips the torrents and categories that exist already.
+# skips the torrents and categories that exist already, and restarts the peer's
+# download.
 #
 # Usage: python3 make-test-data.py [WebUI URL, default http://127.0.0.1:8080]
 
@@ -47,6 +50,14 @@ STOPPED = {"Arch Linux 2026.10.01", "LibreOffice 25.8 Portable"}
 # privileged ports, which qBittorrent refuses to connect to
 BANNED_IPS = ["203.0.113.7", "198.51.100.23", "2001:db8::42"]
 BLOCKED_PEERS = ["203.0.113.7:51413", "198.51.100.23:6881", "[2001:db8::42]:6881", "192.0.2.80:80", "192.0.2.81:443"]
+# HTTP Sources tab; the servers don't exist
+WEB_SEEDS = {"Sintel Open Movie Collection": ["https://download.example.org/sintel/",
+                                              "https://mirror.example.net/pub/movies/open-movies/sintel/"]}
+# The peer downloads this torrent from the first qbittorrent-nox at 1 KiB/s, which
+# takes about 10 minutes
+PEER_API = "http://127.0.0.1:8081/api/v2"
+PEER_TORRENT = "Big Buck Bunny (2008) 1080p"
+QBT_ADDRESS = "127.0.0.1:56881"
 EXTRA_TORRENT = ("Example Series (2026) Complete 1080p WEB",
                  [(f"Season 1/Episode {i:02d} - A Fairly Long Episode Title.mkv", 300_000 + (i * 1000)) for i in range(1, 9)]
                  + [("Extras/Behind the scenes.mp4", 200_000), ("Subtitles/en.srt", 4_000), ("cover.jpg", 30_000)])
@@ -92,7 +103,7 @@ def make_torrent(name, files, write_content, file_name=None) -> Path:
     return torrent_path
 
 
-def post(endpoint, fields=None, files=None):
+def post(endpoint, fields=None, files=None, api=API):
     if files:
         boundary = uuid.uuid4().hex
         body = b""
@@ -106,7 +117,7 @@ def post(endpoint, fields=None, files=None):
     else:
         body = urllib.parse.urlencode(fields or {}).encode()
         headers = {"Content-Type": "application/x-www-form-urlencoded"}
-    request = urllib.request.Request(API + endpoint, data=body, headers=headers, method="POST")
+    request = urllib.request.Request(api + endpoint, data=body, headers=headers, method="POST")
     with urllib.request.urlopen(request) as response:
         return response.read().decode()
 
@@ -122,8 +133,8 @@ def post_new(endpoint, fields=None, files=None) -> bool:
         return False
 
 
-def get(endpoint):
-    with urllib.request.urlopen(API + endpoint) as response:
+def get(endpoint, api=API):
+    with urllib.request.urlopen(api + endpoint) as response:
         return json.loads(response.read())
 
 
@@ -132,6 +143,31 @@ def add_blocked_peers() -> None:
                                                      "block_peers_on_privileged_ports": True})})
     torrent = next(t for t in get("/torrents/info") if t["state"] not in ("stoppedDL", "stoppedUP"))
     post("/torrents/addPeers", {"hashes": torrent["hash"], "peers": "|".join(BLOCKED_PEERS)})
+
+
+def add_web_seeds() -> None:
+    hashes = {torrent["name"]: torrent["hash"] for torrent in get("/torrents/info")}
+    for name, urls in WEB_SEEDS.items():
+        post("/torrents/addWebSeeds", {"hash": hashes[name],
+                                       "urls": "|".join(urllib.parse.quote(url, safe="") for url in urls)})
+
+
+def start_peer_download(torrent_path) -> bool:
+    """False if no peer runs"""
+    try:
+        torrents = get("/torrents/info", PEER_API)
+    except urllib.error.URLError:
+        return False
+
+    # start over, the previous download may be complete
+    for torrent in torrents:
+        post("/torrents/delete", {"hashes": torrent["hash"], "deleteFiles": "true"}, api=PEER_API)
+    time.sleep(1)
+    post("/torrents/add", {"dlLimit": "1024"}, {"torrents": torrent_path}, api=PEER_API)
+    time.sleep(1)
+    torrent = get("/torrents/info", PEER_API)[0]
+    post("/torrents/addPeers", {"hashes": torrent["hash"], "peers": QBT_ADDRESS}, api=PEER_API)
+    return True
 
 
 def main() -> None:
@@ -143,8 +179,9 @@ def main() -> None:
         post_new("/torrents/createCategory", {"category": category})
     post("/torrents/createTags", {"tags": "hd,favourite,archive"})
 
+    torrent_paths = {}
     for name, files, content, category, tags in TORRENTS:
-        torrent_path = make_torrent(name, files, content)
+        torrent_path = torrent_paths[name] = make_torrent(name, files, content)
         added = post_new("/torrents/add", {"category": category, "tags": tags, "stopped": str(name in STOPPED).lower()},
                          {"torrents": torrent_path})
         print(f"added {name}" if added else f"exists already: {name}")
@@ -152,6 +189,12 @@ def main() -> None:
     time.sleep(1)
     add_blocked_peers()
     print(f"blocked {len(BLOCKED_PEERS)} peers (Log → Blocked IPs)")
+    add_web_seeds()
+    print(f"added web seeds to {', '.join(WEB_SEEDS)} (HTTP Sources tab)")
+    if start_peer_download(torrent_paths[PEER_TORRENT]):
+        print(f"the peer downloads {PEER_TORRENT} for about 10 minutes (Peers tab)")
+    else:
+        print("no peer on port 8081, the Peers tabs stay empty (see dev/README.md)")
 
     extra = make_torrent(*EXTRA_TORRENT, write_content=False, file_name="extra-series.torrent")
     print(f"not added, for the add torrent dialog: {extra}")
