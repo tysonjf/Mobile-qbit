@@ -57,6 +57,7 @@ are documented at the top of [`tour.js`](tour.js). The groups:
 | `views.json` | Search (with results), search plugins, RSS, RSS Downloader, Log |
 | `other-windows.json` | About, Statistics, Torrent Creator, Cookies, API key, logout |
 | `options.json` | every tab of the Options window |
+| `update.json` | the updater (*Help → Check for WebUI updates*), needs `fake-github.py`, see below |
 
 Sizes below 800px wide or 500px high are emulated as touch screens.
 
@@ -75,6 +76,65 @@ curl -X POST http://127.0.0.1:8080/api/v2/app/setPreferences --data-urlencode 'j
 
 Then compare the two folders (e.g. with Pillow's `ImageChops.difference`). Only
 live numbers (speeds, free space) may differ.
+
+Testing the updater
+---
+
+The updater (`private/scripts/mobile-update.js`) talks to GitHub, which a test
+shouldn't depend on. [`fake-github.py`](fake-github.py) stands in for it:
+
+```sh
+python3 fake-github.py        # keep it running, port 8098
+node tour.js scenarios/update.json 390x844
+```
+
+On start it builds releases `v<version>`, `v<version + 1>` and `v<version + 2>` from
+the working tree (uncommitted changes included) with `tools/make-release.py`, and
+exports the first one to `.cache/fake-github/install`. The scenarios then
+
+1. point qBittorrent at that folder (the "installed" version),
+2. open the update window, with the browser's requests to `api.github.com` and
+   `raw.githubusercontent.com` redirected to the fake server (`route` steps),
+3. update twice. The second update also deletes the folder of the first one. The
+   newer releases set `window.mobileQbitFakeRelease`, which shows that the browser
+   really runs the new scripts after the reload,
+4. point qBittorrent back at the repository.
+
+qBittorrent itself downloads the releases from the fake server: their torrents name
+it as the web seed. `http://127.0.0.1:8098/control/fail/1` makes the web seed fail
+(the updater gives up after two minutes without progress), `/control/fail/0` ends
+that, and `/control/latest/<tag>` changes which release is the latest one.
+
+Restart `fake-github.py` to test changed code: it rebuilds everything, and deletes
+`.cache/fake-github`, so make sure qBittorrent doesn't use a folder in there at that
+moment (`update-restore` points it back at the repository).
+
+Making a release
+---
+
+1. Set `"version"` in [`private/version.json`](../private/version.json) (for example
+   `1.1.0`). If the release needs a different qBittorrent version, also update
+   `"qbittorrent"` (major.minor, e.g. `5.3`); the updater only installs releases made
+   for the running qBittorrent.
+2. Commit, then tag and push:
+
+   ```sh
+   git tag v1.1.0
+   git push origin v1.1.0
+   ```
+
+The [release workflow](../.github/workflows/release.yml) runs
+[`tools/make-release.py`](../tools/make-release.py) and publishes a GitHub release
+with:
+
+* `mobile-qbit-v1.1.0.zip`: the WebUI folder, for installing by hand,
+* `mobile-qbit-v1.1.0.torrent`: the same files for the updater. Its only source is a
+  web seed on `raw.githubusercontent.com`, so the files are served straight from the
+  tagged commit and qBittorrent verifies them against the torrent.
+
+The workflow fails if the tag doesn't match `version.json`. Tags with a hyphen
+(`v1.1.0-rc1`) become pre-releases, which the updater ignores. A fork must change
+`"repository"` in `version.json`, as the updater looks for releases there.
 
 Things to know before changing the WebUI
 ---
@@ -104,6 +164,12 @@ Things to know before changing the WebUI
   `mobile.css` turns rows into cards (torrents, search results, log). With the
   "virtual list" option rows have a fixed height (`TORRENT_CARD_HEIGHT` in
   `mobile.js`).
+* **MooTools replaces some built-ins.** For example `Array.from()` ignores its
+  second (map) argument; use a loop or `.map()` instead.
+* **Calling the Web API from scripts.** Without login (localhost), every request
+  without the session cookie gets a new session, and some calls keep state per
+  session (`torrents/fetchMetadata` caches the downloaded torrent there). Keep the
+  cookie (`curl -c cookies -b cookies`, a cookie jar in Python).
 * **Strings.** New user-visible text uses `QBT_TR(text)QBT_TR[CONTEXT=...]`. Reuse
   strings that exist in `translations/*.ts` where possible (they are translated
   already); `python3 tools/build-translations.py` rebuilds the `.qm` files.

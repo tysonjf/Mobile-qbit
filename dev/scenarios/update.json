@@ -1,0 +1,67 @@
+[
+    {
+        "name": "update-setup",
+        "steps": [
+            { "js": "fetch('http://127.0.0.1:8098/control/latest/v1.0.1')" },
+            { "js": "fetch('api/v2/app/setPreferences', { method: 'POST', body: new URLSearchParams({ json: JSON.stringify({ alternative_webui_enabled: true, alternative_webui_path: '$CACHE/fake-github/install' }) }) })" },
+            { "wait": 500 },
+            { "eval": "fetch('version.json').then((response) => response.json())" }
+        ]
+    },
+    {
+        "name": "update-check",
+        "steps": [
+            { "route": ["https://api.github.com/", "http://127.0.0.1:8098/api/"] },
+            { "route": ["https://raw.githubusercontent.com/", "http://127.0.0.1:8098/raw/"] },
+            { "js": "document.getElementById('mobileUpdateLink').click()" },
+            { "wait": 2500 },
+            { "js": "document.getElementById('mobileUpdateNotesBox').open = true" },
+            { "wait": 300 },
+            { "shot": true },
+            { "eval": "document.getElementById('mobileUpdateMessage').textContent" }
+        ]
+    },
+    {
+        "name": "update-install",
+        "dialogs": "accept",
+        "steps": [
+            { "route": ["https://api.github.com/", "http://127.0.0.1:8098/api/"] },
+            { "route": ["https://raw.githubusercontent.com/", "http://127.0.0.1:8098/raw/"] },
+            { "js": "document.getElementById('mobileUpdateLink').click()" },
+            { "wait": 2500 },
+            { "click": "#mobileUpdateInstall" },
+            { "wait": 1500 },
+            { "shot": "progress" },
+            { "wait": 15000 },
+            { "eval": "Promise.all([window.mobileQbitFakeRelease, fetch('version.json').then((response) => response.json()).then((info) => info.version), fetch('api/v2/app/preferences').then((response) => response.json()).then((prefs) => prefs.alternative_webui_path)])" },
+            { "js": "document.getElementById('aboutLink').click()" },
+            { "wait": 2000 },
+            { "shot": "about" }
+        ]
+    },
+    {
+        "name": "update-again",
+        "dialogs": "accept",
+        "steps": [
+            { "route": ["https://api.github.com/", "http://127.0.0.1:8098/api/"] },
+            { "route": ["https://raw.githubusercontent.com/", "http://127.0.0.1:8098/raw/"] },
+            { "js": "fetch('http://127.0.0.1:8098/control/latest/v1.0.2')" },
+            { "js": "document.getElementById('mobileUpdateLink').click()" },
+            { "wait": 2500 },
+            { "shot": true },
+            { "click": "#mobileUpdateInstall" },
+            { "wait": 18000 },
+            { "eval": "Promise.all([window.mobileQbitFakeRelease, fetch('version.json').then((response) => response.json()).then((info) => info.version), fetch('api/v2/app/preferences').then((response) => response.json()).then((prefs) => prefs.alternative_webui_path), fetch('api/v2/torrents/info?tag=Mobile-qbit%20update').then((response) => response.json()).then((torrents) => torrents.length)])" },
+            { "js": "document.getElementById('mobileUpdateLink').click()" },
+            { "wait": 2500 },
+            { "shot": "latest" }
+        ]
+    },
+    {
+        "name": "update-restore",
+        "steps": [
+            { "js": "fetch('api/v2/app/setPreferences', { method: 'POST', body: new URLSearchParams({ json: JSON.stringify({ alternative_webui_enabled: true, alternative_webui_path: '$REPO' }) }) })" },
+            { "wait": 500 }
+        ]
+    }
+]

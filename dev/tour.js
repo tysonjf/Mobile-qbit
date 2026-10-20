@@ -16,7 +16,11 @@
  *
  * Screenshots go to dev/.cache/shots/<size>/<scenario>[-<shot>].png
  *
- * Scenario file: an array of { "name": "...", "steps": [ ... ] }. Steps:
+ * Scenario file: an array of { "name": "...", "steps": [ ... ] }. A scenario
+ * may also set "url" (page to open) and "dialogs": "accept" (answer alert,
+ * confirm and prompt dialogs with OK instead of Cancel). Steps:
+ *   { "route": [from, to] }     requests of the page to URLs starting with
+ *                               "from" go to "to" + the rest of the URL instead
  *   { "click": selector }       mouse click
  *   { "tap": selector }         touch tap
  *   { "tapxy": [x, y] }         touch tap at a position
@@ -24,9 +28,12 @@
  *   { "js": "code" }            run code in the page
  *   { "eval": "code" }          run code and print its result
  *   { "fill": [selector, text] }
- *   { "files": [selector, file, ...] }  "$TORRENTS" is replaced by dev/.cache/torrents
+ *   { "files": [selector, file, ...] }
  *   { "wait": ms }
  *   { "shot": true | "suffix" }
+ *
+ * In "js", "eval" and "files", "$TORRENTS" is replaced by the path of
+ * dev/.cache/torrents, "$CACHE" by dev/.cache and "$REPO" by the repository.
  */
 
 "use strict";
@@ -52,7 +59,10 @@ const loadPlaywright = () => {
     }
 
     const { chromium } = loadPlaywright();
-    const torrentsDir = path.join(__dirname, ".cache", "torrents");
+    const expand = (text) => text
+        .replaceAll("$TORRENTS", path.join(__dirname, ".cache", "torrents"))
+        .replaceAll("$CACHE", path.join(__dirname, ".cache"))
+        .replaceAll("$REPO", path.dirname(__dirname));
     const scenarios = JSON.parse(fs.readFileSync(scenarioFile, "utf8"))
         .filter((scenario) => !filter || new RegExp(filter).test(scenario.name));
     const browser = await chromium.launch();
@@ -75,6 +85,17 @@ const loadPlaywright = () => {
             const page = await context.newPage();
             const problems = [];
             page.on("pageerror", (error) => problems.push(`page error: ${error.message}`));
+            page.on("dialog", (dialog) => {
+                console.log(`  ${scenario.name}: ${dialog.type()} "${dialog.message().replaceAll("\n", " ")}"`);
+                return (scenario.dialogs === "accept") ? dialog.accept() : dialog.dismiss();
+            });
+            for (const step of scenario.steps.filter((step) => step.route)) {
+                const [from, to] = step.route;
+                await page.route((url) => url.href.startsWith(from), async (route) => {
+                    const response = await route.fetch({ url: to + route.request().url().slice(from.length) });
+                    await route.fulfill({ response });
+                });
+            }
             await page.goto(scenario.url || process.env.URL || "http://127.0.0.1:8080/", { waitUntil: "load" });
             await page.mouse.move(width - 2, height - 2).catch(() => {});
             await page.waitForTimeout(scenario.initialWait ?? 2000);
@@ -88,11 +109,11 @@ const loadPlaywright = () => {
                     if (step.tapxy)
                         await page.touchscreen.tap(step.tapxy[0], step.tapxy[1]);
                     if (step.js)
-                        await page.evaluate(step.js);
+                        await page.evaluate(expand(step.js));
                     if (step.fill)
                         await page.fill(step.fill[0], step.fill[1]);
                     if (step.files)
-                        await page.setInputFiles(step.files[0], step.files.slice(1).map((file) => file.replace("$TORRENTS", torrentsDir)));
+                        await page.setInputFiles(step.files[0], step.files.slice(1).map(expand));
                     if (step.longpress) {
                         const box = await (await page.$(step.longpress)).boundingBox();
                         const x = box.x + Math.min(box.width / 2, 60);
@@ -105,7 +126,7 @@ const loadPlaywright = () => {
                     if (step.wait)
                         await page.waitForTimeout(step.wait);
                     if (step.eval)
-                        console.log(`  ${scenario.name}: ${JSON.stringify(await page.evaluate(step.eval))}`);
+                        console.log(`  ${scenario.name}: ${JSON.stringify(await page.evaluate(expand(step.eval)))}`);
                     if (step.shot) {
                         const suffix = (step.shot === true) ? "" : `-${step.shot}`;
                         await page.screenshot({ path: path.join(outDir, `${scenario.name}${suffix}.png`) });
