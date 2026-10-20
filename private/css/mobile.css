@@ -1027,7 +1027,8 @@
     :is(
         #torrentsTableFixedHeaderDiv,
         #searchResultsTableFixedHeaderDiv,
-        #logMessageTableFixedHeaderDiv
+        #logMessageTableFixedHeaderDiv,
+        #logPeerTableFixedHeaderDiv
     ) {
         overflow: auto hidden;
         scrollbar-width: none;
@@ -1036,7 +1037,8 @@
     :is(
             #torrentsTableFixedHeaderDiv,
             #searchResultsTableFixedHeaderDiv,
-            #logMessageTableFixedHeaderDiv
+            #logMessageTableFixedHeaderDiv,
+            #logPeerTableFixedHeaderDiv
         )
         :is(table.dynamicTable, thead) {
         display: block;
@@ -1047,7 +1049,8 @@
     :is(
             #torrentsTableFixedHeaderDiv,
             #searchResultsTableFixedHeaderDiv,
-            #logMessageTableFixedHeaderDiv
+            #logMessageTableFixedHeaderDiv,
+            #logPeerTableFixedHeaderDiv
         )
         tr {
         display: flex;
@@ -1058,7 +1061,8 @@
     :is(
             #torrentsTableFixedHeaderDiv,
             #searchResultsTableFixedHeaderDiv,
-            #logMessageTableFixedHeaderDiv
+            #logMessageTableFixedHeaderDiv,
+            #logPeerTableFixedHeaderDiv
         )
         th {
         border: 1px solid var(--color-border-default);
@@ -1074,7 +1078,8 @@
     :is(
             #torrentsTableFixedHeaderDiv,
             #searchResultsTableFixedHeaderDiv,
-            #logMessageTableFixedHeaderDiv
+            #logMessageTableFixedHeaderDiv,
+            #logPeerTableFixedHeaderDiv
         )
         th.invisible {
         display: none;
@@ -1083,7 +1088,8 @@
     :is(
             #torrentsTableFixedHeaderDiv,
             #searchResultsTableFixedHeaderDiv,
-            #logMessageTableFixedHeaderDiv
+            #logMessageTableFixedHeaderDiv,
+            #logPeerTableFixedHeaderDiv
         )
         th.sorted {
         background-color: var(--color-background-blue);
@@ -1099,25 +1105,38 @@
     :is(
             #torrentsTableFixedHeaderDiv,
             #searchResultsTableFixedHeaderDiv,
-            #logMessageTableFixedHeaderDiv
+            #logMessageTableFixedHeaderDiv,
+            #logPeerTableFixedHeaderDiv
         )
         th.sorted.reverse {
         background-image: url("../images/go-down.svg");
     }
 
-    /* Search results and log messages are shown as cards as well */
-    :is(#searchResultsTableDiv, #logMessageTableDiv):not(.virtualList)
+    /* Search results, log messages and blocked IPs are shown as cards as well */
+    :not(.virtualList):is(
+            #searchResultsTableDiv,
+            #logMessageTableDiv,
+            #logPeerTableDiv
+        )
         :is(table.dynamicTable, tbody) {
         display: block;
         width: 100% !important;
     }
 
-    :is(#searchResultsTableDiv, #logMessageTableDiv):not(.virtualList)
+    :not(.virtualList):is(
+            #searchResultsTableDiv,
+            #logMessageTableDiv,
+            #logPeerTableDiv
+        )
         colgroup {
         display: none;
     }
 
-    :is(#searchResultsTableDiv, #logMessageTableDiv):not(.virtualList)
+    :not(.virtualList):is(
+            #searchResultsTableDiv,
+            #logMessageTableDiv,
+            #logPeerTableDiv
+        )
         tbody
         tr {
         align-items: center;
@@ -1128,7 +1147,11 @@
         padding: 8px 10px;
     }
 
-    :is(#searchResultsTableDiv, #logMessageTableDiv):not(.virtualList)
+    :not(.virtualList):is(
+            #searchResultsTableDiv,
+            #logMessageTableDiv,
+            #logPeerTableDiv
+        )
         table.dynamicTable
         tbody
         td {
@@ -1157,12 +1180,22 @@
             [data-column="message"],
             [data-column="timestamp"],
             [data-column="type"]
+        ),
+    #logPeerTableDiv:not(.virtualList)
+        table.dynamicTable
+        tbody
+        td:is(
+            [data-column="ip"],
+            [data-column="timestamp"],
+            [data-column="blocked"],
+            [data-column="reason"]
         ) {
         display: block;
     }
 
     #searchResultsTableDiv table.dynamicTable tbody td[data-column="fileName"],
-    #logMessageTableDiv table.dynamicTable tbody td[data-column="message"] {
+    #logMessageTableDiv table.dynamicTable tbody td[data-column="message"],
+    #logPeerTableDiv table.dynamicTable tbody td[data-column="ip"] {
         flex: 1 1 100%;
         font-size: 14px;
         overflow-wrap: anywhere;
@@ -1203,8 +1236,19 @@
     #logMessageTableDiv
         table.dynamicTable
         tbody
-        td:is([data-column="timestamp"], [data-column="type"]) {
+        td:is([data-column="timestamp"], [data-column="type"]),
+    #logPeerTableDiv table.dynamicTable tbody td[data-column="timestamp"] {
         opacity: 0.75;
+    }
+
+    /* blocked IPs: status and reason first, the time on the right */
+    #logPeerTableDiv table.dynamicTable tbody td[data-column="blocked"] {
+        font-weight: 600;
+    }
+
+    #logPeerTableDiv table.dynamicTable tbody td[data-column="timestamp"] {
+        margin-left: auto;
+        order: 1;
     }
 
     /* Status bar ------------------------------------------------------------- */
@@ -2066,7 +2110,8 @@
     :is(
             #torrentsTableFixedHeaderDiv,
             #searchResultsTableFixedHeaderDiv,
-            #logMessageTableFixedHeaderDiv
+            #logMessageTableFixedHeaderDiv,
+            #logPeerTableFixedHeaderDiv
         )
         tr {
         padding-bottom: 4px;

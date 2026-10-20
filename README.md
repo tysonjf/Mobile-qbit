@@ -38,7 +38,8 @@ What changes on a phone:
   open full screen, small prompts are centered and grow to fit their content.
 * The Options window, Search, RSS, RSS Downloader, Log and all other dialogs reflow
   for narrow screens; text fields use a 16px font so iOS doesn't zoom in.
-* Search results and log messages are cards too; light and dark themes both work.
+* Search results, log messages and blocked IPs are cards too; light and dark themes
+  both work.
 
 On every screen size, **Help → Check for WebUI updates** shows whether a newer
 Mobile-qbit release exists and installs it with one tap (see
