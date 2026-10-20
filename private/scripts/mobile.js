@@ -45,7 +45,7 @@ window.qBittorrent.Mobile ??= (() => {
     };
 
     // Keep in sync with the phone layout media queries in css/mobile.css
-    const mobileLayoutQuery = window.matchMedia("(max-width: 767px), (pointer: coarse) and (max-height: 500px)");
+    const mobileLayoutQuery = window.matchMedia("(width <= 767px), (pointer: coarse) and (height <= 500px)");
     const isMobileLayout = () => mobileLayoutQuery.matches;
 
     const layoutChangeListeners = [];
@@ -129,6 +129,8 @@ window.qBittorrent.Mobile ??= (() => {
             toggleMenu();
         });
 
+        // the filters column is created later on by MochaUI
+        filtersButton.setAttribute("aria-controls", "filtersColumn");
         filtersButton.addEventListener("click", (event) => {
             event.stopPropagation();
             toggleFiltersDrawer();

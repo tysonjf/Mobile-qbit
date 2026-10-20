@@ -29,7 +29,7 @@
  * Narrow screens (tablets, small laptops)
  * --------------------------------------------------------------------- */
 
-@media (max-width: 1100px) {
+@media (width <= 1100px) {
     #torrentsFilterInput {
         min-width: 120px;
         width: 160px;
@@ -158,7 +158,7 @@
  * Phone layout: main window
  * --------------------------------------------------------------------- */
 
-@media (max-width: 767px), (pointer: coarse) and (max-height: 500px) {
+@media (width <= 767px), (pointer: coarse) and (height <= 500px) {
     :root {
         --mobile-bar-height: 46px;
         --mobile-touch-size: 40px;
@@ -611,8 +611,11 @@
         height: 0 !important;
     }
 
+    /* collapse button on the right of the tabs, files filter below them */
     #propertiesPanel_header {
+        display: flex;
         flex: none;
+        flex-direction: row-reverse;
         height: auto;
         min-height: 40px;
     }
@@ -631,6 +634,8 @@
     }
 
     #propertiesPanel_header .panel-headerContent {
+        flex: 1 1 auto;
+        min-width: 0;
         padding-top: 0;
     }
 
@@ -645,9 +650,23 @@
         padding: 6px 9px;
     }
 
+    #propertiesPanel_header .toolbarTabs {
+        display: flex;
+        flex-direction: column;
+    }
+
+    #propertiesPanel_header .toolbarTabs .clear {
+        display: none;
+    }
+
     #torrentFilesFilterToolbar {
         float: none;
-        margin: 4px 6px 0;
+        margin: 0 6px 6px 4px;
+        order: 1;
+    }
+
+    #torrentFilesFilterToolbar.invisible {
+        display: none;
     }
 
     #torrentFilesFilterInput {
@@ -711,12 +730,11 @@
     #torrentsTableDiv table.dynamicTable tbody tr {
         align-items: center;
         border-bottom: 1px solid var(--color-border-default);
-        column-gap: 12px;
         display: flex;
         flex-wrap: wrap;
+        gap: 5px 12px;
         overflow: hidden;
         padding: 9px 12px 10px;
-        row-gap: 5px;
         width: 100%;
     }
 
@@ -727,7 +745,10 @@
         width: auto !important;
     }
 
-    #torrentsTableDiv table.dynamicTable tbody td:is(
+    #torrentsTableDiv
+        table.dynamicTable
+        tbody
+        td:is(
             [data-column="state_icon"],
             [data-column="name"],
             [data-column="progress"],
@@ -814,7 +835,10 @@
         opacity: 0.7;
     }
 
-    #torrentsTableDiv table.dynamicTable tbody td:is([data-column="dlspeed"], [data-column="upspeed"]) {
+    #torrentsTableDiv
+        table.dynamicTable
+        tbody
+        td:is([data-column="dlspeed"], [data-column="upspeed"]) {
         background-position: left center;
         background-repeat: no-repeat;
         background-size: 13px;
@@ -832,29 +856,50 @@
         order: 8;
     }
 
-    #torrentsTableDiv tr.selected td:is([data-column="dlspeed"], [data-column="upspeed"]) {
+    #torrentsTableDiv
+        tr.selected
+        td:is([data-column="dlspeed"], [data-column="upspeed"]) {
         filter: brightness(0) invert(1);
     }
 
     /* Headers of card lists: a scrollable row of sort buttons */
-    :is(#torrentsTableFixedHeaderDiv, #searchResultsTableFixedHeaderDiv, #logMessageTableFixedHeaderDiv) {
+    :is(
+        #torrentsTableFixedHeaderDiv,
+        #searchResultsTableFixedHeaderDiv,
+        #logMessageTableFixedHeaderDiv
+    ) {
         overflow: auto hidden;
         scrollbar-width: none;
     }
 
-    :is(#torrentsTableFixedHeaderDiv, #searchResultsTableFixedHeaderDiv, #logMessageTableFixedHeaderDiv) :is(table.dynamicTable, thead) {
+    :is(
+            #torrentsTableFixedHeaderDiv,
+            #searchResultsTableFixedHeaderDiv,
+            #logMessageTableFixedHeaderDiv
+        )
+        :is(table.dynamicTable, thead) {
         display: block;
         left: 0 !important;
         width: max-content !important;
     }
 
-    :is(#torrentsTableFixedHeaderDiv, #searchResultsTableFixedHeaderDiv, #logMessageTableFixedHeaderDiv) tr {
+    :is(
+            #torrentsTableFixedHeaderDiv,
+            #searchResultsTableFixedHeaderDiv,
+            #logMessageTableFixedHeaderDiv
+        )
+        tr {
         display: flex;
         gap: 6px;
         padding: 6px 8px;
     }
 
-    :is(#torrentsTableFixedHeaderDiv, #searchResultsTableFixedHeaderDiv, #logMessageTableFixedHeaderDiv) th {
+    :is(
+            #torrentsTableFixedHeaderDiv,
+            #searchResultsTableFixedHeaderDiv,
+            #logMessageTableFixedHeaderDiv
+        )
+        th {
         border: 1px solid var(--color-border-default);
         border-radius: 999px;
         flex: none;
@@ -865,11 +910,21 @@
         width: auto !important;
     }
 
-    :is(#torrentsTableFixedHeaderDiv, #searchResultsTableFixedHeaderDiv, #logMessageTableFixedHeaderDiv) th.invisible {
+    :is(
+            #torrentsTableFixedHeaderDiv,
+            #searchResultsTableFixedHeaderDiv,
+            #logMessageTableFixedHeaderDiv
+        )
+        th.invisible {
         display: none;
     }
 
-    :is(#torrentsTableFixedHeaderDiv, #searchResultsTableFixedHeaderDiv, #logMessageTableFixedHeaderDiv) th.sorted {
+    :is(
+            #torrentsTableFixedHeaderDiv,
+            #searchResultsTableFixedHeaderDiv,
+            #logMessageTableFixedHeaderDiv
+        )
+        th.sorted {
         background-color: var(--color-background-blue);
         background-image: url("../images/go-up.svg");
         background-position: right 8px center;
@@ -880,31 +935,42 @@
         padding-right: 26px !important;
     }
 
-    :is(#torrentsTableFixedHeaderDiv, #searchResultsTableFixedHeaderDiv, #logMessageTableFixedHeaderDiv) th.sorted.reverse {
+    :is(
+            #torrentsTableFixedHeaderDiv,
+            #searchResultsTableFixedHeaderDiv,
+            #logMessageTableFixedHeaderDiv
+        )
+        th.sorted.reverse {
         background-image: url("../images/go-down.svg");
     }
 
     /* Search results and log messages are shown as cards as well */
-    :is(#searchResultsTableDiv, #logMessageTableDiv):not(.virtualList) :is(table.dynamicTable, tbody) {
+    :is(#searchResultsTableDiv, #logMessageTableDiv):not(.virtualList)
+        :is(table.dynamicTable, tbody) {
         display: block;
         width: 100% !important;
     }
 
-    :is(#searchResultsTableDiv, #logMessageTableDiv):not(.virtualList) colgroup {
+    :is(#searchResultsTableDiv, #logMessageTableDiv):not(.virtualList)
+        colgroup {
         display: none;
     }
 
-    :is(#searchResultsTableDiv, #logMessageTableDiv):not(.virtualList) tbody tr {
+    :is(#searchResultsTableDiv, #logMessageTableDiv):not(.virtualList)
+        tbody
+        tr {
         align-items: center;
         border-bottom: 1px solid var(--color-border-default);
-        column-gap: 12px;
         display: flex;
         flex-wrap: wrap;
+        gap: 4px 12px;
         padding: 8px 10px;
-        row-gap: 4px;
     }
 
-    :is(#searchResultsTableDiv, #logMessageTableDiv):not(.virtualList) table.dynamicTable tbody td {
+    :is(#searchResultsTableDiv, #logMessageTableDiv):not(.virtualList)
+        table.dynamicTable
+        tbody
+        td {
         display: none;
         font-size: 12px;
         max-width: none !important;
@@ -912,7 +978,10 @@
         width: auto !important;
     }
 
-    #searchResultsTableDiv:not(.virtualList) table.dynamicTable tbody td:is(
+    #searchResultsTableDiv:not(.virtualList)
+        table.dynamicTable
+        tbody
+        td:is(
             [data-column="fileName"],
             [data-column="fileSize"],
             [data-column="nbSeeders"],
@@ -920,7 +989,10 @@
             [data-column="engineName"],
             [data-column="pubDate"]
         ),
-    #logMessageTableDiv:not(.virtualList) table.dynamicTable tbody td:is(
+    #logMessageTableDiv:not(.virtualList)
+        table.dynamicTable
+        tbody
+        td:is(
             [data-column="message"],
             [data-column="timestamp"],
             [data-column="type"]
@@ -940,22 +1012,37 @@
         font-weight: 600;
     }
 
-    #searchResultsTableDiv table.dynamicTable tbody td[data-column="nbSeeders"]::before {
+    #searchResultsTableDiv
+        table.dynamicTable
+        tbody
+        td[data-column="nbSeeders"]::before {
         color: var(--color-text-green);
         content: "\25B2\00a0";
     }
 
-    #searchResultsTableDiv table.dynamicTable tbody td[data-column="nbLeechers"]::before {
+    #searchResultsTableDiv
+        table.dynamicTable
+        tbody
+        td[data-column="nbLeechers"]::before {
         color: var(--color-text-red);
         content: "\25BC\00a0";
     }
 
-    #searchResultsTableDiv table.dynamicTable tbody td[data-column="engineName"] {
+    #searchResultsTableDiv
+        table.dynamicTable
+        tbody
+        td[data-column="engineName"] {
         margin-left: auto;
     }
 
-    #searchResultsTableDiv table.dynamicTable tbody td:is([data-column="engineName"], [data-column="pubDate"]),
-    #logMessageTableDiv table.dynamicTable tbody td:is([data-column="timestamp"], [data-column="type"]) {
+    #searchResultsTableDiv
+        table.dynamicTable
+        tbody
+        td:is([data-column="engineName"], [data-column="pubDate"]),
+    #logMessageTableDiv
+        table.dynamicTable
+        tbody
+        td:is([data-column="timestamp"], [data-column="type"]) {
         opacity: 0.75;
     }
 
@@ -1187,27 +1274,37 @@
  * Phone layout: tabs and windows of the main page
  * --------------------------------------------------------------------- */
 
-@media (max-width: 767px), (pointer: coarse) and (max-height: 500px) {
+@media (width <= 767px), (pointer: coarse) and (height <= 500px) {
+    /*
+     * Views loaded into the main page bring their own \3c style> elements, which
+     * come after this stylesheet. The `:root` prefix makes these rules win.
+     */
+
     /* Options window --------------------------------------------------------- */
 
-    #preferencesPage .PrefTab fieldset {
+    :root #preferencesPage .PrefTab fieldset {
         margin-left: 0;
         margin-right: 0;
         min-width: 0;
     }
 
-    #preferencesPage .PrefTab fieldset.settings {
+    :root #preferencesPage .PrefTab fieldset.settings {
         padding: 4px 8px 8px;
     }
 
     /* label/input tables: label and input side by side when they fit, stacked otherwise */
-    #preferencesPage .PrefTab table:not(#watched_folders_tab),
-    #preferencesPage .PrefTab table:not(#watched_folders_tab) > tbody {
+    :root #preferencesPage .PrefTab table:not(#watched_folders_tab),
+    :root #preferencesPage .PrefTab table:not(#watched_folders_tab) > tbody {
         display: block;
         width: 100%;
     }
 
-    #preferencesPage .PrefTab table:not(#watched_folders_tab) > tbody > tr {
+    :root
+        #preferencesPage
+        .PrefTab
+        table:not(#watched_folders_tab)
+        > tbody
+        > tr {
         align-items: center;
         column-gap: 8px;
         display: flex;
@@ -1215,7 +1312,13 @@
         padding: 2px 0;
     }
 
-    #preferencesPage .PrefTab table:not(#watched_folders_tab) > tbody > tr > td {
+    :root
+        #preferencesPage
+        .PrefTab
+        table:not(#watched_folders_tab)
+        > tbody
+        > tr
+        > td {
         display: block;
         max-width: 100%;
         min-width: 0;
@@ -1223,7 +1326,13 @@
     }
 
     /* value cell: the input grows, a unit (KiB, min, ...) stays next to it */
-    #preferencesPage .PrefTab table:not(#watched_folders_tab) > tbody > tr > td:last-child:not(:first-child) {
+    :root
+        #preferencesPage
+        .PrefTab
+        table:not(#watched_folders_tab)
+        > tbody
+        > tr
+        > td:last-child:not(:first-child) {
         align-items: center;
         display: flex;
         flex: 1 1 10em;
@@ -1231,100 +1340,109 @@
         gap: 4px;
     }
 
-    #preferencesPage .PrefTab input:not([type="checkbox"], [type="radio"]),
-    #preferencesPage .PrefTab textarea {
+    :root
+        #preferencesPage
+        .PrefTab
+        input:not([type="checkbox"], [type="radio"]),
+    :root #preferencesPage .PrefTab textarea {
         box-sizing: border-box;
         max-width: 100%;
     }
 
-    #preferencesPage .PrefTab td:last-child:not(:first-child) > input:not([type="checkbox"], [type="radio"], [type="button"]) {
+    :root
+        #preferencesPage
+        .PrefTab
+        td:last-child:not(:first-child)
+        > input:not([type="checkbox"], [type="radio"], [type="button"]) {
         flex: 1 1 6em;
         min-width: 0;
         width: auto !important;
     }
 
-    #preferencesPage .PrefTab textarea {
+    :root #preferencesPage .PrefTab textarea {
         width: 100%;
     }
 
-    #preferencesPage .PrefTab select {
+    :root #preferencesPage .PrefTab select {
         max-width: 100%;
     }
 
-    #preferencesPage .PrefTab .formRow {
+    :root #preferencesPage .PrefTab .formRow {
         overflow-wrap: anywhere;
     }
 
-    #watched_folders_tab {
+    :root #watched_folders_tab {
         table-layout: fixed;
         width: 100%;
     }
 
-    #watched_folders_tab :is(input, select, .select-watched-folder-editable) {
+    :root
+        #watched_folders_tab
+        :is(input, select, .select-watched-folder-editable) {
         max-width: 100%;
         width: 100%;
     }
 
-    #watched_folders_tab .select-watched-folder-editable select {
+    :root #watched_folders_tab .select-watched-folder-editable select {
         width: 100%;
     }
 
-    #preferencesTabs {
+    :root #preferencesTabs {
         scrollbar-width: none;
     }
 
     /* Search tab -------------------------------------------------------------- */
 
-    #searchResults {
+    :root #searchResults {
         display: flex;
         flex-direction: column;
         padding: 0 8px;
     }
 
-    #searchResultsHeader {
+    :root #searchResultsHeader {
         flex: none;
         height: auto;
         overflow: visible;
     }
 
-    #searchResultsHeaderContainer {
+    :root #searchResultsHeaderContainer {
         gap: 6px;
         height: auto;
         margin: 8px 0 6px;
     }
 
-    #searchPattern {
+    :root #searchPattern {
         flex: 1 1 100%;
         height: 38px;
         width: auto;
     }
 
-    #categorySelect,
-    #pluginsSelect {
+    :root #categorySelect,
+    :root #pluginsSelect {
         flex: 1 1 0;
         height: 38px;
         min-width: 0;
         width: auto;
     }
 
-    #startSearchButton {
+    :root #startSearchButton {
         flex: none;
         height: 38px;
     }
 
-    #searchResultsNoPlugins,
-    #searchResultsNoSearches {
+    :root #searchResultsNoPlugins,
+    :root #searchResultsNoSearches {
         flex: 1 1 auto;
         height: auto;
         min-height: 0;
         padding: 0 8px;
     }
 
-    #searchTabsToolbar {
+    :root #searchTabsToolbar {
         flex: none;
     }
 
-    #searchResultsFilters {
+    :root #searchResultsFilters {
         align-items: center;
         display: flex;
         flex: none;
@@ -1335,51 +1453,62 @@
         padding: 6px 0;
     }
 
-    #searchResultsFilters.invisible {
+    :root #searchResultsFilters.invisible {
         display: none;
     }
 
-    #searchInNameFilter {
+    :root #searchInNameFilter {
         flex: 1 1 100%;
         height: 36px;
         margin: 0;
         width: auto;
     }
 
-    #searchResultsFilters > div {
+    /* search in / seeds / size filters: one horizontally scrollable row */
+    :root #searchResultsFilters > div {
         align-items: center;
         display: flex !important;
-        flex-wrap: wrap;
         float: none !important;
         gap: 6px;
+        max-width: 100%;
+        overflow: auto hidden;
+        scrollbar-width: thin;
     }
 
-    #searchResultsFilters label {
+    :root #searchResultsFilters > div > * {
+        flex: none;
+    }
+
+    :root #searchResultsFilters label {
         margin-left: 0 !important;
     }
 
-    #searchResultsGranularFilters {
+    :root #searchResultsGranularFilters {
         align-items: center;
         display: flex;
-        flex-wrap: wrap;
+        flex: none;
         gap: 6px;
     }
 
-    #searchResultsGranularFiltersWarning {
+    :root #searchResultsGranularFilters input {
+        width: 4.5em;
+    }
+
+    :root #searchResultsGranularFiltersWarning {
         display: none;
     }
 
-    #searchResultsTableContainer {
+    :root #searchResultsTableContainer {
         flex: 1 1 0;
         height: auto;
         min-height: 0;
     }
 
-    #searchResultsTableContainer.invisible {
+    :root #searchResultsTableContainer.invisible {
         display: none;
     }
 
-    #searchResults > div:last-child {
+    :root #searchResults > div:last-child {
         flex: none;
         height: auto !important;
         padding: 6px 0 !important;
@@ -1387,12 +1516,12 @@
 
     /* RSS tab: feeds, articles and details stacked ------------------------------ */
 
-    #rssView {
+    :root #rssView {
         height: 100%;
         padding: 8px 8px 0;
     }
 
-    #rssButtonBar {
+    :root #rssButtonBar {
         display: flex;
         flex-wrap: wrap;
         gap: 6px;
@@ -1401,11 +1530,11 @@
         padding-bottom: 6px;
     }
 
-    #rssButtonBar button {
+    :root #rssButtonBar button {
         min-height: 36px;
     }
 
-    #rssButtonBar #rssFilterToolbar {
+    :root #rssButtonBar #rssFilterToolbar {
         display: flex;
         flex: 1 1 100%;
         float: none;
@@ -1413,22 +1542,22 @@
         margin: 0;
     }
 
-    #rssButtonBar #rssFilterInput {
+    :root #rssButtonBar #rssFilterInput {
         flex: 1 1 0;
         min-width: 0;
         width: 0;
     }
 
-    #rssContentView {
+    :root #rssContentView {
         display: flex;
         flex-direction: column;
         gap: 10px;
         padding-bottom: 8px;
     }
 
-    #leftRssColumn,
-    #centerRssColumn,
-    #rightRssColumn {
+    :root #leftRssColumn,
+    :root #centerRssColumn,
+    :root #rightRssColumn {
         flex: none;
         float: none;
         height: auto;
@@ -1436,106 +1565,112 @@
         width: 100%;
     }
 
-    #rssFeedTableDiv {
+    :root #rssFeedTableDiv {
         height: 28dvh;
     }
 
-    #rssArticleTableDiv {
+    :root #rssArticleTableDiv {
         height: 36dvh;
     }
 
-    #rssArticleTableDiv td {
+    :root #rssArticleTableDiv td {
         white-space: normal;
     }
 
-    #rssDetailsView {
+    :root #rssDetailsView {
         height: auto;
         min-height: 60dvh;
     }
 
-    #rssDescription {
+    :root #rssDescription {
         min-height: 50dvh;
     }
 
     /* RSS Downloader window ---------------------------------------------------- */
 
-    #rssdownloaderpage_content {
-        height: auto;
+    /* the RSS Downloader script sets these heights inline */
+    :root #rssdownloaderpage_content {
+        height: auto !important;
     }
 
-    #RssDownloader {
+    :root #RssDownloader {
         display: flex;
         flex-direction: column;
         gap: 12px;
-        height: auto;
+        height: auto !important;
     }
 
-    #leftRssDownloaderColumn,
-    #centerRssDownloaderColumn,
-    #rightRssDownloaderColumn {
+    :root #leftRssDownloaderColumn,
+    :root #centerRssDownloaderColumn,
+    :root #rightRssDownloaderColumn {
         float: none;
+        height: auto !important;
         width: 100%;
     }
 
-    #topMenuBar {
+    :root #topMenuBar {
         height: auto;
         padding-bottom: 4px;
     }
 
-    #topMenuBar .imageButton {
+    :root #topMenuBar .imageButton {
         height: 34px;
         width: 40px;
     }
 
-    #rulesTable {
-        height: 25dvh;
+    :root #rulesTable {
+        height: 25dvh !important;
     }
 
-    #RssDownloader .noWrap {
+    :root #RssDownloader .noWrap {
         white-space: normal;
     }
 
-    #RssDownloader table td:first-child {
+    :root #RssDownloader table td:first-child {
         width: 40%;
     }
 
-    #rssDownloaderFeeds {
-        height: 30dvh;
+    :root #rssDownloaderFeeds {
+        height: auto !important;
     }
 
-    #rssDownloaderArticlesTable {
-        height: 40dvh;
+    :root #rssDownloaderFeedsTable {
+        height: 25dvh !important;
     }
 
-    #lastMatchDiv {
+    :root #rssDownloaderArticlesTable {
+        height: 40dvh !important;
+    }
+
+    :root #lastMatchDiv {
         float: none;
         margin: 4px 0;
     }
 
     /* Log tab ------------------------------------------------------------------ */
 
-    #logView {
+    :root #logView {
         padding: 0 8px;
     }
 
-    #logTopBar {
+    :root #logTopBar {
         margin-top: 8px;
     }
 
-    #logFilterBar {
+    :root #logFilterBar {
         gap: 6px;
         height: auto;
     }
 
-    #logFilterBar > label {
+    :root #logFilterBar > label {
         flex: none;
     }
 
-    #logFilterBar .vsb-main {
+    :root #logFilterBar .vsb-main {
         flex: 1 1 auto;
     }
 
-    #filterTextInput {
+    :root #filterTextInput {
         flex: 1 1 0;
         height: 36px;
         margin: 0;
@@ -1543,26 +1678,26 @@
         width: 0;
     }
 
-    #logFilterSummary {
+    :root #logFilterSummary {
         margin: 6px 0;
     }
 
     /* Rename files window: options, file list and buttons stacked --------------- */
 
-    #multiRenamePage_content > div {
+    :root #multiRenamePage_content > div {
         display: flex;
         flex-direction: column;
         gap: 8px;
         padding: 0 !important;
     }
 
-    #multiRenamePage_content > div > div:first-child {
+    :root #multiRenamePage_content > div > div:first-child {
         float: none !important;
         height: auto !important;
         width: auto !important;
     }
 
-    #multiRenamePage_content #torrentFiles {
+    :root #multiRenamePage_content #torrentFiles {
         height: 45dvh !important;
         inset: auto !important;
         margin: 0 !important;
@@ -1570,27 +1705,108 @@
         position: relative !important;
     }
 
-    #multiRenamePage_content #operation_btns {
+    :root #multiRenamePage_content #operation_btns {
         margin: 0 !important;
         order: 2;
         position: static !important;
         width: auto !important;
     }
 
+    /* Search plugins window ----------------------------------------------------- */
+
+    :root #searchPluginsContainer {
+        display: flex;
+        flex-direction: column;
+    }
+
+    :root #searchPluginsTable {
+        flex: 1 1 0;
+        height: auto;
+        min-height: 120px;
+    }
+
+    :root #searchPluginsContainer > div:last-child {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    :root #searchPluginsContainer > div:last-child > button {
+        flex: 1 1 auto;
+        min-height: 40px;
+        width: auto !important;
+    }
+
+    /* Torrent creator: big text fields below their label */
+    :root #createTorrentForm tr:has(textarea),
+    :root #createTorrentForm tr:has(textarea) > td {
+        display: block;
+        text-align: left;
+        width: 100%;
+    }
+
     /* Cookies window ------------------------------------------------------------ */
 
-    #cookiesPage_content {
+    :root #cookiesPage_content {
         overflow-x: auto;
     }
 
     /* About window -------------------------------------------------------------- */
 
-    #aboutpage_content :is(table, pre) {
+    :root #aboutpage_content :is(table, pre) {
         max-width: 100%;
     }
 
-    #aboutpage_content pre {
+    :root #aboutpage_content pre {
         white-space: pre-wrap;
+    }
+}
+
+/* ------------------------------------------------------------------------
+ * Phone layout in landscape: little height, so the toolbar shares the top
+ * row with the tabs
+ * --------------------------------------------------------------------- */
+
+@media (width <= 767px) and (width >= 600px) and (height <= 500px),
+    (pointer: coarse) and (width >= 600px) and (height <= 500px) {
+    #mainWindowTabs {
+        flex: none;
+        max-width: 45%;
+    }
+
+    #mainWindowTabsList li:not(.selected) a {
+        font-size: 0;
+        gap: 0;
+    }
+
+    #toolbarButtons {
+        border-left: 1px solid var(--color-border-default);
+        border-top: 0;
+        flex: 1 1 0;
+        margin-left: 4px;
+        min-width: 0;
+        order: 1;
+    }
+
+    #torrentsTableDiv table.dynamicTable tbody tr {
+        padding-bottom: 6px;
+        padding-top: 6px;
+        row-gap: 3px;
+    }
+
+    :is(
+            #torrentsTableFixedHeaderDiv,
+            #searchResultsTableFixedHeaderDiv,
+            #logMessageTableFixedHeaderDiv
+        )
+        tr {
+        padding-bottom: 4px;
+        padding-top: 4px;
+    }
+
+    #desktopFooterWrapper,
+    #desktopFooter {
+        height: 30px;
     }
 }
 
@@ -1598,7 +1814,7 @@
  * Very small phones
  * --------------------------------------------------------------------- */
 
-@media (max-width: 479px) {
+@media (width <= 479px) {
     /* only the selected main window tab shows its name */
     #mainWindowTabsList li:not(.selected) a {
         font-size: 0;
