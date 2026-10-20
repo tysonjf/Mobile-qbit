@@ -62,7 +62,8 @@ jobs:
 
   tours:
     name: Screenshot tours
-    runs-on: ubuntu-latest
+    # Playwright 1.56 (dev/package.json) can't install Chromium on newer Ubuntu versions
+    runs-on: ubuntu-24.04
     timeout-minutes: 60
     defaults:
       run:
