@@ -30,6 +30,7 @@
  *  - the "More actions" button of the torrent cards
  *  - no browser menus for buttons and icons on a long press
  *  - fitting MochaUI windows (dialogs) into the viewport
+ *  - the switch of the search plugin cards
  *  - row height of the torrents table when the virtual list is used
  *  - the download and "More actions" buttons of the search result cards
  *  - the browser's theme color (status bar of the app added to the home screen)
@@ -302,6 +303,72 @@ window.qBittorrent.Mobile ??= (() => {
         // color-scheme.js toggles the "dark" class
         new MutationObserver(update).observe(document.documentElement, { attributeFilter: ["class"] });
         update();
+    };
+
+    /* Search plugins window */
+
+    // Plugin cards have a switch that enables or disables the plugin with a tap
+    // (in the table that takes a double click or the context menu).
+    const togglePlugin = (name) => {
+        const plugin = window.qBittorrent.Search.getPlugin(name);
+        if (plugin === null)
+            return;
+
+        // shown right away; the window reloads the plugins every 2 seconds and
+        // shows the real state again if this failed
+        plugin.enabled = !plugin.enabled;
+        window.qBittorrent.SearchPlugins.updateTable();
+
+        fetch("api/v2/search/enablePlugin", {
+            method: "POST",
+            body: new URLSearchParams({
+                names: name,
+                enable: plugin.enabled
+            })
+        });
+    };
+
+    const updatePluginSwitch = (table, tr) => {
+        let button = tr.querySelector(":scope > td.mobileSwitchCell > button");
+        if (button === null) {
+            button = document.createElement("button");
+            button.type = "button";
+            button.className = "mobileSwitch";
+            button.title = "QBT_TR(Enabled)QBT_TR[CONTEXT=PluginSelectDlg]";
+            button.setAttribute("role", "switch");
+            button.addEventListener("click", (event) => {
+                // the row's own handlers would change the selection
+                event.stopPropagation();
+                togglePlugin(tr.rowId);
+            });
+            // a quick second tap must not run the double click action of the row
+            button.addEventListener("dblclick", (event) => {
+                event.stopPropagation();
+            });
+
+            // after the column cells, so their indexes don't change; hidden outside the card layout
+            const td = document.createElement("td");
+            td.className = "mobileSwitchCell";
+            td.append(button);
+            tr.append(td);
+        }
+
+        const plugin = table.rows.get(tr.rowId)?.full_data ?? {};
+        button.setAttribute("aria-checked", (plugin.enabled === true).toString());
+        button.setAttribute("aria-label", plugin.fullName ?? tr.rowId);
+    };
+
+    const patchSearchPluginsTable = () => {
+        const SearchPluginsTable = window.qBittorrent.DynamicTable?.SearchPluginsTable;
+        if (SearchPluginsTable === undefined)
+            return;
+
+        const updateRow = SearchPluginsTable.prototype.updateRow;
+        SearchPluginsTable.prototype.updateRow = function(tr, ...args) {
+            const result = updateRow.call(this, tr, ...args);
+            updatePluginSwitch(this, tr);
+            return result;
+        };
     };
 
     /* MochaUI windows */
@@ -589,6 +656,7 @@ window.qBittorrent.Mobile ??= (() => {
     /* Initialization */
 
     const init = () => {
+        patchSearchPluginsTable();
         if (window.MUI?.Window !== undefined)
             patchMochaWindows();
         patchDetailsTables();

@@ -19,7 +19,8 @@
 #mobileBackdrop,
 #mobileSelectButton,
 #mobileSelectionBar,
-.mobileMoreCell {
+.mobileMoreCell,
+.mobileSwitchCell {
     display: none;
 }
 
@@ -2545,6 +2546,183 @@
         flex: 1 1 0;
         height: auto;
         min-height: 120px;
+    }
+
+    /*
+     * Every plugin is a card: name and the switch that enables it (mobile.js),
+     * version and URL below. The header is only used for sorting.
+     */
+    :root #searchPluginsTableFixedHeaderDiv:has(+ :not(.virtualList)) {
+        display: none;
+    }
+
+    :root #searchPluginsTableDiv:not(.virtualList) {
+        border-top: 1px solid var(--color-border-default);
+        height: 100%;
+    }
+
+    #searchPluginsTableDiv:not(.virtualList) :is(table.dynamicTable, tbody) {
+        display: block;
+        width: 100% !important;
+    }
+
+    #searchPluginsTableDiv:not(.virtualList) colgroup {
+        display: none;
+    }
+
+    #searchPluginsTableDiv:not(.virtualList) table.dynamicTable tbody tr {
+        align-items: center;
+        border-bottom: 1px solid var(--color-border-default);
+        column-gap: 12px;
+        display: flex;
+        flex-wrap: wrap;
+        padding: 6px 4px 8px 10px;
+    }
+
+    /* the switch shows the state: no green and red text, hard to read in the dark theme */
+    #searchPluginsTableDiv:not(.virtualList)
+        table.dynamicTable
+        tbody
+        tr:is(.green, .red):not(.selected) {
+        color: inherit;
+    }
+
+    #searchPluginsTableDiv:not(.virtualList)
+        table.dynamicTable
+        tbody
+        tr.red:not(.selected)
+        td[data-column="fullName"] {
+        color: var(--color-text-disabled);
+    }
+
+    #searchPluginsTableDiv:not(.virtualList) table.dynamicTable tbody td {
+        display: none;
+        font-size: 12px;
+        max-width: none !important;
+        padding: 0 !important;
+        width: auto !important;
+    }
+
+    #searchPluginsTableDiv:not(.virtualList)
+        table.dynamicTable
+        tbody
+        td:is(
+            [data-column="fullName"],
+            [data-column="version"],
+            [data-column="url"],
+            .mobileSwitchCell
+        ) {
+        display: block;
+        flex: none;
+    }
+
+    #searchPluginsTableDiv:not(.virtualList)
+        table.dynamicTable
+        tbody
+        td[data-column="fullName"] {
+        flex: 1 1 calc(100% - 68px);
+        font-size: 14px;
+        font-weight: 600;
+        min-width: 0;
+        overflow-wrap: anywhere;
+        white-space: normal;
+    }
+
+    #searchPluginsTableDiv:not(.virtualList)
+        table.dynamicTable
+        tbody
+        td:is([data-column="version"], [data-column="url"]) {
+        margin-top: -6px;
+        opacity: 0.8;
+        order: 2;
+    }
+
+    #searchPluginsTableDiv td[data-column="version"]::before {
+        content: "v";
+    }
+
+    #searchPluginsTableDiv:not(.virtualList)
+        table.dynamicTable
+        tbody
+        td[data-column="url"] {
+        flex: 1 1 0;
+        min-width: 0;
+        overflow-wrap: anywhere;
+        white-space: normal;
+    }
+
+    #searchPluginsTableDiv:not(.virtualList)
+        table.dynamicTable
+        tbody
+        td:is(
+            [data-column="fullName"],
+            [data-column="version"],
+            [data-column="url"]
+        ).invisible {
+        display: none;
+    }
+
+    #searchPluginsTableDiv:not(.virtualList)
+        table.dynamicTable
+        tbody
+        td.mobileSwitchCell {
+        order: 1;
+    }
+
+    /* a big touch target around the switch */
+    .mobileSwitch {
+        background: none;
+        border: 0;
+        border-radius: 999px;
+        height: 40px;
+        padding: 0;
+        position: relative;
+        touch-action: manipulation;
+        width: 56px;
+    }
+
+    .mobileSwitch::before,
+    .mobileSwitch::after {
+        content: "";
+        left: 6px;
+        position: absolute;
+        top: 8px;
+        transition:
+            background-color 0.15s,
+            transform 0.15s;
+    }
+
+    .mobileSwitch::before {
+        background-color: var(--color-text-disabled);
+        border-radius: 999px;
+        height: 24px;
+        width: 44px;
+    }
+
+    .mobileSwitch::after {
+        background-color: var(--color-text-white);
+        border-radius: 50%;
+        box-shadow: 0 1px 2px rgb(0 0 0 / 40%);
+        height: 20px;
+        margin: 2px;
+        width: 20px;
+    }
+
+    .mobileSwitch[aria-checked="true"]::before {
+        background-color: var(--color-background-blue);
+    }
+
+    .mobileSwitch[aria-checked="true"]::after {
+        transform: translateX(20px);
+    }
+
+    /* selected rows are blue as well */
+    tr.selected .mobileSwitch::before {
+        box-shadow: 0 0 0 2px var(--color-text-white);
+    }
+
+    .mobileSwitch:focus-visible {
+        outline: 2px solid var(--color-accent-blue);
     }
 
     :root #searchPluginsContainer > div:last-child {

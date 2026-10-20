@@ -308,5 +308,85 @@
                 "wait": 300
             }
         ]
+    },
+    {
+        "name": "searchplugins-cards",
+        "steps": [
+            {
+                "js": "fetch('api/v2/search/installPlugin', { method: 'POST', body: new URLSearchParams({ sources: '$REPO/dev/search-plugin/longname.py' }) })"
+            },
+            {
+                "wait": 3000
+            },
+            {
+                "js": "document.getElementById('searchTabLink').click()"
+            },
+            {
+                "wait": 1500
+            },
+            {
+                "js": "document.getElementById('manageSearchPlugins').click()"
+            },
+            {
+                "wait": 2500
+            },
+            {
+                "eval": "(() => { const div = document.getElementById('searchPluginsTableDiv'); const rows = [...div.querySelectorAll('tbody tr')]; if (rows.length < 2) throw new Error(`${rows.length} plugins`); if (rows.some((tr) => getComputedStyle(tr).display !== 'flex')) throw new Error('not cards'); if (document.getElementById('searchPluginsTableFixedHeaderDiv').checkVisibility()) throw new Error('the header is shown'); if (div.scrollWidth > div.clientWidth) throw new Error(`${div.scrollWidth - div.clientWidth}px wider than the window`); const right = div.getBoundingClientRect().right; for (const tr of rows) { const shown = [...tr.cells].filter((td) => td.checkVisibility()).map((td) => td.dataset.column ?? td.className); const missing = ['fullName', 'version', 'url', 'mobileSwitchCell'].filter((column) => !shown.includes(column)); if (missing.length > 0) throw new Error(`${tr.rowId}: not shown: ${missing.join(', ')}`); if ([...tr.cells].some((td) => td.checkVisibility() && (td.getBoundingClientRect().right > right + 0.5))) throw new Error(`${tr.rowId}: wider than the window`); const button = tr.querySelector('.mobileSwitch'); if (button.getAttribute('aria-checked') !== String(window.qBittorrent.Search.getPlugin(tr.rowId).enabled)) throw new Error(`${tr.rowId}: the switch doesn't show the state`); const box = button.getBoundingClientRect(); if ((box.width < 44) || (box.height < 40)) throw new Error(`${tr.rowId}: the switch is too small to tap (${box.width}x${box.height})`); } return rows.map((tr) => `${tr.rowId}: ${Math.round(tr.getBoundingClientRect().height)}px`); })()"
+            },
+            {
+                "shot": true
+            },
+            {
+                "tap": "#searchPluginsTableDiv tr[data-row-id=\"longname\"] .mobileSwitch"
+            },
+            {
+                "wait": 100
+            },
+            {
+                "eval": "(() => { const checked = document.querySelector('#searchPluginsTableDiv tr[data-row-id=\"longname\"] .mobileSwitch').getAttribute('aria-checked'); if (checked !== 'false') throw new Error(`switch ${checked} right after the tap`); return checked; })()"
+            },
+            {
+                "wait": 2500
+            },
+            {
+                "eval": "(() => { const tr = document.querySelector('#searchPluginsTableDiv tr[data-row-id=\"longname\"]'); const checked = tr.querySelector('.mobileSwitch').getAttribute('aria-checked'); if ((checked !== 'false') || !tr.classList.contains('red') || (window.qBittorrent.Search.getPlugin('longname').enabled !== false)) throw new Error(`switch ${checked}, row ${tr.className}, plugin enabled: ${window.qBittorrent.Search.getPlugin('longname').enabled}`); if (tr.classList.contains('selected')) throw new Error('tapping the switch selected the plugin'); return checked; })()"
+            },
+            {
+                "shot": "disabled"
+            },
+            {
+                "tap": "#searchPluginsTableDiv tr[data-row-id=\"longname\"] .mobileSwitch"
+            },
+            {
+                "wait": 2500
+            },
+            {
+                "eval": "(() => { const tr = document.querySelector('#searchPluginsTableDiv tr[data-row-id=\"longname\"]'); const checked = tr.querySelector('.mobileSwitch').getAttribute('aria-checked'); if ((checked !== 'true') || !tr.classList.contains('green') || (window.qBittorrent.Search.getPlugin('longname').enabled !== true)) throw new Error(`switch ${checked}, row ${tr.className}, plugin enabled: ${window.qBittorrent.Search.getPlugin('longname').enabled}`); if (tr.classList.contains('selected')) throw new Error('tapping the switch selected the plugin'); return checked; })()"
+            },
+            {
+                "longpress": "#searchPluginsTableDiv tr[data-row-id=\"dummytest\"] td[data-column=version]"
+            },
+            {
+                "wait": 500
+            },
+            {
+                "eval": "(() => { if (!document.getElementById('searchPluginsTableMenu').classList.contains('visible')) throw new Error('no menu after a long press'); return true; })()"
+            },
+            {
+                "shot": "menu"
+            },
+            {
+                "js": "document.getElementById('contextMenuBackdrop')?.click()"
+            },
+            {
+                "wait": 300
+            },
+            {
+                "js": "fetch('api/v2/search/uninstallPlugin', { method: 'POST', body: new URLSearchParams({ names: 'longname' }) })"
+            },
+            {
+                "wait": 2500
+            }
+        ]
     }
 ]
