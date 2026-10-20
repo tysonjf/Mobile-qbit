@@ -27,11 +27,12 @@ What changes on a phone:
   The column headers become a row of **sort buttons**: tap one to sort, tap again to
   reverse.
 * **Long press** a torrent (or a filter, tracker, peer, file, RSS item, ...) for its
-  context menu, shown as a bottom sheet. Entries with a ▾ expand in place.
+  context menu, shown as a bottom sheet. Entries with a ▾ expand in place. The **⋮**
+  button on a torrent card opens the same menu with a tap.
 * **Select several torrents**: the ☑ button next to the torrent filter turns on the
   selection mode (on every touch screen, as there are no CTRL/SHIFT keys). Tap
   torrents to tick them, or use *Select All* / *Clear*; the toolbar buttons and the
-  long press menu then act on all ticked torrents. ✕ leaves the selection mode.
+  long press and ⋮ menus then act on all ticked torrents. ✕ leaves the selection mode.
 * Tap a torrent, then tap **General / Trackers / Peers / HTTP Sources / Content** to
   open its details. Tap the open tab again (or the arrow on the right) to close them.
 * Every dialog fits the screen: big ones (Options, Add torrent, RSS Downloader, ...)
@@ -114,8 +115,8 @@ The first commit of this repository is the unmodified WebUI of qBittorrent v5.2.
 
 * `private/css/mobile.css` (new): all responsive styles.
 * `private/scripts/mobile.js` (new): menu button, filters drawer, selection mode,
-  fitting MochaUI windows into the screen, card row height for the virtual list
-  option.
+  the ⋮ button of torrent cards, fitting MochaUI windows into the screen, card row
+  height for the virtual list option.
 * `private/index.html`: menu/filter buttons, a wrapper around the toolbar buttons,
   loads `mobile.css` and `mobile.js`.
 * `private/*.html` dialog pages: load `mobile.css`.

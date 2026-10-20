@@ -27,6 +27,7 @@
  * Most of the responsive behaviour is pure CSS. This script only handles the
  * parts that MochaUI computes in JavaScript or that need interaction:
  *  - the menu button and the filters drawer of the phone layout
+ *  - the "More actions" button of the torrent cards
  *  - fitting MochaUI windows (dialogs) into the viewport
  *  - row height of the torrents table when the virtual list is used
  */
@@ -413,6 +414,47 @@ window.qBittorrent.Mobile ??= (() => {
         table.rerender();
     };
 
+    // A long press isn't discoverable: the cards also get a "More actions" (⋮) button
+    // that opens the same menu. In selection mode the menu acts on the selection,
+    // which the torrent of the card is added to.
+    const openRowMenu = (table, tr, event) => {
+        // the row's own handlers would change the selection and close the menu again
+        event.stopPropagation();
+
+        if (!table.isRowSelected(tr.rowId)) {
+            if (!table.multiSelect)
+                table.deselectAll();
+            table.selectRow(tr.rowId);
+        }
+        table.contextMenu?.triggerMenu(event, tr);
+    };
+
+    const addMoreActionsButton = (table, tr) => {
+        // rows of the virtual list are reused, and reordering the columns drops the cell
+        if (tr.querySelector(":scope > td.mobileMoreCell") !== null)
+            return;
+
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "mobileMoreButton";
+        button.title = "QBT_TR(More actions)QBT_TR[CONTEXT=MainWindow]";
+        button.setAttribute("aria-label", button.title);
+        button.setAttribute("aria-haspopup", "menu");
+        button.addEventListener("click", (event) => {
+            openRowMenu(table, tr, event);
+        });
+        // a quick second tap must not run the double click action of the row
+        button.addEventListener("dblclick", (event) => {
+            event.stopPropagation();
+        });
+
+        // after the column cells, so their indexes don't change; hidden outside the card layout
+        const td = document.createElement("td");
+        td.className = "mobileMoreCell";
+        td.append(button);
+        tr.append(td);
+    };
+
     const patchTorrentsTable = () => {
         const TorrentsTable = window.qBittorrent.DynamicTable?.TorrentsTable;
         if (TorrentsTable === undefined)
@@ -425,6 +467,13 @@ window.qBittorrent.Mobile ??= (() => {
             return result;
         };
         onLayoutChange(() => updateTorrentsTableRowHeight(window.torrentsTable));
+
+        const updateRowElement = TorrentsTable.prototype.updateRowElement;
+        TorrentsTable.prototype.updateRowElement = function(tr, ...args) {
+            const result = updateRowElement.call(this, tr, ...args);
+            addMoreActionsButton(this, tr);
+            return result;
+        };
     };
 
     /* Initialization */

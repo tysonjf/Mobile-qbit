@@ -52,7 +52,7 @@ are documented at the top of [`tour.js`](tour.js). The groups:
 
 | File | Covers |
 | --- | --- |
-| `main.json` | torrent list, menu, filters drawer, long press menu, selection mode, sort chips, details tabs |
+| `main.json` | torrent list, menu, filters drawer, long press menu, ⋮ button, selection mode, sort chips, details tabs |
 | `torrent-dialogs.json` | add torrent (file / link), remove, limits, location, rename, categories, tags, trackers, peers, web seeds |
 | `views.json` | Search (with results), search plugins, RSS, RSS Downloader, Log |
 | `other-windows.json` | About, Statistics, Torrent Creator, Cookies, API key, logout |
