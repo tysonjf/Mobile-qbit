@@ -40,6 +40,10 @@ What changes on a phone:
   for narrow screens; text fields use a 16px font so iOS doesn't zoom in.
 * Search results and log messages are cards too; light and dark themes both work.
 
+On every screen size, **Help → Check for WebUI updates** shows whether a newer
+Mobile-qbit release exists and installs it with one tap (see
+[Updating](INSTALL.md#updating)).
+
 Installing
 ---
 
@@ -72,8 +76,9 @@ and troubleshooting).
 3. Open `http://<your-pc-ip>:<port>` (port 8080 by default) on your phone and log in.
    If the browser shows the old page, reload it once.
 
-To update later, replace the folder with the new version (or `git pull`) and reload
-the page. To go back to the built-in WebUI, untick **Use alternative WebUI**.
+To update later, use **Help → Check for WebUI updates** in the WebUI, or replace the
+folder with the new version (or `git pull`) and reload the page. To go back to the
+built-in WebUI, untick **Use alternative WebUI**.
 
 > [!NOTE]
 > The WebUI talks to qBittorrent through its Web API, so use it with
@@ -125,6 +130,11 @@ The first commit of this repository is the unmodified WebUI of qBittorrent v5.2.
 * `public/css/login.css`: responsive login page.
 * `private/images/mobile-menu.svg`, `private/images/mobile-filter.svg`,
   `private/images/mobile-select.svg` (new).
+* `private/version.json` (new): the version of Mobile-qbit, the qBittorrent version
+  it is made for and the GitHub repository its releases come from.
+* `private/scripts/mobile-update.js`, `private/views/mobileupdate.html` (new): the
+  updater (*Help → Check for WebUI updates*); `private/views/about.html` shows the
+  Mobile-qbit version.
 * `translations/*.qm` (new): compiled translations, built from the unchanged
   `translations/*.ts` sources with `tools/build-translations.py`.
 
@@ -150,6 +160,10 @@ pnpm run test                     # vitest
 
 To try changes, point qBittorrent's *alternative WebUI* at your working copy; files
 are re-read when they change, so a page reload is enough.
+
+Releases are made by pushing a version tag; a GitHub Actions workflow publishes the
+ZIP and the torrent the updater uses. See *Making a release* in
+[`dev/README.md`](dev/README.md#making-a-release).
 
 After updating the translation sources, rebuild the `.qm` files (no Qt tools needed;
 the output matches `lrelease -removeidentical`, which qBittorrent uses):

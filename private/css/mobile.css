@@ -37,6 +37,56 @@
     white-space: pre-wrap;
 }
 
+/* Update window (Help → Check for WebUI updates), all screen sizes */
+#mobileUpdate {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#mobileUpdateVersions th {
+    font-weight: normal;
+    padding-right: 1em;
+    text-align: start;
+    vertical-align: top;
+    white-space: nowrap;
+}
+
+#mobileUpdateLocation {
+    overflow-wrap: anywhere;
+}
+
+#mobileUpdateMessage {
+    margin: 0;
+
+    &.mobileUpdateError {
+        color: var(--color-text-red);
+    }
+}
+
+#mobileUpdateProgress {
+    width: 100%;
+}
+
+#mobileUpdateButtons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+#mobileUpdateNotes {
+    max-height: 14em;
+    overflow: auto;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+}
+
+#mobileUpdateLinks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1em;
+}
+
 /* ------------------------------------------------------------------------
  * Narrow screens (tablets, small laptops)
  * --------------------------------------------------------------------- */

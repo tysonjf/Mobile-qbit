@@ -4,3 +4,8 @@
 node_modules
 package-lock.json
 pnpm-lock.yaml
+
+# Mobile-qbit: test environment (also keeps it out of prettier), and the
+# versions the updater installs into a git clone
+dev/.cache
+/versions/

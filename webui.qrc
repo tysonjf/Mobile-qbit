@@ -408,6 +408,7 @@
         <file>private/scripts/lib/vanillaSelectBox.js</file>
         <file>private/scripts/localpreferences.js</file>
         <file>private/scripts/misc.js</file>
+        <file>private/scripts/mobile-update.js</file>
         <file>private/scripts/mobile.js</file>
         <file>private/scripts/mocha-init.js</file>
         <file>private/scripts/monkeypatch.js</file>
@@ -426,6 +427,7 @@
         <file>private/setlocation.html</file>
         <file>private/shareratio.html</file>
         <file>private/speedlimit.html</file>
+        <file>private/version.json</file>
         <file>private/views/about.html</file>
         <file>private/views/aboutToolbar.html</file>
         <file>private/views/confirmAutoTMM.html</file>
@@ -438,6 +440,7 @@
         <file>private/views/installsearchplugin.html</file>
         <file>private/views/log.html</file>
         <file>private/views/logTabs.html</file>
+        <file>private/views/mobileupdate.html</file>
         <file>private/views/preferences.html</file>
         <file>private/views/preferencesToolbar.html</file>
         <file>private/views/properties.html</file>

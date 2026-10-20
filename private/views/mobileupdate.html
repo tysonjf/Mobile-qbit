@@ -1,0 +1,46 @@
+<div id="mobileUpdate">
+    <table id="mobileUpdateVersions">
+        <tbody>
+            <tr>
+                <th scope="row">QBT_TR(Installed version:)QBT_TR[CONTEXT=MobileUpdate]</th>
+                <td id="mobileUpdateInstalled"></td>
+            </tr>
+            <tr>
+                <th scope="row">QBT_TR(Latest version:)QBT_TR[CONTEXT=MobileUpdate]</th>
+                <td id="mobileUpdateLatest"></td>
+            </tr>
+            <tr>
+                <th scope="row">QBT_TR(WebUI folder:)QBT_TR[CONTEXT=MobileUpdate]</th>
+                <td id="mobileUpdateLocation"></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p id="mobileUpdateMessage" role="status"></p>
+    <progress id="mobileUpdateProgress" class="invisible" max="1" value="0"></progress>
+
+    <div id="mobileUpdateRemoveOldRow" class="invisible">
+        <input type="checkbox" id="mobileUpdateRemoveOld" checked>
+        <label for="mobileUpdateRemoveOld">QBT_TR(Delete the folder of the current version afterwards)QBT_TR[CONTEXT=MobileUpdate]</label>
+    </div>
+
+    <div id="mobileUpdateButtons">
+        <button type="button" id="mobileUpdateInstall" class="invisible" disabled>QBT_TR(Update)QBT_TR[CONTEXT=RSSWidget]</button>
+        <button type="button" id="mobileUpdateCheck">QBT_TR(Check for updates)QBT_TR[CONTEXT=PluginSelectDlg]</button>
+    </div>
+
+    <details id="mobileUpdateNotesBox" class="invisible">
+        <summary>QBT_TR(Release notes)QBT_TR[CONTEXT=MobileUpdate]</summary>
+        <div id="mobileUpdateNotes"></div>
+        <p id="mobileUpdateLinks">
+            <a id="mobileUpdateReleaseLink" href="#" target="_blank" rel="noopener noreferrer">QBT_TR(Release page)QBT_TR[CONTEXT=MobileUpdate]</a>
+            <a id="mobileUpdateZipLink" href="#" class="invisible" target="_blank" rel="noopener noreferrer">QBT_TR(Download ZIP)QBT_TR[CONTEXT=MobileUpdate]</a>
+        </p>
+    </details>
+</div>
+
+<script>
+    "use strict";
+
+    window.qBittorrent.MobileUpdate.initWindow();
+</script>
