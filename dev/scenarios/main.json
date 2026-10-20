@@ -77,6 +77,104 @@
         ]
     },
     {
+        "name": "panels-keyboard",
+        "steps": [
+            {
+                "tap": "#mobileMenuButton"
+            },
+            {
+                "wait": 300
+            },
+            {
+                "eval": "(() => { const active = document.activeElement; if (!(document.getElementById('desktopNavbar').contains(active) && (active === [...document.querySelectorAll('#desktopNavbar > ul > li > a')][0]))) throw new Error(`focus is not on the first menu entry (focus: ${active.id || active.tagName} \"${active.textContent.trim().slice(0, 30)}\")`); return document.activeElement.textContent.trim().slice(0, 40); })()"
+            },
+            {
+                "press": "Enter"
+            },
+            {
+                "wait": 200
+            },
+            {
+                "eval": "(() => { const active = document.activeElement; if (!([...document.querySelectorAll('#desktopNavbar > ul > li > a')][0].parentElement.classList.contains('mobileOpen'))) throw new Error(`Enter did not open the File menu (focus: ${active.id || active.tagName} \"${active.textContent.trim().slice(0, 30)}\")`); return document.activeElement.textContent.trim().slice(0, 40); })()"
+            },
+            {
+                "press": "Tab"
+            },
+            {
+                "eval": "(() => { const active = document.activeElement; if (!(active.id === 'uploadLinkLabel')) throw new Error(`Tab did not move to the first File entry (focus: ${active.id || active.tagName} \"${active.textContent.trim().slice(0, 30)}\")`); return document.activeElement.textContent.trim().slice(0, 40); })()"
+            },
+            {
+                "shot": "menu"
+            },
+            {
+                "press": "Shift+Tab"
+            },
+            {
+                "press": "Shift+Tab"
+            },
+            {
+                "eval": "(() => { const active = document.activeElement; if (!(active === [...document.querySelectorAll('#desktopNavbar > ul > li > a')].at(-1))) throw new Error(`Shift+Tab on the first entry did not go to the last one (focus: ${active.id || active.tagName} \"${active.textContent.trim().slice(0, 30)}\")`); return document.activeElement.textContent.trim().slice(0, 40); })()"
+            },
+            {
+                "press": "Tab"
+            },
+            {
+                "eval": "(() => { const active = document.activeElement; if (!(active === [...document.querySelectorAll('#desktopNavbar > ul > li > a')][0])) throw new Error(`Tab on the last entry did not go to the first one (focus: ${active.id || active.tagName} \"${active.textContent.trim().slice(0, 30)}\")`); return document.activeElement.textContent.trim().slice(0, 40); })()"
+            },
+            {
+                "press": "Escape"
+            },
+            {
+                "wait": 200
+            },
+            {
+                "eval": "(() => { const active = document.activeElement; if (!(!document.getElementById('desktopNavbar').classList.contains('mobileOpen') && (active.id === 'mobileMenuButton') && (document.querySelectorAll('#desktopNavbar [tabindex], #filtersColumn [data-mobile-focusable]').length === 0))) throw new Error(`closing the menu did not bring focus back to its button, or left a tabindex behind (focus: ${active.id || active.tagName} \"${active.textContent.trim().slice(0, 30)}\")`); return document.activeElement.textContent.trim().slice(0, 40); })()"
+            },
+            {
+                "tap": "#mobileFiltersButton"
+            },
+            {
+                "wait": 400
+            },
+            {
+                "eval": "(() => { const active = document.activeElement; if (!(document.getElementById('filtersColumn').contains(active) && active.classList.contains('filterTitle'))) throw new Error(`focus is not on the first entry of the drawer (focus: ${active.id || active.tagName} \"${active.textContent.trim().slice(0, 30)}\")`); return document.activeElement.textContent.trim().slice(0, 40); })()"
+            },
+            {
+                "eval": "(() => { const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches; const duration = getComputedStyle(document.getElementById('filtersColumn')).transitionDuration; if (reduce !== duration.split(',').every((value) => Number.parseFloat(value) === 0)) throw new Error(`reduced motion: ${reduce}, transition of the drawer: ${duration}`); return [reduce, duration]; })()"
+            },
+            {
+                "shot": "drawer"
+            },
+            {
+                "press": "Shift+Tab"
+            },
+            {
+                "eval": "(() => { const active = document.activeElement; if (!(document.getElementById('filtersColumn').contains(active) && (active.closest('#trackerFilterList') !== null))) throw new Error(`Shift+Tab on the first entry did not go to the last tracker (focus: ${active.id || active.tagName} \"${active.textContent.trim().slice(0, 30)}\")`); return document.activeElement.textContent.trim().slice(0, 40); })()"
+            },
+            {
+                "press": "Tab"
+            },
+            {
+                "press": "Tab"
+            },
+            {
+                "eval": "(() => { const active = document.activeElement; if (!(active.closest('li')?.id === 'all_filter')) throw new Error(`Tab did not move to the All filter (focus: ${active.id || active.tagName} \"${active.textContent.trim().slice(0, 30)}\")`); return document.activeElement.textContent.trim().slice(0, 40); })()"
+            },
+            {
+                "js": "document.querySelector('#statusFilterList .selectedFilter > span.link').focus()"
+            },
+            {
+                "press": "Enter"
+            },
+            {
+                "wait": 600
+            },
+            {
+                "eval": "(() => { const active = document.activeElement; if (!(!document.getElementById('filtersColumn').classList.contains('mobileOpen') && (active.id === 'mobileFiltersButton') && (document.querySelectorAll('#desktopNavbar [tabindex], #filtersColumn [data-mobile-focusable]').length === 0))) throw new Error(`picking a filter did not close the drawer and bring focus back to its button (focus: ${active.id || active.tagName} \"${active.textContent.trim().slice(0, 30)}\")`); return document.activeElement.textContent.trim().slice(0, 40); })()"
+            }
+        ]
+    },
+    {
         "name": "torrent-menu",
         "steps": [
             {

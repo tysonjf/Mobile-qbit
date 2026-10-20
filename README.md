@@ -21,6 +21,9 @@ What changes on a phone:
 * **Menu** button (☰) opens File / Edit / View / Tools / Help as a drop-down panel.
 * **Filter** button opens the status / category / tag / tracker filters as a drawer.
   Picking a filter closes it again.
+* Both also work with a keyboard (e.g. on a tablet): focus moves into the panel, Tab
+  stays inside it, Enter or Space picks an entry, and Escape closes it again. With
+  *reduce motion* set in the system, the drawer doesn't slide.
 * The toolbar is a single row you can swipe sideways. Transfers / Search / RSS / Log
   tabs sit next to the menu buttons.
 * Torrents are shown as **cards** (name, progress, status, size, ratio, ETA, speeds).
@@ -119,6 +122,7 @@ which is loaded last by the main page and by every dialog page:
 | `(width <= 1100px)` | tablets, small laptops | narrower filter box and status bar |
 | `(pointer: coarse)` | any touch screen | bigger menu, list and tab hit targets; a long press doesn't select text, a double tap doesn't zoom |
 | `(hover: none)` | touch-only screens | no "sticky" hover highlight after a tap |
+| `(prefers-reduced-motion: reduce)` | *reduce motion* set in the system | the filters drawer and the menu don't animate |
 
 The login page has its own media queries in [`public/css/login.css`](public/css/login.css).
 

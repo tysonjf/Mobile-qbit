@@ -12,6 +12,7 @@
  *     name filter: regular expression matched against the scenario names
  *
  *   SCHEME=dark  use the dark color scheme
+ *   REDUCED_MOTION=1  prefer reduced motion
  *   URL=...      WebUI address, default http://127.0.0.1:8080/
  *
  * Screenshots go to dev/.cache/shots/<size>/<scenario>[-<shot>].png
@@ -28,6 +29,7 @@
  *   { "js": "code" }            run code in the page
  *   { "eval": "code" }          run code and print its result
  *   { "fill": [selector, text] }
+ *   { "press": key }            press a key, e.g. "Tab", "Shift+Tab", "Enter"
  *   { "files": [selector, file, ...] }
  *   { "wait": ms }
  *   { "shot": true | "suffix" }
@@ -78,7 +80,8 @@ const loadPlaywright = () => {
             deviceScaleFactor: touch ? 2 : 1,
             isMobile: touch,
             hasTouch: touch,
-            colorScheme: process.env.SCHEME || "light"
+            colorScheme: process.env.SCHEME || "light",
+            reducedMotion: process.env.REDUCED_MOTION ? "reduce" : "no-preference"
         });
 
         for (const scenario of scenarios) {
@@ -112,6 +115,8 @@ const loadPlaywright = () => {
                         await page.evaluate(expand(step.js));
                     if (step.fill)
                         await page.fill(step.fill[0], step.fill[1]);
+                    if (step.press)
+                        await page.keyboard.press(step.press);
                     if (step.files)
                         await page.setInputFiles(step.files[0], step.files.slice(1).map(expand));
                     if (step.longpress) {

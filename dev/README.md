@@ -69,6 +69,9 @@ are documented at the top of [`tour.js`](tour.js). The groups:
 | `update.json` | the updater (*Help → Check for WebUI updates*), needs `fake-github.py`, see below |
 
 Sizes below 800px wide or 500px high are emulated as touch screens.
+`REDUCED_MOTION=1 node tour.js ...` emulates *reduce motion*, and the `press` step
+sends real key presses (`main.json` → `panels-keyboard` tests the keyboard access to
+the menu panel and the filters drawer).
 
 Checking that desktop didn't change
 ---
