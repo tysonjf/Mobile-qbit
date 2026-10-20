@@ -30,6 +30,7 @@
  *  - the "More actions" button of the torrent cards
  *  - fitting MochaUI windows (dialogs) into the viewport
  *  - row height of the torrents table when the virtual list is used
+ *  - the download and "More actions" buttons of the search result cards
  *  - the browser's theme color (status bar of the app added to the home screen)
  */
 
@@ -449,30 +450,51 @@ window.qBittorrent.Mobile ??= (() => {
         table.contextMenu?.triggerMenu(event, tr);
     };
 
-    const addMoreActionsButton = (table, tr) => {
-        // rows of the virtual list are reused, and reordering the columns drops the cell
-        if (tr.querySelector(":scope > td.mobileMoreCell") !== null)
-            return;
-
+    const createCardButton = (className, title, onClick) => {
         const button = document.createElement("button");
         button.type = "button";
-        button.className = "mobileMoreButton";
-        button.title = "QBT_TR(More actions)QBT_TR[CONTEXT=MainWindow]";
-        button.setAttribute("aria-label", button.title);
-        button.setAttribute("aria-haspopup", "menu");
-        button.addEventListener("click", (event) => {
-            openRowMenu(table, tr, event);
-        });
+        button.className = className;
+        button.title = title;
+        button.setAttribute("aria-label", title);
+        button.addEventListener("click", onClick);
         // a quick second tap must not run the double click action of the row
         button.addEventListener("dblclick", (event) => {
             event.stopPropagation();
         });
+        return button;
+    };
+
+    const addMoreActionsButton = (table, tr, createOtherButtons = () => []) => {
+        // rows of the virtual list are reused, and reordering the columns drops the cell
+        if (tr.querySelector(":scope > td.mobileMoreCell") !== null)
+            return;
+
+        const button = createCardButton("mobileMoreButton", "QBT_TR(More actions)QBT_TR[CONTEXT=MainWindow]", (event) => {
+            openRowMenu(table, tr, event);
+        });
+        button.setAttribute("aria-haspopup", "menu");
 
         // after the column cells, so their indexes don't change; hidden outside the card layout
         const td = document.createElement("td");
         td.className = "mobileMoreCell";
-        td.append(button);
+        td.append(...createOtherButtons(), button);
         tr.append(td);
+    };
+
+    // Search results: downloading one takes a double tap or its menu, so the cards
+    // also get a download button. Like a double tap it opens the download window.
+    const createDownloadButton = (table, tr) => {
+        const button = createCardButton("mobileDownloadButton", "QBT_TR(Open download window)QBT_TR[CONTEXT=SearchJobWidget]", (event) => {
+            event.stopPropagation();
+            table.deselectAll();
+            table.selectRow(tr.rowId);
+            table.contextMenu?.execute("OpenDownloadWindow", tr);
+        });
+        const icon = document.createElement("img");
+        icon.src = "images/download.svg";
+        icon.alt = "";
+        button.append(icon);
+        return button;
     };
 
     const patchTorrentsTable = () => {
@@ -496,12 +518,26 @@ window.qBittorrent.Mobile ??= (() => {
         };
     };
 
+    const patchSearchResultsTable = () => {
+        const SearchResultsTable = window.qBittorrent.DynamicTable?.SearchResultsTable;
+        if (SearchResultsTable === undefined)
+            return;
+
+        const updateRowElement = SearchResultsTable.prototype.updateRowElement;
+        SearchResultsTable.prototype.updateRowElement = function(tr, ...args) {
+            const result = updateRowElement.call(this, tr, ...args);
+            addMoreActionsButton(this, tr, () => [createDownloadButton(this, tr)]);
+            return result;
+        };
+    };
+
     /* Initialization */
 
     const init = () => {
         if (window.MUI?.Window !== undefined)
             patchMochaWindows();
         patchTorrentsTable();
+        patchSearchResultsTable();
 
         mobileLayoutQuery.addEventListener("change", () => {
             for (const listener of layoutChangeListeners)

@@ -963,7 +963,8 @@
         order: 1;
     }
 
-    .mobileMoreButton {
+    .mobileMoreButton,
+    .mobileDownloadButton {
         align-items: center;
         background: none;
         border: 0;
@@ -988,8 +989,14 @@
         width: 4px;
     }
 
-    .mobileMoreButton:active {
+    .mobileMoreButton:active,
+    .mobileDownloadButton:active {
         background-color: var(--color-border-default);
+    }
+
+    .mobileDownloadButton img {
+        height: 20px;
+        width: 20px;
     }
 
     #transferList #torrentsTableDiv td[data-column="name"] .stateIcon {
@@ -1243,7 +1250,23 @@
     }
 
     #searchResultsTableDiv table.dynamicTable tbody td[data-column="fileName"] {
+        /* leaves room for the buttons, the other cells go to the next line */
+        flex-basis: calc(100% - 82px);
         font-weight: 600;
+        order: -1;
+    }
+
+    /* download and "More actions" buttons next to the name (mobile.js) */
+    #searchResultsTableDiv:not(.virtualList)
+        table.dynamicTable
+        tbody
+        td.mobileMoreCell {
+        align-self: flex-start;
+        display: flex;
+        flex: none;
+        /* big touch targets that don't make the card taller */
+        margin: -8px -10px -8px 0;
+        order: -1;
     }
 
     #searchResultsTableDiv
@@ -2161,6 +2184,25 @@
     #desktopFooterWrapper,
     #desktopFooter {
         height: 30px;
+    }
+
+    /*
+     * Search: the form and the filters are taller than the screen, which left no
+     * room for the results. The tab scrolls as a whole instead, and the results
+     * (moved below the "Search plugins..." button) fill it at the end.
+     */
+    :root #searchResults {
+        overflow-y: auto;
+    }
+
+    :root #searchPattern {
+        flex: 1 1 200px;
+    }
+
+    :root #searchResultsTableContainer {
+        flex: none;
+        height: 100%;
+        order: 1;
     }
 }
 

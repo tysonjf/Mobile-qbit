@@ -54,7 +54,7 @@ are documented at the top of [`tour.js`](tour.js). The groups:
 | --- | --- |
 | `main.json` | torrent list, menu, filters drawer, long press menu, ⋮ button, selection mode, sort chips, details tabs |
 | `torrent-dialogs.json` | add torrent (file / link), remove, limits, location, rename, categories, tags, trackers, peers, web seeds |
-| `views.json` | Search (with results), search plugins, RSS, RSS Downloader, Log (General and Blocked IPs) |
+| `views.json` | Search (with results, their download and ⋮ buttons), search plugins, RSS, RSS Downloader, Log (General and Blocked IPs) |
 | `other-windows.json` | About, Statistics, Torrent Creator, Cookies, API key, logout |
 | `options.json` | every tab of the Options window |
 | `update.json` | the updater (*Help → Check for WebUI updates*), needs `fake-github.py`, see below |
