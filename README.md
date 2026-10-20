@@ -106,7 +106,9 @@ built-in WebUI, untick **Use alternative WebUI**.
 
 The WebUI follows the language set in qBittorrent, like the built-in one: for an
 alternative WebUI qBittorrent loads the compiled translations from the
-`translations` folder, which are included here.
+`translations` folder, which are included here. Mobile-qbit's own texts (the menu
+button, the updater, ...) are translated too, into the languages qBittorrent's WebUI
+is mostly translated into; the others show them in English.
 
 Layout breakpoints
 ---
@@ -163,8 +165,10 @@ The first commit of this repository is the unmodified WebUI of qBittorrent v5.2.
 * `private/scripts/mobile-update.js`, `private/views/mobileupdate.html` (new): the
   updater (*Help → Check for WebUI updates*); `private/views/about.html` shows the
   Mobile-qbit version.
-* `translations/*.qm` (new): compiled translations, built from the unchanged
-  `translations/*.ts` sources with `tools/build-translations.py`.
+* `translations/*.qm` (new): compiled translations, built with
+  `tools/build-translations.py` from qBittorrent's unchanged `translations/*.ts`
+  sources and `translations/mobile/*.ts` (new), the translations of Mobile-qbit's
+  own strings. `tools/update-translations.py` adds new strings to those.
 
 Development
 ---
@@ -197,6 +201,7 @@ After updating the translation sources, rebuild the `.qm` files (no Qt tools nee
 the output matches `lrelease -removeidentical`, which qBittorrent uses):
 
 ```sh
+python3 tools/update-translations.py   # new strings → translations/mobile/*.ts
 python3 tools/build-translations.py
 ```
 
