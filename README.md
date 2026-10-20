@@ -47,7 +47,8 @@ What changes on a phone:
   open full screen, small prompts are centered and grow to fit their content.
 * The **Content** tab shows every file and folder as a card, indented like the file
   tree, with its progress and priority. Tap the check box to (not) download a file,
-  the arrow to open or close a folder.
+  the arrow to open or close a folder. The file list of the add torrent dialog works
+  the same way.
 * The Options window, Search, RSS, RSS Downloader, Log and all other dialogs reflow
   for narrow screens; text fields use a 16px font so iOS doesn't zoom in. The Torrent
   Creator shows its tasks as cards.

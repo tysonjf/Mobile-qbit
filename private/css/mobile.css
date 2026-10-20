@@ -930,20 +930,26 @@
     }
 
     /*
-     * Content tab: every file and folder is a card, indented by its depth in the
-     * tree (--file-tree-depth, set by dynamicTable.js). Check box, name and size
-     * on the first line, progress and priority below the name.
+     * Content tab and the file list of the add torrent dialog: every file and
+     * folder is a card, indented by its depth in the tree (--file-tree-depth, set
+     * by dynamicTable.js). Check box, name and size on the first line, progress
+     * (Content tab only) and priority below the name.
      */
-    #torrentFilesTableDiv:not(.virtualList) :is(table.dynamicTable, tbody) {
+    :is(#torrentFilesTableDiv, #addTorrentFilesTableDiv):not(.virtualList)
+        :is(table.dynamicTable, tbody) {
         display: block;
         width: 100% !important;
     }
 
-    #torrentFilesTableDiv:not(.virtualList) colgroup {
+    :is(#torrentFilesTableDiv, #addTorrentFilesTableDiv):not(.virtualList)
+        colgroup {
         display: none;
     }
 
-    #torrentFilesTableDiv:not(.virtualList) table.dynamicTable tbody tr {
+    :is(#torrentFilesTableDiv, #addTorrentFilesTableDiv):not(.virtualList)
+        table.dynamicTable
+        tbody
+        tr {
         align-items: flex-start;
         border-bottom: 1px solid var(--color-border-default);
         column-gap: 8px;
@@ -953,13 +959,19 @@
     }
 
     /* ends the first line */
-    #torrentFilesTableDiv:not(.virtualList) table.dynamicTable tbody tr::after {
+    :is(#torrentFilesTableDiv, #addTorrentFilesTableDiv):not(.virtualList)
+        table.dynamicTable
+        tbody
+        tr::after {
         content: "";
         flex-basis: 100%;
         order: 3;
     }
 
-    #torrentFilesTableDiv:not(.virtualList) table.dynamicTable tbody td {
+    :is(#torrentFilesTableDiv, #addTorrentFilesTableDiv):not(.virtualList)
+        table.dynamicTable
+        tbody
+        td {
         display: none;
         font-size: 12px;
         line-height: 16px;
@@ -968,7 +980,7 @@
         width: auto !important;
     }
 
-    #torrentFilesTableDiv:not(.virtualList)
+    :is(#torrentFilesTableDiv, #addTorrentFilesTableDiv):not(.virtualList)
         table.dynamicTable
         tbody
         td:is(
@@ -982,31 +994,36 @@
         flex: none;
     }
 
-    #torrentFilesTableDiv:not(.virtualList)
+    :is(#torrentFilesTableDiv, #addTorrentFilesTableDiv):not(.virtualList)
         table.dynamicTable
         tbody
         :is(tr, td).invisible {
         display: none !important;
     }
 
-    #torrentFilesTableDiv td[data-column="checked"] {
+    :is(#torrentFilesTableDiv, #addTorrentFilesTableDiv)
+        td[data-column="checked"] {
         order: 0;
         width: 22px !important;
     }
 
     /* the tree lines of the table */
-    #torrentFilesTableDiv td[data-column="checked"] > img {
+    :is(#torrentFilesTableDiv, #addTorrentFilesTableDiv)
+        td[data-column="checked"]
+        > img {
         display: none;
     }
 
-    #torrentFilesTableDiv td[data-column="checked"] > input {
+    :is(#torrentFilesTableDiv, #addTorrentFilesTableDiv)
+        td[data-column="checked"]
+        > input {
         display: block;
         height: 20px;
         margin: 0 auto;
         width: 20px;
     }
 
-    #torrentFilesTableDiv:not(.virtualList)
+    :is(#torrentFilesTableDiv, #addTorrentFilesTableDiv):not(.virtualList)
         table.dynamicTable
         tbody
         td[data-column="name"] {
@@ -1020,13 +1037,14 @@
     }
 
     /* the indentation is on the card */
-    #torrentFilesTableDiv:not(.virtualList)
+    :is(#torrentFilesTableDiv, #addTorrentFilesTableDiv):not(.virtualList)
         td[data-column="name"]
         > :is(.filesTableCollapseIcon, span) {
         margin-left: 0 !important;
     }
 
-    #torrentFilesTableDiv:not(.virtualList) .filesTableCollapseIcon {
+    :is(#torrentFilesTableDiv, #addTorrentFilesTableDiv):not(.virtualList)
+        .filesTableCollapseIcon {
         box-sizing: content-box;
         flex: none;
         height: 16px;
@@ -1036,20 +1054,22 @@
         width: 16px;
     }
 
-    #torrentFilesTableDiv:not(.virtualList)
+    :is(#torrentFilesTableDiv, #addTorrentFilesTableDiv):not(.virtualList)
         td[data-column="name"]
         > img:not(.filesTableCollapseIcon) {
         flex: none;
         margin-top: 1px;
     }
 
-    #torrentFilesTableDiv:not(.virtualList) td[data-column="name"] > span {
+    :is(#torrentFilesTableDiv, #addTorrentFilesTableDiv):not(.virtualList)
+        td[data-column="name"]
+        > span {
         min-width: 0;
         overflow-wrap: anywhere;
         white-space: normal;
     }
 
-    #torrentFilesTableDiv:not(.virtualList)
+    :is(#torrentFilesTableDiv, #addTorrentFilesTableDiv):not(.virtualList)
         table.dynamicTable
         tbody
         td[data-column="size"] {
@@ -1060,7 +1080,7 @@
     }
 
     /* below the name, the priority wraps onto a line of its own if they don't fit */
-    #torrentFilesTableDiv:not(.virtualList)
+    :is(#torrentFilesTableDiv, #addTorrentFilesTableDiv):not(.virtualList)
         table.dynamicTable
         tbody
         td[data-column="progress"] {
@@ -1071,12 +1091,14 @@
         order: 4;
     }
 
-    #torrentFilesTableDiv td[data-column="progress"] progress-bar {
+    :is(#torrentFilesTableDiv, #addTorrentFilesTableDiv)
+        td[data-column="progress"]
+        progress-bar {
         border-radius: 3px;
         overflow: hidden;
     }
 
-    #torrentFilesTableDiv:not(.virtualList)
+    :is(#torrentFilesTableDiv, #addTorrentFilesTableDiv):not(.virtualList)
         table.dynamicTable
         tbody
         td[data-column="priority"] {
@@ -1084,9 +1106,33 @@
         order: 5;
     }
 
-    #torrentFilesTableDiv td[data-column="priority"] select {
+    :is(#torrentFilesTableDiv, #addTorrentFilesTableDiv)
+        td[data-column="priority"]
+        select {
         max-width: 100%;
         min-height: 32px;
+    }
+
+    /* add torrent dialog: no progress, so the priority goes on the first line if the list is wide */
+    #addTorrentFilesTableDiv:not(.virtualList) {
+        container-type: inline-size;
+    }
+
+    @container (width >= 520px) {
+        #addTorrentFilesTableDiv:not(.virtualList)
+            table.dynamicTable
+            tbody
+            tr::after {
+            content: none;
+        }
+
+        #addTorrentFilesTableDiv:not(.virtualList)
+            table.dynamicTable
+            tbody
+            td[data-column="priority"] {
+            margin: 0 0 0 auto;
+            order: 2;
+        }
     }
 
     /* header: the check box for all files and a scrollable row of sort buttons */
