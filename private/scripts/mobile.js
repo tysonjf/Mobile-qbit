@@ -191,6 +191,18 @@ window.qBittorrent.Mobile ??= (() => {
         });
     };
 
+    const setupDetailsPanel = () => {
+        // Opening the details panel shrinks the torrent list, keep the selected torrent visible
+        document.addEventListener("click", (event) => {
+            if (!isMobileLayout() || (event.target.closest("#propertiesTabs, #propertiesPanel_collapseToggle") === null))
+                return;
+
+            setTimeout(() => {
+                document.querySelector("#torrentsTableDiv tr.selected")?.scrollIntoView({ block: "nearest" });
+            }, 50);
+        });
+    };
+
     /* MochaUI windows */
 
     const getWindowChromeHeight = (instance) => {
@@ -391,6 +403,7 @@ window.qBittorrent.Mobile ??= (() => {
             window.addEventListener("DOMContentLoaded", () => {
                 setupMenus();
                 setupFiltersDrawer();
+                setupDetailsPanel();
             });
         }
     };
