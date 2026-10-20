@@ -100,6 +100,26 @@
         ]
     },
     {
+        "name": "long-press-text",
+        "steps": [
+            {
+                "eval": "(() => { const touch = matchMedia('(pointer: coarse)').matches; const selectable = (el) => getComputedStyle(el).userSelect !== 'none'; const browserMenu = (el) => { const event = new MouseEvent('contextmenu', { bubbles: true, cancelable: true }); el.dispatchEvent(event); return !event.defaultPrevented; }; const q = (selector) => document.querySelector(selector); const result = { cardText: selectable(q('#torrentsTableDiv tbody tr td[data-column=name]')), statusBarText: selectable(q('#DlInfos')), searchFieldText: selectable(q('#torrentsFilterInput')), generalTabText: selectable(q('#propGeneral')), toolbarIconBrowserMenu: browserMenu(q('#mochaToolbar img')), menuEntryBrowserMenu: browserMenu(q('#desktopNavbar ul ul a[href=\"#\"]') ?? q('#desktopNavbar ul ul a')), searchFieldBrowserMenu: browserMenu(q('#torrentsFilterInput')), webLinkBrowserMenu: browserMenu(q('#docsLink')), doubleTapZoom: getComputedStyle(document.documentElement).touchAction !== 'manipulation' }; const expected = { cardText: false, statusBarText: !touch, searchFieldText: true, generalTabText: true, toolbarIconBrowserMenu: !touch, menuEntryBrowserMenu: !touch, searchFieldBrowserMenu: true, webLinkBrowserMenu: true, doubleTapZoom: !touch }; const wrong = Object.keys(expected).filter((key) => result[key] !== expected[key]); if (wrong.length > 0) throw new Error(`unexpected: ${wrong.join(', ')}`); return result; })()"
+            },
+            {
+                "longpress": "#torrentsTableDiv tbody tr:nth-child(2)"
+            },
+            {
+                "wait": 500
+            },
+            {
+                "eval": "(() => { const menuOpen = document.getElementById('torrentsTableMenu').classList.contains('visible'); if (matchMedia('(pointer: coarse)').matches && !menuOpen) throw new Error('the long press did not open the menu'); return [menuOpen, window.getSelection().toString()]; })()"
+            },
+            {
+                "shot": true
+            }
+        ]
+    },
+    {
         "name": "select-mode",
         "steps": [
             {

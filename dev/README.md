@@ -52,7 +52,7 @@ are documented at the top of [`tour.js`](tour.js). The groups:
 
 | File | Covers |
 | --- | --- |
-| `main.json` | torrent list, menu, filters drawer, long press menu, ⋮ button, selection mode, sort chips, details tabs |
+| `main.json` | torrent list, menu, filters drawer, long press menu (and what a long press may select), ⋮ button, selection mode, sort chips, details tabs |
 | `torrent-dialogs.json` | add torrent (file / link), remove, limits, location, rename, categories, tags, trackers, peers, web seeds |
 | `views.json` | Search (with results), search plugins, RSS, RSS Downloader, Log (General and Blocked IPs) |
 | `other-windows.json` | About, Statistics, Torrent Creator, Cookies, API key, logout |
@@ -160,6 +160,11 @@ Things to know before changing the WebUI
 * **Touch events.** MooTools' `Drag` (column resize/reorder, window drag) also reacts
   to touch events, and browsers send emulated mouse events after a tap. Test taps,
   long presses and swipes, not only clicks.
+* **Long press.** Chromium's emulation has no native long press: the `longpress`
+  step only sends touch events, so it never selects text or opens the browser's own
+  menu. Check the computed styles instead (see the `*long-press-text` scenarios).
+  Safari has no `user-select`, only `-webkit-user-select`; `mobile.css` sets both
+  on touch screens.
 * **Lists as cards.** `dynamicTable.js` puts `data-column` on every cell, and
   `mobile.css` turns rows into cards (torrents, search results, log). With the
   "virtual list" option rows have a fixed height (`TORRENT_CARD_HEIGHT` in

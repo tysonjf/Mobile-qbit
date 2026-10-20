@@ -28,6 +28,7 @@
  * parts that MochaUI computes in JavaScript or that need interaction:
  *  - the menu button and the filters drawer of the phone layout
  *  - the "More actions" button of the torrent cards
+ *  - no browser menus for buttons and icons on a long press
  *  - fitting MochaUI windows (dialogs) into the viewport
  *  - row height of the torrents table when the virtual list is used
  *  - the browser's theme color (status bar of the app added to the home screen)
@@ -259,6 +260,29 @@ window.qBittorrent.Mobile ??= (() => {
         onLayoutChange(() => setSelectMode(false));
     };
 
+    /* Long press on touch screens */
+
+    // A long press opens the WebUI's menus. Elsewhere Android browsers open their own
+    // menu for the link or image under the finger (open in new tab, download image),
+    // which on buttons, icons and menu entries is only in the way. Text that can be
+    // selected (see "Touch screens: long press and taps" in css/mobile.css) and real
+    // links keep it.
+    const touchQuery = window.matchMedia("(pointer: coarse)");
+    const preventBrowserMenu = (event) => {
+        // the WebUI's own menus handle the event themselves
+        if (!touchQuery.matches || event.defaultPrevented)
+            return;
+
+        // also called for the documents of dialogs, which are iframes
+        const target = event.target;
+        if ((target.nodeType !== Node.ELEMENT_NODE) || (target.closest("a[href^='http']") !== null))
+            return;
+        if (target.ownerDocument.defaultView.getComputedStyle(target).userSelect !== "none")
+            return;
+
+        event.preventDefault();
+    };
+
     /* Theme color */
 
     // The theme-color meta tags follow the system's color scheme. The WebUI can be
@@ -410,6 +434,12 @@ window.qBittorrent.Mobile ??= (() => {
                 fitWindowToViewport(this);
                 // dialogs loaded in an iframe may need more room once their content is known
                 this.iframeEl?.addEventListener("load", () => {
+                    try {
+                        this.iframeEl.contentDocument?.addEventListener("contextmenu", preventBrowserMenu);
+                    }
+                    catch {
+                        // not accessible
+                    }
                     if (isMobileLayout())
                         fitWindowToViewport(this);
                 });
@@ -521,6 +551,8 @@ window.qBittorrent.Mobile ??= (() => {
                     fitAllWindows();
             }, 150);
         });
+
+        document.addEventListener("contextmenu", preventBrowserMenu);
 
         if (document.getElementById("mobileBar") !== null) {
             window.addEventListener("DOMContentLoaded", () => {

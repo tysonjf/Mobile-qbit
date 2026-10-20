@@ -37,6 +37,23 @@
         ]
     },
     {
+        "name": "addtorrent-long-press-text",
+        "steps": [
+            {
+                "files": [
+                    "#fileselectButton",
+                    "$TORRENTS/extra-series.torrent"
+                ]
+            },
+            {
+                "wait": 3000
+            },
+            {
+                "eval": "(() => { const touch = matchMedia('(pointer: coarse)').matches; const frame = [...document.querySelectorAll('iframe')].find((iframe) => iframe.src.includes('addtorrent.html')); const doc = frame.contentDocument; const selectable = (el) => doc.defaultView.getComputedStyle(el).userSelect !== 'none'; const browserMenu = (el) => { const event = new doc.defaultView.MouseEvent('contextmenu', { bubbles: true, cancelable: true }); el.dispatchEvent(event); return !event.defaultPrevented; }; const label = doc.querySelector('label[for=savepath]') ?? doc.querySelector('label'); const field = doc.getElementById('savepath') ?? doc.querySelector('input[type=text]'); const result = { labelText: selectable(label), fieldText: selectable(field), infoHashText: selectable(doc.getElementById('infoHashV1')), labelBrowserMenu: browserMenu(label), fieldBrowserMenu: browserMenu(field) }; const expected = { labelText: !touch, fieldText: true, infoHashText: true, labelBrowserMenu: !touch, fieldBrowserMenu: true }; const wrong = Object.keys(expected).filter((key) => result[key] !== expected[key]); if (wrong.length > 0) throw new Error(`unexpected: ${wrong.join(', ')}`); return result; })()"
+            }
+        ]
+    },
+    {
         "name": "addtorrent-multi",
         "steps": [
             {
