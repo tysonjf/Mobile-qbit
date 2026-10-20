@@ -46,6 +46,35 @@ window.qBittorrent.ContextMenu ??= (() => {
     };
 
     let lastShownContextMenu = null;
+
+    // In the phone layout menus are shown as a bottom sheet, see css/mobile.css
+    const isSheetLayout = () => {
+        const mobile = window.qBittorrent.Mobile ?? window.parent?.qBittorrent?.Mobile;
+        return mobile?.isMobileLayout() ?? false;
+    };
+
+    let sheetBackdrop = null;
+    let sheetShownAt = 0;
+    const showSheetBackdrop = () => {
+        if (sheetBackdrop === null) {
+            sheetBackdrop = document.createElement("div");
+            sheetBackdrop.id = "contextMenuBackdrop";
+            sheetBackdrop.addEventListener("click", (event) => {
+                // ignore the click that may follow the long press which opened the menu
+                if ((performance.now() - sheetShownAt) < 400)
+                    event.stopPropagation();
+            });
+            sheetBackdrop.addEventListener("contextmenu", (event) => {
+                event.preventDefault();
+            });
+        }
+        sheetShownAt = performance.now();
+        document.body.append(sheetBackdrop);
+    };
+    const hideSheetBackdrop = () => {
+        sheetBackdrop?.remove();
+    };
+
     class ContextMenu {
         constructor(options) {
             this.options = {
@@ -79,6 +108,25 @@ window.qBittorrent.ContextMenu ??= (() => {
         adjustMenuPosition(e) {
             this.updateMenuItems();
 
+            const isSheet = isSheetLayout();
+            this.menu.classList.toggle("mobileSheet", isSheet);
+            if (isSheet) {
+                // sub menus are expanded inline by tapping their parent entry
+                for (const item of this.menu.querySelectorAll("li.mobileOpen"))
+                    item.classList.remove("mobileOpen");
+                for (const ul of this.menu.getElementsByTagName("ul")) {
+                    ul.style.marginLeft = "";
+                    ul.style.marginTop = "";
+                    ul.style.maxHeight = "";
+                }
+                this.menu.style.maxHeight = "";
+                this.menu.scrollTop = 0;
+                return;
+            }
+
+            // touch events carry the coordinates in their touch points
+            const point = e.changedTouches?.[0] ?? e.touches?.[0] ?? e;
+
             const scrollableMenuMaxHeight = document.documentElement.clientHeight * 0.75;
 
             if (this.menu.classList.contains("scrollableMenu"))
@@ -89,8 +137,8 @@ window.qBittorrent.ContextMenu ??= (() => {
             this.menu.style.top = "-999em";
 
             // position the menu
-            let xPosMenu = e.pageX + this.options.offsets.x;
-            let yPosMenu = e.pageY + this.options.offsets.y;
+            let xPosMenu = point.pageX + this.options.offsets.x;
+            let yPosMenu = point.pageY + this.options.offsets.y;
             if ((xPosMenu + this.menu.offsetWidth) > document.documentElement.clientWidth)
                 xPosMenu -= this.menu.offsetWidth;
             if ((yPosMenu + this.menu.offsetHeight) > document.documentElement.clientHeight)
@@ -199,6 +247,14 @@ window.qBittorrent.ContextMenu ??= (() => {
                     return;
 
                 e.preventDefault();
+                if (this.menu.classList.contains("mobileSheet") && (menuItem.querySelector(":scope > ul") !== null)) {
+                    // expand or collapse the sub menu instead of closing the sheet
+                    e.stopPropagation();
+                    if (!menuItem.classList.contains("disabled"))
+                        menuItem.classList.toggle("mobileOpen");
+                    return;
+                }
+
                 if (!menuItem.classList.contains("disabled")) {
                     const anchor = menuItem.firstElementChild;
                     this.execute(anchor.href.split("#")[1], this.options.element);
@@ -235,6 +291,8 @@ window.qBittorrent.ContextMenu ??= (() => {
             if (lastShownContextMenu && (lastShownContextMenu !== this))
                 lastShownContextMenu.hide();
             this.menu.classList.add("visible");
+            if (this.menu.classList.contains("mobileSheet"))
+                showSheetBackdrop();
             this.options.onShow.call(this);
             lastShownContextMenu = this;
             return this;
@@ -244,6 +302,8 @@ window.qBittorrent.ContextMenu ??= (() => {
         hide(trigger) {
             if (lastShownContextMenu && (lastShownContextMenu.menu.style.visibility !== "hidden")) {
                 this.menu.classList.remove("visible");
+                if (this.menu.classList.contains("mobileSheet"))
+                    hideSheetBackdrop();
                 this.options.onHide.call(this);
             }
             return this;

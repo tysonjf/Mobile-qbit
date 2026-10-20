@@ -1,0 +1,1607 @@
+/*
+ * Responsive layout for the qBittorrent WebUI.
+ *
+ * This stylesheet is loaded last by the main page and by every dialog page, so
+ * the rules below override the desktop styles of the other stylesheets.
+ *
+ * Breakpoints:
+ *  - Phone layout: `(max-width: 767px), (pointer: coarse) and (max-height: 500px)`
+ *    (phones in portrait and landscape). Keep in sync with scripts/mobile.js.
+ *  - Narrow screens: `(max-width: 1100px)` small laptops and tablets.
+ *  - Touch screens: `(pointer: coarse)` bigger hit targets.
+ *
+ * MochaUI sizes most of the layout with inline styles from JavaScript, which is
+ * why some rules have to use `!important`.
+ */
+
+/* Elements that only exist for the phone layout */
+#mobileBar,
+#mobileBackdrop {
+    display: none;
+}
+
+/* Desktop: the wrapper of the toolbar buttons does not take part in the layout */
+#toolbarButtons {
+    display: contents;
+}
+
+/* ------------------------------------------------------------------------
+ * Narrow screens (tablets, small laptops)
+ * --------------------------------------------------------------------- */
+
+@media (max-width: 1100px) {
+    #torrentsFilterInput {
+        min-width: 120px;
+        width: 160px;
+    }
+
+    .mochaToolButton {
+        margin-right: 6px;
+    }
+
+    td.speedLabel {
+        min-width: 11em;
+    }
+}
+
+/* ------------------------------------------------------------------------
+ * Touch screens: bigger hit targets
+ * --------------------------------------------------------------------- */
+
+@media (pointer: coarse) {
+    #desktopNavbar li ul li a,
+    #desktopNavbar li ul li div.anchor {
+        padding-bottom: 9px;
+        padding-top: 9px;
+    }
+
+    .contextMenu li a {
+        padding-bottom: 10px;
+        padding-top: 10px;
+    }
+
+    ul.filterList span.link {
+        padding-bottom: 8px;
+        padding-top: 8px;
+    }
+
+    .tab-menu li a {
+        padding: 8px 10px 6px;
+    }
+
+    input[type="checkbox"],
+    input[type="radio"] {
+        height: 18px;
+        width: 18px;
+    }
+}
+
+/* ------------------------------------------------------------------------
+ * Touch-only screens: a tap leaves the element in the :hover state, which
+ * would look like a selection. Only show hover highlights with a mouse.
+ * --------------------------------------------------------------------- */
+
+@media (hover: none) {
+    .dynamicTableDiv table.dynamicTable tbody tr:hover,
+    #torrentFilesTableDiv .dynamicTable tr.nonAlt:hover,
+    #addTorrentFilesTableDiv .dynamicTable tr.nonAlt:hover {
+        background-color: transparent;
+        color: inherit;
+    }
+
+    .altRowColors tbody tr:nth-child(odd of :not(.invisible)):hover {
+        background-color: var(--color-background-default);
+    }
+
+    .dynamicTableDiv table.dynamicTable tbody tr.selected:hover {
+        background-color: var(--color-background-blue);
+        color: var(--color-text-white);
+    }
+
+    .dynamicTable tr:hover:not(.selected) img:not(.flags) {
+        filter: none;
+    }
+
+    ul.filterList span.link:hover {
+        background-color: transparent;
+        color: inherit;
+    }
+
+    ul.filterList span.link:hover :is(img, button) {
+        filter: none;
+    }
+
+    ul.filterList .selectedFilter > span.link:hover {
+        background-color: var(--color-background-blue);
+        color: var(--color-text-white);
+    }
+
+    ul.filterList .selectedFilter > span.link:hover :is(img, button) {
+        filter: var(--color-icon-hover);
+    }
+
+    ul.filterList span.link:active {
+        background-color: var(--color-background-hover);
+        color: var(--color-text-white);
+    }
+
+    .tab-menu li:not(.selected):hover a {
+        background-color: var(--color-background-default);
+        color: var(--color-text-default);
+    }
+
+    .tab-menu li:not(.selected):hover img {
+        filter: none;
+    }
+
+    .vsb-menu li:hover {
+        background-color: transparent;
+        color: inherit;
+    }
+
+    .contextMenu li a:hover {
+        background-color: transparent;
+        color: var(--color-text-default);
+    }
+
+    .contextMenu li a:hover img:not(.highlightedCategoryIcon) {
+        filter: none;
+    }
+
+    .contextMenu li a:active {
+        background-color: var(--color-background-hover);
+        color: var(--color-text-white);
+    }
+}
+
+/* ------------------------------------------------------------------------
+ * Phone layout: main window
+ * --------------------------------------------------------------------- */
+
+@media (max-width: 767px), (pointer: coarse) and (max-height: 500px) {
+    :root {
+        --mobile-bar-height: 46px;
+        --mobile-touch-size: 40px;
+    }
+
+    /* Prevent iOS from zooming in when an input gets focused */
+    input[type="search"],
+    input[type="text"],
+    input[type="number"],
+    input[type="password"],
+    input[type="url"],
+    input[type="email"],
+    input:not([type]),
+    select,
+    textarea {
+        font-size: 16px;
+    }
+
+    #desktop {
+        min-width: 0;
+    }
+
+    /* Header ------------------------------------------------------------ */
+
+    #desktopHeader {
+        align-items: center;
+        background-color: var(--color-background-default);
+        display: flex;
+        flex-wrap: wrap;
+        position: relative;
+    }
+
+    #mobileBar {
+        align-items: center;
+        display: flex;
+        flex: none;
+        gap: 2px;
+        height: var(--mobile-bar-height);
+        order: 0;
+        padding: 0 2px 0 4px;
+    }
+
+    .mobileBarButton {
+        align-items: center;
+        background-color: transparent;
+        border: 1px solid transparent;
+        border-radius: 8px;
+        display: flex;
+        height: var(--mobile-touch-size);
+        justify-content: center;
+        padding: 0;
+        width: var(--mobile-touch-size);
+    }
+
+    .mobileBarButton img {
+        height: 24px;
+        width: 24px;
+    }
+
+    .mobileBarButton[aria-expanded="true"] {
+        background-color: var(--color-background-blue);
+    }
+
+    .mobileBarButton[aria-expanded="true"] img {
+        filter: var(--color-icon-hover);
+    }
+
+    /* the filters only apply to the Transfers tab */
+    #desktopHeader:has(#torrentsFilterToolbar.invisible) #mobileFiltersButton {
+        display: none;
+    }
+
+    #mochaToolbar {
+        display: contents;
+    }
+
+    #mochaToolbar.invisible {
+        display: none;
+    }
+
+    /* Main window tabs, next to the menu buttons */
+    #mainWindowTabs {
+        align-self: stretch;
+        display: flex;
+        flex: 1 1 0;
+        float: none;
+        margin: 0;
+        min-width: 0;
+        order: 1;
+    }
+
+    #mainWindowTabs.invisible {
+        display: none;
+    }
+
+    #mainWindowTabsList {
+        align-items: center;
+        flex: 1 1 auto;
+        padding-right: 4px;
+        scrollbar-width: none;
+    }
+
+    #mainWindowTabsList li a {
+        border-radius: 8px;
+        font-size: 13px;
+        gap: 6px;
+        margin-left: 4px;
+        min-height: 36px;
+        padding: 6px 9px;
+    }
+
+    #mainWindowTabsList li a img {
+        height: 18px;
+        width: 18px;
+    }
+
+    /* Toolbar: a single horizontally scrollable row of buttons */
+    #toolbarButtons {
+        align-items: center;
+        border-top: 1px solid var(--color-border-default);
+        display: flex;
+        flex: 1 0 100%;
+        order: 2;
+        overflow: auto hidden;
+        padding: 0 2px;
+        scrollbar-width: none;
+    }
+
+    #toolbarButtons > a,
+    #toolbarButtons > div,
+    #queueingButtons > a {
+        align-items: center;
+        display: flex !important;
+        flex: none;
+        height: 44px;
+        justify-content: center;
+        min-width: 42px;
+    }
+
+    #queueingButtons {
+        display: flex;
+        flex: none;
+    }
+
+    #queueingButtons.invisible {
+        display: none;
+    }
+
+    #uploadButton label {
+        align-items: center;
+        display: flex;
+        height: 100%;
+        justify-content: center;
+        width: 100%;
+    }
+
+    #toolbarButtons .mochaToolButton {
+        height: 26px;
+        margin: 0;
+        width: 26px;
+    }
+
+    #mochaToolbar #toolbarButtons .divider {
+        background-position: 2px center;
+        background-size: 2px 24px;
+        padding: 0 0 0 10px;
+    }
+
+    /* Torrent filter: full width row */
+    #torrentsFilterToolbar {
+        align-items: center;
+        border-top: 1px solid var(--color-border-default);
+        display: flex;
+        flex: 1 0 100%;
+        gap: 6px;
+        min-width: 0;
+        order: 3;
+        padding: 6px 8px;
+    }
+
+    #torrentsFilterToolbar.invisible {
+        display: none;
+    }
+
+    #torrentsFilterInput {
+        flex: 1 1 0;
+        height: 36px;
+        min-width: 0;
+        width: 0;
+    }
+
+    #torrentsFilterRegexBox + label,
+    #torrentsFilterRegexBox:checked + label {
+        flex: none;
+        height: 36px;
+        margin: 0;
+        width: 36px;
+    }
+
+    label[for="torrentsFilterSelect"] {
+        display: none;
+    }
+
+    #torrentsFilterSelect {
+        flex: none;
+        height: 36px;
+        max-width: 34%;
+    }
+
+    /* Menu bar: becomes a drop down panel opened by the menu button */
+    #desktopNavbar {
+        background-color: var(--color-background-popup);
+        border: 1px solid var(--color-border-default);
+        border-radius: 10px;
+        box-shadow: 0 10px 30px rgb(0 0 0 / 35%);
+        display: none;
+        left: 6px;
+        max-height: calc(100dvh - var(--mobile-bar-height) - 12px);
+        overflow: hidden auto;
+        overscroll-behavior: contain;
+        position: absolute;
+        top: calc(var(--mobile-bar-height) - 2px);
+        width: min(320px, calc(100vw - 12px));
+        z-index: 8100;
+    }
+
+    #desktopNavbar.mobileOpen {
+        display: block;
+    }
+
+    #desktopNavbar ul {
+        font-size: 15px;
+    }
+
+    #desktopNavbar > ul {
+        padding: 4px 0;
+    }
+
+    #desktopNavbar > ul > li {
+        float: none;
+    }
+
+    #desktopNavbar > ul > li + li {
+        border-top: 1px solid var(--color-border-default);
+    }
+
+    #desktopNavbar > ul > li > a {
+        align-items: center;
+        display: flex;
+        font-weight: bold;
+        justify-content: space-between;
+        min-height: 44px;
+        padding: 10px 16px;
+    }
+
+    /* chevron */
+    #desktopNavbar > ul > li > a::after {
+        border: solid currentcolor;
+        border-width: 0 2px 2px 0;
+        content: "";
+        padding: 3px;
+        transform: rotate(45deg);
+        transition: transform 0.15s;
+    }
+
+    #desktopNavbar > ul > li.mobileOpen > a::after {
+        transform: rotate(-135deg);
+    }
+
+    #desktopNavbar li ul,
+    #desktopNavbar li:hover ul {
+        border: 0;
+        display: none;
+        left: auto;
+        position: static;
+    }
+
+    #desktopNavbar li.mobileOpen > ul {
+        display: block;
+        padding-bottom: 6px;
+    }
+
+    #desktopNavbar li ul li a,
+    #desktopNavbar li ul li div.anchor {
+        align-items: center;
+        display: flex;
+        min-height: 44px;
+        min-width: 0;
+        padding: 8px 16px 8px 46px;
+    }
+
+    #desktopNavbar li ul li div.anchor label {
+        align-items: center;
+        display: flex;
+        flex: 1;
+    }
+
+    #desktopNavbar .MyMenuIcon {
+        height: 20px;
+        margin: 0 10px 0 -32px;
+        width: 20px;
+    }
+
+    #desktopNavbar li.divider {
+        margin-top: 4px;
+        padding-top: 4px;
+    }
+
+    /* the desktop :hover colors stick on touch screens */
+    #desktopNavbar > ul > li > a:hover {
+        background-color: transparent;
+        color: var(--color-text-default);
+    }
+
+    #desktopNavbar > ul > li > a:active,
+    #desktopNavbar li ul li a:active {
+        background-color: var(--color-background-hover);
+        color: var(--color-text-white);
+    }
+
+    /* Backdrop behind the menu and the filters drawer */
+    #mobileBackdrop {
+        background-color: rgb(0 0 0 / 40%);
+        display: block;
+        inset: 0;
+        position: fixed;
+        z-index: 8000;
+    }
+
+    #mobileBackdrop.invisible {
+        display: none;
+    }
+
+    /* Columns -------------------------------------------------------------- */
+
+    #pageWrapper .column.rWidth {
+        width: 100% !important;
+    }
+
+    .columnHandle,
+    #filtersColumn_handle {
+        display: none !important;
+    }
+
+    /* Filters sidebar: off-canvas drawer */
+    #filtersColumn {
+        background-color: var(--color-background-primary);
+        bottom: 0;
+        box-shadow: 4px 0 24px rgb(0 0 0 / 35%);
+        display: block;
+        height: auto !important;
+        left: 0;
+        padding-bottom: env(safe-area-inset-bottom);
+        position: fixed;
+        top: 0;
+        transform: translateX(-105%);
+        transition:
+            transform 0.2s ease-out,
+            visibility 0.2s;
+        visibility: hidden;
+        width: min(300px, 85vw) !important;
+        z-index: 8050;
+    }
+
+    #filtersColumn.invisible:not(.mobileOpen) {
+        display: none;
+    }
+
+    #filtersColumn.mobileOpen {
+        transform: none;
+        visibility: visible;
+    }
+
+    #filtersColumn .panelWrapper,
+    #Filters {
+        height: 100% !important;
+    }
+
+    #Filters {
+        overscroll-behavior: contain;
+    }
+
+    #Filters .filterTitle {
+        padding-bottom: 10px;
+        padding-top: 12px;
+    }
+
+    #Filters ul.filterList span.link {
+        font-size: 14px;
+        min-height: 42px;
+        padding: 8px 12px;
+    }
+
+    #Filters ul img {
+        height: 20px;
+        width: 20px;
+    }
+
+    /* Panels --------------------------------------------------------------- */
+
+    .horizontalHandle {
+        height: 6px;
+    }
+
+    /* Transfers tab: torrent list on top, details below (60% when expanded) */
+    #mainColumn {
+        display: flex;
+        flex-direction: column;
+    }
+
+    #mainColumn.invisible {
+        display: none;
+    }
+
+    #transferList_wrapper {
+        display: flex;
+        flex: 1 1 0;
+        flex-direction: column;
+        min-height: 0;
+    }
+
+    #transferList {
+        flex: 1 1 auto;
+        height: auto !important;
+        min-height: 0;
+    }
+
+    #transferList_handle {
+        display: none !important;
+    }
+
+    #propertiesPanel_wrapper {
+        border-top: 1px solid var(--color-border-default);
+        display: flex;
+        flex: none;
+        flex-direction: column;
+    }
+
+    #propertiesPanel_wrapper.expanded {
+        height: 60%;
+    }
+
+    #propertiesPanel_wrapper.expanded #propertiesPanel {
+        flex: 1 1 auto;
+        height: auto !important;
+        min-height: 0;
+    }
+
+    #propertiesPanel_wrapper.collapsed #propertiesPanel {
+        height: 0 !important;
+    }
+
+    #propertiesPanel_header {
+        flex: none;
+        height: auto;
+        min-height: 40px;
+    }
+
+    #propertiesPanel_header .toolbox {
+        align-items: center;
+        display: flex;
+        height: 40px;
+        margin: 0;
+    }
+
+    #propertiesPanel_header .icon16 {
+        height: 24px !important;
+        margin: 0;
+        width: 32px !important;
+    }
+
+    #propertiesPanel_header .panel-headerContent {
+        padding-top: 0;
+    }
+
+    #propertiesTabs {
+        scrollbar-width: none;
+    }
+
+    #propertiesTabs li a {
+        border-radius: 8px;
+        margin: 4px 0 4px 4px;
+        min-height: 32px;
+        padding: 6px 9px;
+    }
+
+    #torrentFilesFilterToolbar {
+        float: none;
+        margin: 4px 6px 0;
+    }
+
+    #torrentFilesFilterInput {
+        height: 34px;
+        width: 100%;
+    }
+
+    /* General tab: label/value pairs in two columns instead of six */
+    #propGeneral table {
+        display: block;
+    }
+
+    #propGeneral tbody {
+        column-gap: 10px;
+        display: grid;
+        grid-template-columns: max-content minmax(0, 1fr);
+    }
+
+    #propGeneral tr {
+        display: contents;
+    }
+
+    #propGeneral td {
+        overflow-wrap: anywhere;
+        padding: 3px 0;
+    }
+
+    #propGeneral td.generalLabel {
+        white-space: normal;
+        width: auto;
+    }
+
+    #propGeneral fieldset {
+        margin: 6px 4px;
+        padding: 4px 8px 8px;
+    }
+
+    /* Tables --------------------------------------------------------------- */
+
+    .dynamicTableDiv {
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .dynamicTable td,
+    .dynamicTable th {
+        padding-bottom: 8px;
+        padding-top: 8px;
+    }
+
+    /* Torrents list: every row is shown as a card */
+    #torrentsTableDiv table.dynamicTable,
+    #torrentsTableDiv table.dynamicTable tbody {
+        display: block;
+        width: 100% !important;
+    }
+
+    #torrentsTableDiv table.dynamicTable colgroup {
+        display: none;
+    }
+
+    #torrentsTableDiv table.dynamicTable tbody tr {
+        align-items: center;
+        border-bottom: 1px solid var(--color-border-default);
+        column-gap: 12px;
+        display: flex;
+        flex-wrap: wrap;
+        overflow: hidden;
+        padding: 9px 12px 10px;
+        row-gap: 5px;
+        width: 100%;
+    }
+
+    #torrentsTableDiv table.dynamicTable tbody td {
+        display: none;
+        max-width: none !important;
+        padding: 0 !important;
+        width: auto !important;
+    }
+
+    #torrentsTableDiv table.dynamicTable tbody td:is(
+            [data-column="state_icon"],
+            [data-column="name"],
+            [data-column="progress"],
+            [data-column="status"],
+            [data-column="size"],
+            [data-column="dlspeed"],
+            [data-column="upspeed"],
+            [data-column="eta"],
+            [data-column="ratio"]
+        ) {
+        display: block;
+        flex: none;
+        font-size: 12px;
+        line-height: 16px;
+    }
+
+    #torrentsTableDiv td[data-column="state_icon"] {
+        order: 0;
+    }
+
+    #torrentsTableDiv td[data-column="state_icon"].invisible {
+        display: none !important;
+    }
+
+    #torrentsTableDiv td[data-column="name"] {
+        flex: 1 1 0 !important;
+        font-size: 14px !important;
+        font-weight: 600;
+        line-height: 19px !important;
+        min-width: 0;
+        order: 1;
+    }
+
+    #torrentsTableDiv td[data-column="name"] > span {
+        -webkit-box-orient: vertical;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+        overflow-wrap: anywhere;
+        white-space: normal;
+    }
+
+    #transferList #torrentsTableDiv td[data-column="name"] .stateIcon {
+        background-position: left 1px;
+        background-size: 17px;
+        margin-left: 0;
+        padding-left: 24px;
+    }
+
+    #torrentsTableDiv td[data-column="progress"] {
+        flex: 1 1 100% !important;
+        order: 2;
+    }
+
+    #torrentsTableDiv td[data-column="progress"] progress-bar {
+        border-radius: 3px;
+        overflow: hidden;
+    }
+
+    #torrentsTableDiv td[data-column="status"] {
+        font-weight: 600;
+        order: 3;
+    }
+
+    #torrentsTableDiv td[data-column="size"] {
+        order: 4;
+    }
+
+    #torrentsTableDiv td[data-column="ratio"] {
+        order: 5;
+    }
+
+    #torrentsTableDiv td[data-column="ratio"]::before {
+        content: "\2696\FE0E\00a0";
+        opacity: 0.7;
+    }
+
+    #torrentsTableDiv td[data-column="eta"] {
+        order: 6;
+    }
+
+    #torrentsTableDiv td[data-column="eta"]::before {
+        content: "\23F1\FE0E\00a0";
+        opacity: 0.7;
+    }
+
+    #torrentsTableDiv table.dynamicTable tbody td:is([data-column="dlspeed"], [data-column="upspeed"]) {
+        background-position: left center;
+        background-repeat: no-repeat;
+        background-size: 13px;
+        padding-left: 17px !important;
+    }
+
+    #torrentsTableDiv table.dynamicTable tbody td[data-column="dlspeed"] {
+        background-image: url("../images/downloading.svg");
+        margin-left: auto;
+        order: 7;
+    }
+
+    #torrentsTableDiv table.dynamicTable tbody td[data-column="upspeed"] {
+        background-image: url("../images/upload.svg");
+        order: 8;
+    }
+
+    #torrentsTableDiv tr.selected td:is([data-column="dlspeed"], [data-column="upspeed"]) {
+        filter: brightness(0) invert(1);
+    }
+
+    /* Headers of card lists: a scrollable row of sort buttons */
+    :is(#torrentsTableFixedHeaderDiv, #searchResultsTableFixedHeaderDiv, #logMessageTableFixedHeaderDiv) {
+        overflow: auto hidden;
+        scrollbar-width: none;
+    }
+
+    :is(#torrentsTableFixedHeaderDiv, #searchResultsTableFixedHeaderDiv, #logMessageTableFixedHeaderDiv) :is(table.dynamicTable, thead) {
+        display: block;
+        left: 0 !important;
+        width: max-content !important;
+    }
+
+    :is(#torrentsTableFixedHeaderDiv, #searchResultsTableFixedHeaderDiv, #logMessageTableFixedHeaderDiv) tr {
+        display: flex;
+        gap: 6px;
+        padding: 6px 8px;
+    }
+
+    :is(#torrentsTableFixedHeaderDiv, #searchResultsTableFixedHeaderDiv, #logMessageTableFixedHeaderDiv) th {
+        border: 1px solid var(--color-border-default);
+        border-radius: 999px;
+        flex: none;
+        font-size: 12px;
+        font-weight: normal;
+        max-width: 12em;
+        padding: 5px 12px !important;
+        width: auto !important;
+    }
+
+    :is(#torrentsTableFixedHeaderDiv, #searchResultsTableFixedHeaderDiv, #logMessageTableFixedHeaderDiv) th.invisible {
+        display: none;
+    }
+
+    :is(#torrentsTableFixedHeaderDiv, #searchResultsTableFixedHeaderDiv, #logMessageTableFixedHeaderDiv) th.sorted {
+        background-color: var(--color-background-blue);
+        background-image: url("../images/go-up.svg");
+        background-position: right 8px center;
+        background-size: 12px;
+        border-color: var(--color-background-blue);
+        color: var(--color-text-white);
+        font-weight: bold;
+        padding-right: 26px !important;
+    }
+
+    :is(#torrentsTableFixedHeaderDiv, #searchResultsTableFixedHeaderDiv, #logMessageTableFixedHeaderDiv) th.sorted.reverse {
+        background-image: url("../images/go-down.svg");
+    }
+
+    /* Search results and log messages are shown as cards as well */
+    :is(#searchResultsTableDiv, #logMessageTableDiv):not(.virtualList) :is(table.dynamicTable, tbody) {
+        display: block;
+        width: 100% !important;
+    }
+
+    :is(#searchResultsTableDiv, #logMessageTableDiv):not(.virtualList) colgroup {
+        display: none;
+    }
+
+    :is(#searchResultsTableDiv, #logMessageTableDiv):not(.virtualList) tbody tr {
+        align-items: center;
+        border-bottom: 1px solid var(--color-border-default);
+        column-gap: 12px;
+        display: flex;
+        flex-wrap: wrap;
+        padding: 8px 10px;
+        row-gap: 4px;
+    }
+
+    :is(#searchResultsTableDiv, #logMessageTableDiv):not(.virtualList) table.dynamicTable tbody td {
+        display: none;
+        font-size: 12px;
+        max-width: none !important;
+        padding: 0 !important;
+        width: auto !important;
+    }
+
+    #searchResultsTableDiv:not(.virtualList) table.dynamicTable tbody td:is(
+            [data-column="fileName"],
+            [data-column="fileSize"],
+            [data-column="nbSeeders"],
+            [data-column="nbLeechers"],
+            [data-column="engineName"],
+            [data-column="pubDate"]
+        ),
+    #logMessageTableDiv:not(.virtualList) table.dynamicTable tbody td:is(
+            [data-column="message"],
+            [data-column="timestamp"],
+            [data-column="type"]
+        ) {
+        display: block;
+    }
+
+    #searchResultsTableDiv table.dynamicTable tbody td[data-column="fileName"],
+    #logMessageTableDiv table.dynamicTable tbody td[data-column="message"] {
+        flex: 1 1 100%;
+        font-size: 14px;
+        overflow-wrap: anywhere;
+        white-space: normal;
+    }
+
+    #searchResultsTableDiv table.dynamicTable tbody td[data-column="fileName"] {
+        font-weight: 600;
+    }
+
+    #searchResultsTableDiv table.dynamicTable tbody td[data-column="nbSeeders"]::before {
+        color: var(--color-text-green);
+        content: "\25B2\00a0";
+    }
+
+    #searchResultsTableDiv table.dynamicTable tbody td[data-column="nbLeechers"]::before {
+        color: var(--color-text-red);
+        content: "\25BC\00a0";
+    }
+
+    #searchResultsTableDiv table.dynamicTable tbody td[data-column="engineName"] {
+        margin-left: auto;
+    }
+
+    #searchResultsTableDiv table.dynamicTable tbody td:is([data-column="engineName"], [data-column="pubDate"]),
+    #logMessageTableDiv table.dynamicTable tbody td:is([data-column="timestamp"], [data-column="type"]) {
+        opacity: 0.75;
+    }
+
+    /* Status bar ------------------------------------------------------------- */
+
+    #desktopFooterWrapper,
+    #desktopFooter {
+        height: 34px;
+    }
+
+    #desktopFooter {
+        align-items: center;
+        display: flex;
+        font-size: 12px;
+        padding: 0 4px;
+        scrollbar-width: none;
+    }
+
+    #desktopFooter table {
+        flex: none;
+        margin: 0 0 0 auto !important;
+    }
+
+    #desktopFooter td {
+        vertical-align: middle;
+    }
+
+    #desktopFooter td img {
+        vertical-align: middle;
+    }
+
+    td.speedLabel {
+        min-width: 0;
+        white-space: nowrap;
+    }
+
+    td.statusBarSeparator {
+        background-position: center;
+        width: 14px;
+    }
+
+    #freeSpaceOnDisk,
+    #DHTNodes,
+    #externalIPs {
+        font-size: 11px;
+    }
+
+    #error_div {
+        font-size: 12px;
+        max-width: 50vw;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    /* Context menus: bottom sheet --------------------------------------------- */
+
+    .contextMenu.mobileSheet {
+        border-radius: 14px 14px 0 0;
+        bottom: 0;
+        box-shadow: 0 -8px 30px rgb(0 0 0 / 35%);
+        left: 0 !important;
+        max-height: 75dvh !important;
+        overflow: hidden auto;
+        overscroll-behavior: contain;
+        padding: 6px 0 calc(6px + env(safe-area-inset-bottom));
+        position: fixed !important;
+        right: 0;
+        top: auto !important;
+        width: 100%;
+        z-index: 9000 !important;
+    }
+
+    .contextMenu.mobileSheet li a {
+        font-size: 15px;
+        min-height: 46px;
+        padding: 10px 40px 10px 16px;
+        white-space: normal;
+    }
+
+    .contextMenu.mobileSheet li img {
+        height: 20px;
+        margin-right: 12px;
+        width: 20px;
+    }
+
+    .contextMenu.mobileSheet li ul {
+        border: 0;
+        border-left: 3px solid var(--color-accent-blue);
+        left: auto;
+        margin: 0 0 4px 22px !important;
+        max-height: none !important;
+        position: static;
+        width: auto;
+    }
+
+    .contextMenu.mobileSheet li:not(.mobileOpen) > ul {
+        display: none;
+    }
+
+    .contextMenu.mobileSheet li:not(.disabled) .arrow-right::after {
+        right: 18px;
+        transform: rotate(45deg) translateY(-50%);
+    }
+
+    .contextMenu.mobileSheet li.mobileOpen > .arrow-right::after {
+        transform: rotate(-135deg) translateY(50%);
+    }
+
+    .contextMenu.mobileSheet li a:hover {
+        background-color: transparent;
+        color: var(--color-text-default);
+    }
+
+    .contextMenu.mobileSheet li a:hover img:not(.highlightedCategoryIcon) {
+        filter: none;
+    }
+
+    .contextMenu.mobileSheet li a:active {
+        background-color: var(--color-background-hover);
+        color: var(--color-text-white);
+    }
+
+    #contextMenuBackdrop {
+        background-color: rgb(0 0 0 / 35%);
+        inset: 0;
+        position: fixed;
+        z-index: 8900;
+    }
+
+    /* Windows ------------------------------------------------------------------ */
+
+    /*
+     * Big windows are shown full screen (see fitWindowToViewport() in
+     * scripts/mobile.js). Flexbox sizes their parts because toolbars are loaded
+     * asynchronously and change height after MochaUI computed the window size.
+     */
+    .mocha.mobileFullscreen {
+        border-radius: 0;
+        bottom: 0;
+        box-shadow: none;
+        height: auto !important;
+        left: 0 !important;
+        right: 0;
+        top: 0 !important;
+        width: auto !important;
+    }
+
+    .mocha.mobileFullscreen .mochaOverlay {
+        border-radius: 0;
+        display: flex;
+        flex-direction: column;
+        height: 100% !important;
+        width: 100% !important;
+    }
+
+    .mocha.mobileFullscreen .mochaTitlebar,
+    .mocha.mobileFullscreen .mochaToolbarWrapper {
+        border-radius: 0;
+        flex: none;
+        width: 100% !important;
+    }
+
+    .mocha.mobileFullscreen .mochaContentBorder {
+        display: flex;
+        flex: 1 1 0;
+        flex-direction: column;
+        min-height: 0;
+    }
+
+    .mocha.mobileFullscreen .mochaContentWrapper {
+        flex: 1 1 0;
+        height: auto !important;
+        min-height: 0;
+        width: 100% !important;
+    }
+
+    .mocha.mobileFullscreen .mochaContent:has(> .mochaIframe) {
+        height: 100%;
+    }
+
+    .mocha.mobileFullscreen .mochaIframe {
+        display: block;
+        height: 100% !important;
+    }
+
+    .mocha .mochaTitlebar h3 {
+        font-size: 15px;
+        line-height: 24px;
+        padding: 8px 52px 8px 14px;
+    }
+
+    .mocha .mochaTitlebar h3[style*="url"] {
+        background-position: 12px center !important;
+        background-size: 20px !important;
+        padding-left: 42px !important;
+    }
+
+    .mocha .mochaControls {
+        height: 40px;
+        right: 0;
+        top: 0;
+        width: auto !important;
+    }
+
+    .mocha .mochaMinimizeButton,
+    .mocha .mochaMaximizeButton {
+        display: none;
+    }
+
+    .mocha .mochaCloseButton {
+        height: 40px;
+        margin: 0;
+        width: 48px;
+    }
+
+    .mocha .mochaCloseButton::before,
+    .mocha .mochaCloseButton::after {
+        height: 2px;
+        width: 18px;
+    }
+
+    #modalOverlay {
+        height: 100% !important;
+    }
+}
+
+/* ------------------------------------------------------------------------
+ * Phone layout: tabs and windows of the main page
+ * --------------------------------------------------------------------- */
+
+@media (max-width: 767px), (pointer: coarse) and (max-height: 500px) {
+    /* Options window --------------------------------------------------------- */
+
+    #preferencesPage .PrefTab fieldset {
+        margin-left: 0;
+        margin-right: 0;
+        min-width: 0;
+    }
+
+    #preferencesPage .PrefTab fieldset.settings {
+        padding: 4px 8px 8px;
+    }
+
+    /* label/input tables: label and input side by side when they fit, stacked otherwise */
+    #preferencesPage .PrefTab table:not(#watched_folders_tab),
+    #preferencesPage .PrefTab table:not(#watched_folders_tab) > tbody {
+        display: block;
+        width: 100%;
+    }
+
+    #preferencesPage .PrefTab table:not(#watched_folders_tab) > tbody > tr {
+        align-items: center;
+        column-gap: 8px;
+        display: flex;
+        flex-wrap: wrap;
+        padding: 2px 0;
+    }
+
+    #preferencesPage .PrefTab table:not(#watched_folders_tab) > tbody > tr > td {
+        display: block;
+        max-width: 100%;
+        min-width: 0;
+        padding: 1px 0;
+    }
+
+    /* value cell: the input grows, a unit (KiB, min, ...) stays next to it */
+    #preferencesPage .PrefTab table:not(#watched_folders_tab) > tbody > tr > td:last-child:not(:first-child) {
+        align-items: center;
+        display: flex;
+        flex: 1 1 10em;
+        flex-wrap: wrap;
+        gap: 4px;
+    }
+
+    #preferencesPage .PrefTab input:not([type="checkbox"], [type="radio"]),
+    #preferencesPage .PrefTab textarea {
+        box-sizing: border-box;
+        max-width: 100%;
+    }
+
+    #preferencesPage .PrefTab td:last-child:not(:first-child) > input:not([type="checkbox"], [type="radio"], [type="button"]) {
+        flex: 1 1 6em;
+        min-width: 0;
+        width: auto !important;
+    }
+
+    #preferencesPage .PrefTab textarea {
+        width: 100%;
+    }
+
+    #preferencesPage .PrefTab select {
+        max-width: 100%;
+    }
+
+    #preferencesPage .PrefTab .formRow {
+        overflow-wrap: anywhere;
+    }
+
+    #watched_folders_tab {
+        table-layout: fixed;
+        width: 100%;
+    }
+
+    #watched_folders_tab :is(input, select, .select-watched-folder-editable) {
+        max-width: 100%;
+        width: 100%;
+    }
+
+    #watched_folders_tab .select-watched-folder-editable select {
+        width: 100%;
+    }
+
+    #preferencesTabs {
+        scrollbar-width: none;
+    }
+
+    /* Search tab -------------------------------------------------------------- */
+
+    #searchResults {
+        display: flex;
+        flex-direction: column;
+        padding: 0 8px;
+    }
+
+    #searchResultsHeader {
+        flex: none;
+        height: auto;
+        overflow: visible;
+    }
+
+    #searchResultsHeaderContainer {
+        gap: 6px;
+        height: auto;
+        margin: 8px 0 6px;
+    }
+
+    #searchPattern {
+        flex: 1 1 100%;
+        height: 38px;
+        width: auto;
+    }
+
+    #categorySelect,
+    #pluginsSelect {
+        flex: 1 1 0;
+        height: 38px;
+        min-width: 0;
+        width: auto;
+    }
+
+    #startSearchButton {
+        flex: none;
+        height: 38px;
+    }
+
+    #searchResultsNoPlugins,
+    #searchResultsNoSearches {
+        flex: 1 1 auto;
+        height: auto;
+        min-height: 0;
+        padding: 0 8px;
+    }
+
+    #searchTabsToolbar {
+        flex: none;
+    }
+
+    #searchResultsFilters {
+        align-items: center;
+        display: flex;
+        flex: none;
+        flex-wrap: wrap;
+        gap: 6px 8px;
+        height: auto;
+        overflow: visible;
+        padding: 6px 0;
+    }
+
+    #searchResultsFilters.invisible {
+        display: none;
+    }
+
+    #searchInNameFilter {
+        flex: 1 1 100%;
+        height: 36px;
+        margin: 0;
+        width: auto;
+    }
+
+    #searchResultsFilters > div {
+        align-items: center;
+        display: flex !important;
+        flex-wrap: wrap;
+        float: none !important;
+        gap: 6px;
+    }
+
+    #searchResultsFilters label {
+        margin-left: 0 !important;
+    }
+
+    #searchResultsGranularFilters {
+        align-items: center;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    #searchResultsGranularFiltersWarning {
+        display: none;
+    }
+
+    #searchResultsTableContainer {
+        flex: 1 1 0;
+        height: auto;
+        min-height: 0;
+    }
+
+    #searchResultsTableContainer.invisible {
+        display: none;
+    }
+
+    #searchResults > div:last-child {
+        flex: none;
+        height: auto !important;
+        padding: 6px 0 !important;
+    }
+
+    /* RSS tab: feeds, articles and details stacked ------------------------------ */
+
+    #rssView {
+        height: 100%;
+        padding: 8px 8px 0;
+    }
+
+    #rssButtonBar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        height: auto;
+        overflow: visible;
+        padding-bottom: 6px;
+    }
+
+    #rssButtonBar button {
+        min-height: 36px;
+    }
+
+    #rssButtonBar #rssFilterToolbar {
+        display: flex;
+        flex: 1 1 100%;
+        float: none;
+        gap: 6px;
+        margin: 0;
+    }
+
+    #rssButtonBar #rssFilterInput {
+        flex: 1 1 0;
+        min-width: 0;
+        width: 0;
+    }
+
+    #rssContentView {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding-bottom: 8px;
+    }
+
+    #leftRssColumn,
+    #centerRssColumn,
+    #rightRssColumn {
+        flex: none;
+        float: none;
+        height: auto;
+        margin: 0;
+        width: 100%;
+    }
+
+    #rssFeedTableDiv {
+        height: 28dvh;
+    }
+
+    #rssArticleTableDiv {
+        height: 36dvh;
+    }
+
+    #rssArticleTableDiv td {
+        white-space: normal;
+    }
+
+    #rssDetailsView {
+        height: auto;
+        min-height: 60dvh;
+    }
+
+    #rssDescription {
+        min-height: 50dvh;
+    }
+
+    /* RSS Downloader window ---------------------------------------------------- */
+
+    #rssdownloaderpage_content {
+        height: auto;
+    }
+
+    #RssDownloader {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        height: auto;
+    }
+
+    #leftRssDownloaderColumn,
+    #centerRssDownloaderColumn,
+    #rightRssDownloaderColumn {
+        float: none;
+        width: 100%;
+    }
+
+    #topMenuBar {
+        height: auto;
+        padding-bottom: 4px;
+    }
+
+    #topMenuBar .imageButton {
+        height: 34px;
+        width: 40px;
+    }
+
+    #rulesTable {
+        height: 25dvh;
+    }
+
+    #RssDownloader .noWrap {
+        white-space: normal;
+    }
+
+    #RssDownloader table td:first-child {
+        width: 40%;
+    }
+
+    #rssDownloaderFeeds {
+        height: 30dvh;
+    }
+
+    #rssDownloaderArticlesTable {
+        height: 40dvh;
+    }
+
+    #lastMatchDiv {
+        float: none;
+        margin: 4px 0;
+    }
+
+    /* Log tab ------------------------------------------------------------------ */
+
+    #logView {
+        padding: 0 8px;
+    }
+
+    #logTopBar {
+        margin-top: 8px;
+    }
+
+    #logFilterBar {
+        gap: 6px;
+        height: auto;
+    }
+
+    #logFilterBar > label {
+        flex: none;
+    }
+
+    #logFilterBar .vsb-main {
+        flex: 1 1 auto;
+    }
+
+    #filterTextInput {
+        flex: 1 1 0;
+        height: 36px;
+        margin: 0;
+        min-width: 8em;
+        width: 0;
+    }
+
+    #logFilterSummary {
+        margin: 6px 0;
+    }
+
+    /* Rename files window: options, file list and buttons stacked --------------- */
+
+    #multiRenamePage_content > div {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding: 0 !important;
+    }
+
+    #multiRenamePage_content > div > div:first-child {
+        float: none !important;
+        height: auto !important;
+        width: auto !important;
+    }
+
+    #multiRenamePage_content #torrentFiles {
+        height: 45dvh !important;
+        inset: auto !important;
+        margin: 0 !important;
+        order: 1;
+        position: relative !important;
+    }
+
+    #multiRenamePage_content #operation_btns {
+        margin: 0 !important;
+        order: 2;
+        position: static !important;
+        width: auto !important;
+    }
+
+    /* Cookies window ------------------------------------------------------------ */
+
+    #cookiesPage_content {
+        overflow-x: auto;
+    }
+
+    /* About window -------------------------------------------------------------- */
+
+    #aboutpage_content :is(table, pre) {
+        max-width: 100%;
+    }
+
+    #aboutpage_content pre {
+        white-space: pre-wrap;
+    }
+}
+
+/* ------------------------------------------------------------------------
+ * Very small phones
+ * --------------------------------------------------------------------- */
+
+@media (max-width: 479px) {
+    /* only the selected main window tab shows its name */
+    #mainWindowTabsList li:not(.selected) a {
+        font-size: 0;
+        gap: 0;
+    }
+}

@@ -103,6 +103,8 @@ window.qBittorrent.DynamicTable ??= (() => {
             if (!this.useVirtualList)
                 return;
             this.table.style.position = "relative";
+            // card layouts of css/mobile.css need a fixed row height with the virtual list
+            this.dynamicTableDiv.classList.add("virtualList");
 
             this.renderedOffset = this.dynamicTableDiv.scrollTop;
             this.renderedHeight = this.dynamicTableDiv.offsetHeight;
@@ -167,16 +169,38 @@ window.qBittorrent.DynamicTable ??= (() => {
                 }
             }, true);
 
+            // Select the touched row on long press (before the context menu opens),
+            // but not while the list is being scrolled. Taps are handled by the click event.
+            let touchSelectTimer = -1;
+            let touchStartPoint = null;
+            const cancelTouchSelect = () => {
+                clearTimeout(touchSelectTimer);
+                touchStartPoint = null;
+            };
             this.dynamicTableDiv.addEventListener("touchstart", (e) => {
+                cancelTouchSelect();
                 const tr = e.target.closest("tr");
-                if (!tr)
+                if (!tr || (e.touches.length !== 1))
                     return;
 
-                if (!this.isRowSelected(tr.rowId)) {
-                    this.deselectAll();
-                    this.selectRow(tr.rowId);
-                }
+                touchStartPoint = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+                touchSelectTimer = setTimeout(() => {
+                    if (!this.isRowSelected(tr.rowId)) {
+                        this.deselectAll();
+                        this.selectRow(tr.rowId);
+                    }
+                }, 300);
             }, { passive: true });
+            this.dynamicTableDiv.addEventListener("touchmove", (e) => {
+                if (touchStartPoint === null)
+                    return;
+
+                const touch = e.touches[0];
+                if ((Math.abs(touch.clientX - touchStartPoint.x) > 10) || (Math.abs(touch.clientY - touchStartPoint.y) > 10))
+                    cancelTouchSelect();
+            }, { passive: true });
+            this.dynamicTableDiv.addEventListener("touchend", cancelTouchSelect, { passive: true });
+            this.dynamicTableDiv.addEventListener("touchcancel", cancelTouchSelect, { passive: true });
 
             this.dynamicTableDiv.addEventListener("keydown", (e) => {
                 const tr = e.target.closest("tr");
@@ -1017,6 +1041,8 @@ window.qBittorrent.DynamicTable ??= (() => {
 
             for (let k = 0; k < this.columns.length; ++k) {
                 const td = document.createElement("td");
+                // used by the card layout of css/mobile.css
+                td.dataset.column = this.columns[k].name;
                 if ((this.columns[k].visible === "0") || this.columns[k].force_hide)
                     td.classList.add("invisible");
                 tr.append(td);

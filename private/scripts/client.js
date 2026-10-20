@@ -411,6 +411,10 @@ window.addEventListener("DOMContentLoaded", async (event) => {
     let isRssPanelLoaded = false;
 
     const saveColumnSizes = () => {
+        // the phone layout uses its own sizes, don't overwrite the desktop ones
+        if (window.qBittorrent.Mobile?.isMobileLayout())
+            return;
+
         const filters_width = document.getElementById("Filters").getSize().x;
         localPreferences.set("filters_width", filters_width);
         const properties_height_rel = document.getElementById("propertiesPanel").getSize().y / Window.getSize().y;
@@ -1837,7 +1841,9 @@ window.addEventListener("DOMContentLoaded", async (event) => {
             const lastUsedTab = localPreferences.get("selected_properties_tab", "propGeneralLink");
             selectTab(lastUsedTab);
 
-            const startCollapsed = localPreferences.get("properties_panel_collapsed", "false") === "true";
+            // on small screens the torrent list gets all the space until a details tab is opened
+            const collapsedByDefault = window.qBittorrent.Mobile?.isMobileLayout() ?? false;
+            const startCollapsed = localPreferences.get("properties_panel_collapsed", collapsedByDefault.toString()) === "true";
             if (startCollapsed)
                 togglePropertiesPanel();
 

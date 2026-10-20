@@ -1,0 +1,400 @@
+/*
+ * MIT License
+ * Copyright (C) 2026  Mobile-qbit contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
+/*
+ * Glue code for the small screen ("phone") layout defined in css/mobile.css.
+ *
+ * Most of the responsive behaviour is pure CSS. This script only handles the
+ * parts that MochaUI computes in JavaScript or that need interaction:
+ *  - the menu button and the filters drawer of the phone layout
+ *  - fitting MochaUI windows (dialogs) into the viewport
+ *  - row height of the torrents table when the virtual list is used
+ */
+
+"use strict";
+
+window.qBittorrent ??= {};
+window.qBittorrent.Mobile ??= (() => {
+    const exports = () => {
+        return {
+            isMobileLayout: isMobileLayout,
+            onLayoutChange: onLayoutChange,
+            closeMenus: closeMenus,
+            fitWindowToViewport: fitWindowToViewport
+        };
+    };
+
+    // Keep in sync with the phone layout media queries in css/mobile.css
+    const mobileLayoutQuery = window.matchMedia("(max-width: 767px), (pointer: coarse) and (max-height: 500px)");
+    const isMobileLayout = () => mobileLayoutQuery.matches;
+
+    const layoutChangeListeners = [];
+    const onLayoutChange = (listener) => {
+        layoutChangeListeners.push(listener);
+    };
+
+    // Height of the window title bar in the phone layout, large enough for touch
+    const WINDOW_HEADER_HEIGHT = 40;
+    // Space kept around windows that are not shown full screen
+    const WINDOW_MARGIN = 8;
+    // Height of a torrent "card" in the phone layout, used by the virtual list
+    const TORRENT_CARD_HEIGHT = 84;
+
+    /* Menus and drawer */
+
+    const getElements = () => {
+        return {
+            backdrop: document.getElementById("mobileBackdrop"),
+            filtersButton: document.getElementById("mobileFiltersButton"),
+            filtersColumn: document.getElementById("filtersColumn"),
+            menuButton: document.getElementById("mobileMenuButton"),
+            navbar: document.getElementById("desktopNavbar")
+        };
+    };
+
+    const updateBackdrop = () => {
+        const { backdrop, filtersColumn, navbar } = getElements();
+        const isOpen = navbar.classList.contains("mobileOpen") || (filtersColumn?.classList.contains("mobileOpen") ?? false);
+        backdrop.classList.toggle("invisible", !isOpen);
+        document.documentElement.classList.toggle("mobileOverlayOpen", isOpen);
+    };
+
+    const closeMenus = () => {
+        const { filtersButton, filtersColumn, menuButton, navbar } = getElements();
+        if (navbar === null)
+            return;
+
+        navbar.classList.remove("mobileOpen");
+        for (const item of navbar.querySelectorAll(".mobileOpen"))
+            item.classList.remove("mobileOpen");
+        menuButton.setAttribute("aria-expanded", "false");
+
+        filtersColumn?.classList.remove("mobileOpen");
+        filtersButton.setAttribute("aria-expanded", "false");
+
+        updateBackdrop();
+    };
+
+    const toggleMenu = () => {
+        const { menuButton, navbar } = getElements();
+        const open = !navbar.classList.contains("mobileOpen");
+        closeMenus();
+        if (open) {
+            navbar.classList.add("mobileOpen");
+            navbar.scrollTop = 0;
+            menuButton.setAttribute("aria-expanded", "true");
+        }
+        updateBackdrop();
+    };
+
+    const toggleFiltersDrawer = () => {
+        const { filtersButton, filtersColumn } = getElements();
+        if (!filtersColumn)
+            return;
+
+        const open = !filtersColumn.classList.contains("mobileOpen");
+        closeMenus();
+        if (open) {
+            filtersColumn.classList.add("mobileOpen");
+            filtersButton.setAttribute("aria-expanded", "true");
+        }
+        updateBackdrop();
+    };
+
+    const setupMenus = () => {
+        const { backdrop, filtersButton, menuButton, navbar } = getElements();
+
+        menuButton.addEventListener("click", (event) => {
+            event.stopPropagation();
+            toggleMenu();
+        });
+
+        filtersButton.addEventListener("click", (event) => {
+            event.stopPropagation();
+            toggleFiltersDrawer();
+        });
+
+        backdrop.addEventListener("click", (event) => {
+            closeMenus();
+        });
+
+        // In the phone layout the top level menu entries (File, Edit, ...) work as an accordion
+        for (const anchor of navbar.querySelectorAll(":scope > ul > li > a")) {
+            anchor.addEventListener("click", (event) => {
+                if (!isMobileLayout())
+                    return;
+
+                const item = anchor.parentElement;
+                const open = !item.classList.contains("mobileOpen");
+                for (const sibling of item.parentElement.children)
+                    sibling.classList.remove("mobileOpen");
+                item.classList.toggle("mobileOpen", open);
+            });
+        }
+
+        // Close the menu once an entry was activated. Capture phase because
+        // most entries stop the propagation of the click event.
+        navbar.addEventListener("click", (event) => {
+            if (!isMobileLayout() || !navbar.classList.contains("mobileOpen"))
+                return;
+            if (event.target.closest("li li") === null)
+                return;
+
+            // let the entry's own click handler run first (e.g. opening the file chooser)
+            setTimeout(closeMenus, 0);
+        }, true);
+
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "Escape")
+                closeMenus();
+        });
+    };
+
+    const setupFiltersDrawer = () => {
+        // Selecting a filter closes the drawer so the result is visible right away.
+        // The filters column is created asynchronously, hence the event delegation.
+        document.addEventListener("click", (event) => {
+            if (!isMobileLayout())
+                return;
+
+            const filtersColumn = event.target.closest("#filtersColumn.mobileOpen");
+            if (filtersColumn === null)
+                return;
+            if (event.target.closest(".categoryToggle, .filterTitle") !== null)
+                return;
+            if (event.target.closest(".filterList li") === null)
+                return;
+
+            setTimeout(closeMenus, 150);
+        });
+    };
+
+    /* MochaUI windows */
+
+    const getWindowChromeHeight = (instance) => {
+        const { options } = instance;
+        let height = options.headerHeight + options.footerHeight;
+        if (instance.contentBorderEl) {
+            const style = window.getComputedStyle(instance.contentBorderEl);
+            height += Number.parseFloat(style.marginTop) + Number.parseFloat(style.marginBottom)
+                + Number.parseFloat(style.borderTopWidth) + Number.parseFloat(style.borderBottomWidth);
+        }
+        for (const toolbar of [instance.toolbarWrapperEl, instance.toolbar2WrapperEl]) {
+            if (toolbar)
+                height += toolbar.offsetHeight;
+        }
+        return height;
+    };
+
+    const isWindowShown = (instance) => {
+        return (instance.windowEl !== undefined)
+            && document.body.contains(instance.windowEl)
+            && !instance.windowEl.classList.contains("windowClosed")
+            && !instance.isMinimized;
+    };
+
+    const fitWindowToViewport = (instance) => {
+        if (!instance?.contentWrapperEl || !isWindowShown(instance))
+            return;
+
+        const { contentWrapperEl, windowEl } = instance;
+        const requested = instance.mobileRequestedSize;
+        const viewportWidth = document.documentElement.clientWidth;
+        const viewportHeight = window.innerHeight;
+
+        if (!isMobileLayout()) {
+            if (!instance.isMobileFitted)
+                return;
+
+            // back to the regular layout: restore the original size
+            instance.isMobileFitted = false;
+            windowEl.classList.remove("mobileFullscreen");
+            contentWrapperEl.style.width = `${Math.min(requested.width, (viewportWidth - 20))}px`;
+            contentWrapperEl.style.height = `${Math.min(requested.height, (viewportHeight - getWindowChromeHeight(instance) - 20))}px`;
+            instance.drawWindow();
+            MUI.centerWindow(windowEl);
+            return;
+        }
+
+        const chromeHeight = getWindowChromeHeight(instance);
+        const availableWidth = viewportWidth - (2 * WINDOW_MARGIN);
+        const availableHeight = viewportHeight - chromeHeight - (2 * WINDOW_MARGIN);
+
+        // Big windows (options, add torrent, ...) are shown full screen,
+        // small ones (prompts, confirmations) are centered.
+        // Most windows were already narrowed down to the viewport width by
+        // qBittorrent.Dialog.limitWidthToViewport(), so such a width counts as big.
+        const isWide = requested.width >= (availableWidth - 4);
+        const isFullscreen = (requested.width > (availableWidth * 1.5))
+            || (requested.height > (availableHeight * 0.75))
+            || (isWide && (requested.height >= (availableHeight * 0.4)));
+
+        // Inputs are bigger in the phone layout, let small dialogs grow to fit their content
+        let contentHeight = requested.height;
+        try {
+            const frameDocument = instance.iframeEl?.contentDocument;
+            if ((frameDocument?.readyState === "complete") && (frameDocument.documentElement !== null))
+                contentHeight = Math.max(contentHeight, frameDocument.documentElement.scrollHeight);
+        }
+        catch {
+            // not accessible, keep the requested height
+        }
+
+        let width;
+        let height;
+        let left;
+        let top;
+        if (isFullscreen) {
+            width = viewportWidth;
+            height = viewportHeight - chromeHeight;
+            left = 0;
+            top = 0;
+        }
+        else {
+            width = Math.min(requested.width, availableWidth);
+            height = Math.min(contentHeight, availableHeight);
+            left = Math.round((viewportWidth - width) / 2);
+            top = Math.max(WINDOW_MARGIN, Math.round((viewportHeight - height - chromeHeight) / 3));
+        }
+
+        instance.isMobileFitted = true;
+        windowEl.classList.toggle("mobileFullscreen", isFullscreen);
+        contentWrapperEl.style.width = `${Math.max(width, 0)}px`;
+        contentWrapperEl.style.height = `${Math.max(height, 0)}px`;
+        instance.drawWindow();
+        windowEl.style.left = `${left}px`;
+        windowEl.style.top = `${top}px`;
+    };
+
+    const fitAllWindows = () => {
+        for (const instance of Object.values(MUI.Windows.instances))
+            fitWindowToViewport(instance);
+    };
+
+    const patchMochaWindows = () => {
+        const newWindow = MUI.Window.prototype.newWindow;
+        MUI.Window.prototype.newWindow = function(...args) {
+            const { options } = this;
+            // MooTools' Hash.get() returns null for unknown keys
+            const isNew = (MUI.Windows.instances.get(options.id) ?? null) === null;
+
+            if (isNew) {
+                this.mobileRequestedSize = {
+                    width: options.width,
+                    height: options.height
+                };
+
+                if (isMobileLayout()) {
+                    // touch friendly title bar, no dragging or resizing on small screens
+                    if (options.headerHeight > 0)
+                        options.headerHeight = WINDOW_HEADER_HEIGHT;
+                    options.footerHeight = 0;
+                    options.draggable = false;
+                    options.resizable = false;
+                    options.maximizable = false;
+                }
+            }
+
+            const result = newWindow.apply(this, args);
+
+            if (isNew && (MUI.Windows.instances.get(options.id) === this)) {
+                fitWindowToViewport(this);
+                // dialogs loaded in an iframe may need more room once their content is known
+                this.iframeEl?.addEventListener("load", () => {
+                    if (isMobileLayout())
+                        fitWindowToViewport(this);
+                });
+            }
+
+            return result;
+        };
+    };
+
+    /* Torrents table */
+
+    const updateTorrentsTableRowHeight = (table) => {
+        if (!table?.useVirtualList || (table.rowHeight === undefined))
+            return;
+
+        table.desktopRowHeight ??= table.rowHeight;
+        const rowHeight = isMobileLayout() ? TORRENT_CARD_HEIGHT : table.desktopRowHeight;
+        if (table.rowHeight === rowHeight)
+            return;
+
+        table.rowHeight = rowHeight;
+        table.rerender();
+    };
+
+    const patchTorrentsTable = () => {
+        const TorrentsTable = window.qBittorrent.DynamicTable?.TorrentsTable;
+        if (TorrentsTable === undefined)
+            return;
+
+        const setup = TorrentsTable.prototype.setup;
+        TorrentsTable.prototype.setup = function(...args) {
+            const result = setup.apply(this, args);
+            updateTorrentsTableRowHeight(this);
+            return result;
+        };
+        onLayoutChange(() => updateTorrentsTableRowHeight(window.torrentsTable));
+    };
+
+    /* Initialization */
+
+    const init = () => {
+        if (window.MUI?.Window !== undefined)
+            patchMochaWindows();
+        patchTorrentsTable();
+
+        mobileLayoutQuery.addEventListener("change", () => {
+            for (const listener of layoutChangeListeners)
+                listener(isMobileLayout());
+        });
+        onLayoutChange(() => {
+            closeMenus();
+            if (window.MUI?.Windows !== undefined)
+                fitAllWindows();
+        });
+
+        let resizeTimer = -1;
+        window.addEventListener("resize", () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                if (isMobileLayout() && (window.MUI?.Windows !== undefined))
+                    fitAllWindows();
+            }, 150);
+        });
+
+        if (document.getElementById("mobileBar") !== null) {
+            window.addEventListener("DOMContentLoaded", () => {
+                setupMenus();
+                setupFiltersDrawer();
+            });
+        }
+    };
+
+    init();
+
+    return exports();
+})();
+Object.freeze(window.qBittorrent.Mobile);
