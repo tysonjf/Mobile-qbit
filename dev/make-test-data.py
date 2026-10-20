@@ -3,7 +3,7 @@
 # Fills the qbittorrent-nox started by start-qbittorrent.sh with test data:
 # torrents in various states (seeding, stalled, stopped, partially downloaded),
 # categories, tags, web seeds, blocked IPs in the log and a dummy search plugin
-# that returns results offline.
+# that returns results offline, and RSS feeds with articles.
 # If a second qbittorrent-nox runs on port 8081 (the "peer", see dev/README.md),
 # it slowly downloads a torrent from the first one, which then has a peer.
 # It also writes an extra torrent file that is not added, for "Add torrent" tests.
@@ -14,15 +14,18 @@
 # Usage: python3 make-test-data.py [WebUI URL, default http://127.0.0.1:8080]
 
 import hashlib
+import http.server
 import json
 import os
 import random
 import sys
+import threading
 import time
 import urllib.error
 import urllib.parse
 import urllib.request
 import uuid
+from email.utils import formatdate
 from pathlib import Path
 
 DEV_DIR = Path(__file__).resolve().parent
@@ -58,6 +61,29 @@ WEB_SEEDS = {"Sintel Open Movie Collection": ["https://download.example.org/sint
 PEER_API = "http://127.0.0.1:8081/api/v2"
 PEER_TORRENT = "Big Buck Bunny (2008) 1080p"
 QBT_ADDRESS = "127.0.0.1:56881"
+# RSS tab: feed path (folder\feed) and its articles (title, description). A local
+# server on RSS_PORT serves the feeds while this script runs; qBittorrent keeps
+# the articles it fetched, so later refreshes of the feeds fail (rerun the script).
+RSS_PORT = 8099
+RSS_FEEDS = {
+    "Linux ISOs": [
+        ("Fedora Workstation 43 released", "<p>The new release brings GNOME 49 and a faster installer.</p>"
+         "<ul><li>Kernel 6.17</li><li>Firefox 144</li><li>Python 3.14</li></ul>"),
+        ("Debian 13.2 point release", "<p>This point release fixes security issues and a few serious problems.</p>"),
+        ("Arch Linux 2026.10.01 ISO", "<p>The monthly ISO, with kernel 6.17.1.</p>"),
+        ("Ubuntu 26.04 LTS beta: a fairly long article title that has to wrap on a phone",
+         "<p>" + " ".join(["Testing images are available for every flavour. Please report bugs on Launchpad."] * 12)
+         + "</p><p>The final release is planned for April.</p>"),
+    ],
+    "Videos\\Open Movies": [
+        ("Sintel (2010) 4K remaster", "<p>The Blender Foundation published a 4K version of Sintel.</p>"),
+        ("Tears of Steel: making of", "<p>Two hours of behind the scenes footage.</p>"),
+        ("Big Buck Bunny 3D", "<p>Stereoscopic version, side by side.</p>"),
+    ],
+    "Videos\\Example Series": [
+        (f"Example Series S01E{i:02d} 1080p WEB", f"<p>Episode {i} of the first season.</p>") for i in range(1, 9)
+    ],
+}
 EXTRA_TORRENT = ("Example Series (2026) Complete 1080p WEB",
                  [(f"Season 1/Episode {i:02d} - A Fairly Long Episode Title.mkv", 300_000 + (i * 1000)) for i in range(1, 9)]
                  + [("Extras/Behind the scenes.mp4", 200_000), ("Subtitles/en.srt", 4_000), ("cover.jpg", 30_000)])
@@ -170,6 +196,67 @@ def start_peer_download(torrent_path) -> bool:
     return True
 
 
+def rss_feed_xml(path, articles) -> bytes:
+    items = ""
+    for number, (title, description) in enumerate(articles):
+        link = f"https://news.example.org/{urllib.parse.quote(path)}/{number}"
+        info_hash = hashlib.sha1(link.encode()).hexdigest()
+        items += (f"<item><title>{title}</title><link>{link}</link><guid>{link}</guid>"
+                  f"<pubDate>{formatdate(time.time() - (number * 86400) - 3600, usegmt=True)}</pubDate>"
+                  f"<author>news@example.org (Example News)</author>"
+                  f"<description><![CDATA[{description}]]></description>"
+                  f'<enclosure url="magnet:?xt=urn:btih:{info_hash}&amp;dn={urllib.parse.quote(title)}"'
+                  f' type="application/x-bittorrent"/></item>')
+    return (f'<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>{path}</title>'
+            f"<link>https://news.example.org/</link><description>{path}</description>{items}</channel></rss>").encode()
+
+
+def add_rss_feeds() -> None:
+    feeds = {f"/{index}.xml": rss_feed_xml(path, articles) for index, (path, articles) in enumerate(RSS_FEEDS.items())}
+
+    class Handler(http.server.BaseHTTPRequestHandler):
+        def do_GET(self):
+            body = feeds.get(self.path)
+            self.send_response(200 if body else 404)
+            self.send_header("Content-Type", "application/rss+xml")
+            self.end_headers()
+            self.wfile.write(body or b"")
+
+        def log_message(self, *args):
+            pass
+
+    server = http.server.ThreadingHTTPServer(("127.0.0.1", RSS_PORT), Handler)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    try:
+        post("/app/setPreferences", {"json": json.dumps({"rss_processing_enabled": True,
+                                                         "rss_refresh_interval": 1440})})
+        for index, path in enumerate(RSS_FEEDS):
+            if "\\" in path:
+                post_new("/rss/addFolder", {"path": path.rsplit("\\", 1)[0]})
+            post_new("/rss/addFeed", {"url": f"http://127.0.0.1:{RSS_PORT}/{index}.xml", "path": path})
+            post("/rss/refreshItem", {"itemPath": path})
+
+        def article_count() -> int:
+            def count(item) -> int:
+                if "articles" in item:
+                    return len(item["articles"])
+                return sum(count(child) for child in item.values() if isinstance(child, dict))
+            return count(get("/rss/items?withData=true"))
+
+        expected = sum(len(articles) for articles in RSS_FEEDS.values())
+        for _ in range(30):
+            if article_count() >= expected:
+                break
+            time.sleep(1)
+        # some articles read, the others stay unread
+        items = get("/rss/items?withData=true")
+        first_feed = items["Linux ISOs"]
+        for article in first_feed["articles"][2:]:
+            post("/rss/markAsRead", {"itemPath": "Linux ISOs", "articleId": article["id"]})
+    finally:
+        server.shutdown()
+
+
 def main() -> None:
     random.seed(42)
     DOWNLOADS_DIR.mkdir(parents=True, exist_ok=True)
@@ -202,6 +289,9 @@ def main() -> None:
     post("/search/installPlugin", {"sources": str(DEV_DIR / "search-plugin" / "dummytest.py")})
     time.sleep(2)
     print("installed the dummy search plugin")
+
+    add_rss_feeds()
+    print(f"added {len(RSS_FEEDS)} RSS feeds (RSS tab)")
 
 
 if __name__ == "__main__":
