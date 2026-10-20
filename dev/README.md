@@ -61,7 +61,7 @@ are documented at the top of [`tour.js`](tour.js). The groups:
 
 | File | Covers |
 | --- | --- |
-| `main.json` | torrent list, menu, filters drawer, long press menu (and what a long press may select), ⋮ button, selection mode, sort chips, details tabs |
+| `main.json` | torrent list, menu, filters drawer, long press menu (and what a long press may select), ⋮ button, selection mode, sort chips, details tabs (also at full height) |
 | `torrent-dialogs.json` | add torrent (file / link), remove, limits, location, rename, categories, tags, trackers, peers, web seeds |
 | `views.json` | Search (with results, their download and ⋮ buttons), search plugins, RSS, RSS Downloader, Log (General and Blocked IPs) |
 | `other-windows.json` | About, Statistics, Torrent Creator, Cookies, API key, logout |

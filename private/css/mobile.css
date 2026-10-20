@@ -18,6 +18,7 @@
 /* Elements that only exist for the phone layout and touch screens */
 #mobileBar,
 #mobileBackdrop,
+#mobileDetailsMaximize,
 #mobileSelectButton,
 #mobileSelectionBar,
 .mobileMoreCell,
@@ -834,6 +835,30 @@
 
     #propertiesPanel_wrapper.collapsed #propertiesPanel {
         height: 0 !important;
+    }
+
+    /* full height details (button next to the arrow, mobile.js): no torrent list and filter */
+    #mainColumn.mobileDetailsMaximized #transferList_wrapper,
+    #desktop:has(#mainColumn.mobileDetailsMaximized:not(.invisible))
+        :is(#torrentsFilterToolbar, #mobileSelectionBar) {
+        display: none;
+    }
+
+    #mainColumn.mobileDetailsMaximized #propertiesPanel_wrapper.expanded {
+        border-top: none;
+        flex: 1 1 0;
+        height: auto;
+        min-height: 0;
+    }
+
+    #mobileDetailsMaximize {
+        display: flex;
+        flex: none;
+    }
+
+    #mobileDetailsMaximize img {
+        height: 22px;
+        width: 22px;
     }
 
     /* collapse button on the right of the tabs, files filter below them */
