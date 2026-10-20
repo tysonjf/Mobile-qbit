@@ -115,7 +115,12 @@ const loadPlaywright = () => {
                     if (step.files)
                         await page.setInputFiles(step.files[0], step.files.slice(1).map(expand));
                     if (step.longpress) {
-                        const box = await (await page.$(step.longpress)).boundingBox();
+                        // lists that refresh (e.g. the Torrent Creator) can replace the element meanwhile
+                        let box = null;
+                        for (let attempt = 0; (box === null) && (attempt < 3); ++attempt)
+                            box = await page.locator(step.longpress).first().boundingBox({ timeout: 4000 });
+                        if (box === null)
+                            throw new Error(`${step.longpress} is not visible`);
                         const x = box.x + Math.min(box.width / 2, 60);
                         const y = box.y + (box.height / 2);
                         const cdp = await context.newCDPSession(page);

@@ -2045,6 +2045,120 @@
         width: auto !important;
     }
 
+    /* Torrent Creator window --------------------------------------------------- */
+
+    /*
+     * The creation tasks are cards: source path, progress, then status, format,
+     * piece size, the time the task was added and its error message, if any.
+     */
+    #torrentCreationTasksTableFixedHeaderDiv {
+        display: none;
+    }
+
+    #torrentCreationTasksTableDiv:not(.virtualList)
+        :is(table.dynamicTable, tbody) {
+        display: block;
+        width: 100% !important;
+    }
+
+    #torrentCreationTasksTableDiv:not(.virtualList) colgroup {
+        display: none;
+    }
+
+    #torrentCreationTasksTableDiv:not(.virtualList) tbody tr {
+        align-items: center;
+        border-bottom: 1px solid var(--color-border-default);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px 12px;
+        padding: 8px 10px;
+    }
+
+    #torrentCreationTasksTableDiv:not(.virtualList)
+        table.dynamicTable
+        tbody
+        td {
+        display: none;
+        font-size: 12px;
+        max-width: none !important;
+        padding: 0 !important;
+        width: auto !important;
+    }
+
+    #torrentCreationTasksTableDiv:not(.virtualList)
+        table.dynamicTable
+        tbody
+        td:is(
+            [data-column="source_path"],
+            [data-column="progress"],
+            [data-column="status"],
+            [data-column="torrent_format"],
+            [data-column="piece_size"],
+            [data-column="added_on"],
+            [data-column="error_message"]
+        ) {
+        display: block;
+    }
+
+    #torrentCreationTasksTableDiv
+        table.dynamicTable
+        tbody
+        td:is(
+            [data-column="source_path"],
+            [data-column="progress"],
+            [data-column="error_message"]
+        ) {
+        flex: 1 1 100%;
+        overflow-wrap: anywhere;
+        white-space: normal;
+    }
+
+    #torrentCreationTasksTableDiv
+        table.dynamicTable
+        tbody
+        td[data-column="source_path"] {
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    #torrentCreationTasksTableDiv
+        table.dynamicTable
+        tbody
+        td[data-column="progress"]
+        progress-bar {
+        border-radius: 3px;
+        overflow: hidden;
+    }
+
+    #torrentCreationTasksTableDiv
+        table.dynamicTable
+        tbody
+        td[data-column="status"] {
+        font-weight: 600;
+    }
+
+    #torrentCreationTasksTableDiv
+        table.dynamicTable
+        tbody
+        td[data-column="added_on"] {
+        margin-left: auto;
+        opacity: 0.75;
+    }
+
+    #torrentCreationTasksTableDiv
+        table.dynamicTable
+        tbody
+        td[data-column="error_message"] {
+        order: 1;
+    }
+
+    #torrentCreationTasksTableDiv
+        table.dynamicTable
+        tbody
+        td[data-column="error_message"]:empty {
+        display: none;
+    }
+
     /* Torrent creator: big text fields below their label */
     :root #createTorrentForm tr:has(textarea),
     :root #createTorrentForm tr:has(textarea) > td {

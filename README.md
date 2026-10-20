@@ -38,7 +38,8 @@ What changes on a phone:
 * Every dialog fits the screen: big ones (Options, Add torrent, RSS Downloader, ...)
   open full screen, small prompts are centered and grow to fit their content.
 * The Options window, Search, RSS, RSS Downloader, Log and all other dialogs reflow
-  for narrow screens; text fields use a 16px font so iOS doesn't zoom in.
+  for narrow screens; text fields use a 16px font so iOS doesn't zoom in. The Torrent
+  Creator shows its tasks as cards.
 * Search results, log messages and blocked IPs are cards too; light and dark themes
   both work.
 
