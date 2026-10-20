@@ -74,8 +74,11 @@ are documented at the top of [`tour.js`](tour.js). The groups:
 | `other-windows.json` | About, Statistics, Torrent Creator, Cookies, API key, logout |
 | `options.json` | every tab of the Options window |
 | `update.json` | the updater (*Help → Check for WebUI updates*), needs `fake-github.py`, see below |
+| `tablet.json` | dragging splitters and windows with a finger, for touch tablets (`768x1024`, or `TOUCH=1` and e.g. `1024x768`) |
 
-Sizes below 800px wide or 500px high are emulated as touch screens.
+Sizes below 800px wide or 500px high are emulated as touch screens; `TOUCH=1`
+emulates one at every size (a tablet in landscape), `TOUCH=0` at none. The `drag`
+step drags with a finger.
 `REDUCED_MOTION=1 node tour.js ...` emulates *reduce motion*, and the `press` step
 sends real key presses (`main.json` → `panels-keyboard` tests the keyboard access to
 the menu panel and the filters drawer).

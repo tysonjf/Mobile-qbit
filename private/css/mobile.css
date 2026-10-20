@@ -339,6 +339,42 @@
     .tab-menu {
         -webkit-tap-highlight-color: transparent;
     }
+
+    /*
+     * Splitters (desktop layout on touch screens, e.g. tablets): a hit area big
+     * enough for a finger around the thin handles. Dragging a splitter, a window
+     * title bar or a resize handle doesn't scroll or zoom the page.
+     */
+    .columnHandle,
+    .horizontalHandle {
+        overflow: visible;
+        position: relative;
+        z-index: 2;
+    }
+
+    /* mostly over the empty right edge of the filters and the end of the list */
+    .columnHandle::before,
+    .horizontalHandle::before {
+        content: "";
+        inset: 0 -6px 0 -10px;
+        position: absolute;
+    }
+
+    .horizontalHandle::before {
+        inset: -12px 0 -4px;
+    }
+
+    /* it was cut to the height of the handle */
+    .horizontalHandle .handleIcon {
+        height: 4px;
+    }
+
+    .columnHandle,
+    .horizontalHandle,
+    .mochaTitlebar,
+    .mocha .handle {
+        touch-action: none;
+    }
 }
 
 /* ------------------------------------------------------------------------

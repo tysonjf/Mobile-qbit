@@ -12,6 +12,8 @@
  *     name filter: regular expression matched against the scenario names
  *
  *   SCHEME=dark  use the dark color scheme
+ *   TOUCH=1      a touch screen at every size (e.g. a tablet in landscape),
+ *   TOUCH=0      at none
  *   REDUCED_MOTION=1  prefer reduced motion
  *   URL=...      WebUI address, default http://127.0.0.1:8080/
  *
@@ -25,6 +27,9 @@
  *   { "click": selector }       mouse click
  *   { "tap": selector }         touch tap
  *   { "tapxy": [x, y] }         touch tap at a position
+ *   { "drag": [selector, dx, dy, ox, oy] }
+ *                               touch drag by dx, dy, starting in the middle of
+ *                               the element, moved by ox, oy (optional)
  *   { "longpress": selector }   touch and hold for 800ms
  *   "frame": selector           in a "tap" or "longpress" step: the element is in
  *                               this iframe, e.g. "iframe[src*='addtorrent.html']"
@@ -74,7 +79,7 @@ const loadPlaywright = () => {
 
     for (const size of sizesArg.split(",")) {
         const [width, height] = size.split("x").map(Number);
-        const touch = (width < 800) || (height < 500);
+        const touch = (process.env.TOUCH === undefined) ? ((width < 800) || (height < 500)) : (process.env.TOUCH === "1");
         const outDir = path.join(__dirname, ".cache", "shots", size);
         fs.mkdirSync(outDir, { recursive: true });
         const context = await browser.newContext({
@@ -136,6 +141,21 @@ const loadPlaywright = () => {
                         const cdp = await context.newCDPSession(page);
                         await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x, y }] });
                         await page.waitForTimeout(800);
+                        await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+                    }
+                    if (step.drag) {
+                        const [selector, dx, dy, ox = 0, oy = 0] = step.drag;
+                        const box = await page.locator(selector).first().boundingBox({ timeout: 4000 });
+                        if (box === null)
+                            throw new Error(`${selector} is not visible`);
+                        const x = box.x + (box.width / 2) + ox;
+                        const y = box.y + (box.height / 2) + oy;
+                        const cdp = await context.newCDPSession(page);
+                        await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x, y }] });
+                        for (let i = 1; i <= 10; ++i) {
+                            await page.waitForTimeout(16);
+                            await cdp.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ x: x + ((dx * i) / 10), y: y + ((dy * i) / 10) }] });
+                        }
                         await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
                     }
                     if (step.wait)
