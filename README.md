@@ -44,6 +44,9 @@ Installing
 ---
 
 The WebUI is used as qBittorrent's *alternative WebUI*. Nothing needs to be built.
+The short version is below; **[INSTALL.md](INSTALL.md)** has the detailed guide
+(desktop app, headless `qbittorrent-nox`, Docker, opening it on the phone, updating
+and troubleshooting).
 
 1. On the computer running qBittorrent, download this repository
    (**Code → Download ZIP** on GitHub, then unzip it) or clone it:
