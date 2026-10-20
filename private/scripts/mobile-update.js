@@ -293,6 +293,7 @@ window.qBittorrent.MobileUpdate ??= (() => {
     const state = {
         busy: false,
         installed: null,
+        location: null,
         message: "",
         isError: false,
         progress: null,
@@ -327,6 +328,8 @@ window.qBittorrent.MobileUpdate ??= (() => {
 
         if (state.installed !== null)
             getElement("mobileUpdateInstalled").textContent = state.installed.version;
+        if (state.location !== null)
+            getElement("mobileUpdateLocation").textContent = state.location;
 
         const update = state.update;
         getElement("mobileUpdateCheck").disabled = state.busy;
@@ -337,7 +340,6 @@ window.qBittorrent.MobileUpdate ??= (() => {
             return;
 
         getElement("mobileUpdateLatest").textContent = update.latest.version;
-        getElement("mobileUpdateLocation").textContent = update.paths.currentRoot;
         getElement("mobileUpdateRemoveOldRow").classList.toggle("invisible", !update.isNewer || !update.paths.isManaged);
 
         getElement("mobileUpdateNotesBox").classList.remove("invisible");
@@ -368,8 +370,11 @@ window.qBittorrent.MobileUpdate ??= (() => {
         state.update = null;
         setStatus("QBT_TR(Checking for updates...)QBT_TR[CONTEXT=MobileUpdate]");
         try {
+            // shown even if GitHub can't be asked
             const installed = await getInstalledVersion();
+            const preferences = await fetchJson("api/v2/app/preferences");
             state.installed = installed;
+            state.location = getInstallPaths(preferences.alternative_webui_path, `v${installed.version}`, "").currentRoot;
             render();
 
             let response;
@@ -389,7 +394,6 @@ window.qBittorrent.MobileUpdate ??= (() => {
 
             const latest = await fetchJson(`${GITHUB_RAW}/${installed.repository}/${release.tag_name}/private/version.json`);
             const qbtVersion = await (await fetch("api/v2/app/version")).text();
-            const preferences = await fetchJson("api/v2/app/preferences");
             const isNewer = compareVersions(latest.version, installed.version) > 0;
             const torrentUrl = getReleaseTorrentUrl(release);
             const compatible = isCompatible(qbtVersion, latest.qbittorrent);
