@@ -48,7 +48,32 @@
  * Touch screens: bigger hit targets
  * --------------------------------------------------------------------- */
 
+/*
+ * Dialog pages are iframes, where width based media queries measure the
+ * iframe and not the screen. Rules for dialogs therefore depend on the input
+ * device: a small dialog on a desktop must not get the phone styles.
+ */
 @media (pointer: coarse) {
+    /* Prevent iOS from zooming in when an input gets focused */
+    input[type="search"],
+    input[type="text"],
+    input[type="number"],
+    input[type="password"],
+    input[type="url"],
+    input[type="email"],
+    input:not([type]),
+    select,
+    textarea {
+        font-size: 16px;
+    }
+
+    /* not with the virtual list, its rows have a fixed height */
+    .dynamicTableDiv:not(.virtualList) .dynamicTable td,
+    .dynamicTable th {
+        padding-bottom: 8px;
+        padding-top: 8px;
+    }
+
     #desktopNavbar li ul li a,
     #desktopNavbar li ul li div.anchor {
         padding-bottom: 9px;
@@ -162,19 +187,6 @@
     :root {
         --mobile-bar-height: 46px;
         --mobile-touch-size: 40px;
-    }
-
-    /* Prevent iOS from zooming in when an input gets focused */
-    input[type="search"],
-    input[type="text"],
-    input[type="number"],
-    input[type="password"],
-    input[type="url"],
-    input[type="email"],
-    input:not([type]),
-    select,
-    textarea {
-        font-size: 16px;
     }
 
     #desktop {
@@ -669,7 +681,7 @@
         display: none;
     }
 
-    #torrentFilesFilterInput {
+    #propertiesPanel_header #torrentFilesFilterInput {
         height: 34px;
         width: 100%;
     }
@@ -705,16 +717,6 @@
     }
 
     /* Tables --------------------------------------------------------------- */
-
-    .dynamicTableDiv {
-        -webkit-overflow-scrolling: touch;
-    }
-
-    .dynamicTable td,
-    .dynamicTable th {
-        padding-bottom: 8px;
-        padding-top: 8px;
-    }
 
     /* Torrents list: every row is shown as a card */
     #torrentsTableDiv table.dynamicTable,
@@ -1090,7 +1092,7 @@
         font-size: 11px;
     }
 
-    #error_div {
+    #desktopFooter #error_div {
         font-size: 12px;
         max-width: 50vw;
         overflow: hidden;
@@ -1417,8 +1419,7 @@
         width: auto;
     }
 
-    :root #categorySelect,
-    :root #pluginsSelect {
+    :root #searchResultsHeaderContainer :is(#categorySelect, #pluginsSelect) {
         flex: 1 1 0;
         height: 38px;
         min-width: 0;
