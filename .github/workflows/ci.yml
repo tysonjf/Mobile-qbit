@@ -95,11 +95,14 @@ jobs:
 
       - name: Start qbittorrent-nox and its peer
         run: |
+          mkdir -p .cache
           nohup sh start-qbittorrent.sh > .cache/qbittorrent.log 2>&1 &
-          for i in $(seq 120); do curl -sf http://127.0.0.1:8080/api/v2/app/version && break; sleep 1; done
-          QBT_PROFILE=peer QBT_PORT=8081 QBT_BT_PORT=56882 nohup sh start-qbittorrent.sh > .cache/peer.log 2>&1 &
-          for i in $(seq 60); do curl -sf http://127.0.0.1:8081/api/v2/app/version && break; sleep 1; done
+          for i in $(seq 120); do curl -sf http://127.0.0.1:8080/api/v2/app/version > /dev/null && break; sleep 1; done
+          curl -sf http://127.0.0.1:8080/api/v2/app/version || { cat .cache/qbittorrent.log; exit 1; }
           echo
+          QBT_PROFILE=peer QBT_PORT=8081 QBT_BT_PORT=56882 nohup sh start-qbittorrent.sh > .cache/peer.log 2>&1 &
+          for i in $(seq 60); do curl -sf http://127.0.0.1:8081/api/v2/app/version > /dev/null && break; sleep 1; done
+          curl -sf http://127.0.0.1:8081/api/v2/app/version || { cat .cache/peer.log; exit 1; }
 
       - name: Make the test data
         id: setup
@@ -129,6 +132,7 @@ jobs:
           nohup python3 fake-github.py > .cache/fake-github.log 2>&1 &
           # it builds the fake releases before it listens
           for i in $(seq 180); do curl -s -o /dev/null http://127.0.0.1:8098/ && break; sleep 1; done
+          curl -s -o /dev/null http://127.0.0.1:8098/ || { cat .cache/fake-github.log; exit 1; }
           node tour.js scenarios/update.json 390x844
 
       - name: Upload the screenshots and logs
