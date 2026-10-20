@@ -172,6 +172,8 @@ Development
 [`dev/`](dev/README.md) has a complete local test environment: a script that starts
 a real `qbittorrent-nox` serving this folder, test data, and screenshot tours of every
 screen at phone, tablet and desktop sizes. Read its notes before changing the WebUI.
+[GitHub Actions](.github/workflows/ci.yml) runs the linters, the unit tests and the
+tours for every pull request.
 
 Open work (polish and nice-to-haves) is tracked as a checklist in
 [issue #1](https://github.com/tysonjf/Mobile-qbit/issues/1), including how to pick up
