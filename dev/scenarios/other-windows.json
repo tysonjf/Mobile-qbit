@@ -134,6 +134,41 @@
         ]
     },
     {
+        "name": "creator-tasks",
+        "steps": [
+            {
+                "js": "(async () => { const sources = ['$CACHE/downloads/Sintel Open Movie Collection', '$CACHE/downloads/Wikipedia Dump Sample', '$CACHE/downloads/Missing Folder']; const tasks = await (await fetch('api/v2/torrentcreator/status')).json(); for (const task of tasks.filter((task) => sources.includes(task.sourcePath))) await fetch('api/v2/torrentcreator/deleteTask', { method: 'POST', body: new URLSearchParams({ taskID: task.taskID }) }); for (const [sourcePath, format] of [[sources[0], 'hybrid'], [sources[1], 'v1'], [sources[2], 'v2']]) await fetch('api/v2/torrentcreator/addTask', { method: 'POST', body: new URLSearchParams({ sourcePath, format, startSeeding: 'false', comment: 'Test task for Mobile-qbit' }) }); })()"
+            },
+            {
+                "wait": 2000
+            },
+            {
+                "js": "document.getElementById('torrentCreatorButton').click()"
+            },
+            {
+                "wait": 3000
+            },
+            {
+                "eval": "(() => { const div = document.getElementById('torrentCreationTasksTableDiv'); const rows = [...div.querySelectorAll('tbody tr')]; if (rows.length < 3) throw new Error(`${rows.length} tasks`); if (getComputedStyle(rows[0]).display !== 'flex') throw new Error('not cards'); if (div.scrollWidth > div.clientWidth) throw new Error(`${div.scrollWidth - div.clientWidth}px wider than the window`); const shown = (tr) => [...tr.cells].filter((td) => td.checkVisibility() && (td.textContent !== '' || td.querySelector('progress-bar'))).map((td) => td.dataset.column); const failed = rows.find((tr) => tr.textContent.includes('Missing Folder')); if (!shown(failed).includes('error_message')) throw new Error('no error message'); for (const column of ['source_path', 'progress', 'status']) if (!rows.every((tr) => shown(tr).includes(column))) throw new Error(`${column} not shown`); return rows.map(shown); })()"
+            },
+            {
+                "shot": true
+            },
+            {
+                "longpress": "#torrentCreationTasksTableDiv tbody tr:first-child"
+            },
+            {
+                "wait": 500
+            },
+            {
+                "eval": "(() => { if (!document.getElementById('torrentCreationTasksTableMenu').classList.contains('visible')) throw new Error('no menu'); return 'menu'; })()"
+            },
+            {
+                "shot": "menu"
+            }
+        ]
+    },
+    {
         "name": "cookies",
         "steps": [
             {
