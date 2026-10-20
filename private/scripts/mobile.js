@@ -30,6 +30,7 @@
  *  - the "More actions" button of the torrent cards
  *  - fitting MochaUI windows (dialogs) into the viewport
  *  - row height of the torrents table when the virtual list is used
+ *  - the browser's theme color (status bar of the app added to the home screen)
  */
 
 "use strict";
@@ -256,6 +257,25 @@ window.qBittorrent.Mobile ??= (() => {
             setSelectMode(false);
         });
         onLayoutChange(() => setSelectMode(false));
+    };
+
+    /* Theme color */
+
+    // The theme-color meta tags follow the system's color scheme. The WebUI can be
+    // set to another one, so use the header color of the scheme it actually shows.
+    const setupThemeColor = () => {
+        const metas = document.querySelectorAll("meta[name='theme-color']");
+        const update = () => {
+            const color = window.getComputedStyle(document.documentElement).getPropertyValue("--color-background-default").trim();
+            if (color === "")
+                return;
+            for (const meta of metas)
+                meta.content = color;
+        };
+
+        // color-scheme.js toggles the "dark" class
+        new MutationObserver(update).observe(document.documentElement, { attributeFilter: ["class"] });
+        update();
     };
 
     /* MochaUI windows */
@@ -508,6 +528,7 @@ window.qBittorrent.Mobile ??= (() => {
                 setupFiltersDrawer();
                 setupDetailsPanel();
                 setupTorrentSelection();
+                setupThemeColor();
             });
         }
     };

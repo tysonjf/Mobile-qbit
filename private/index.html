@@ -8,11 +8,17 @@
     <meta name="application-name" content="qBittorrent">
     <meta name="description" content="qBittorrent WebUI">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- the header color, mobile.js follows the color scheme chosen in the options -->
+    <meta name="theme-color" content="#f0f0f0" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#404040" media="(prefers-color-scheme: dark)">
 
     <title>qBittorrent WebUI</title>
 
     <link rel="icon" type="image/png" href="images/qbittorrent32.png" sizes="32x32">
     <link rel="icon" type="image/svg+xml" href="images/qbittorrent-tray.svg" sizes="any">
+    <!-- served from the public folder, so that they can be loaded before logging in -->
+    <link rel="apple-touch-icon" href="images/mobile-apple-touch-icon.png">
+    <link rel="manifest" href="manifest.webmanifest">
     <link rel="stylesheet" type="text/css" href="css/dynamicTable.css?v=${CACHEID}">
     <link rel="stylesheet" type="text/css" href="css/style.css?v=${CACHEID}">
     <link rel="stylesheet" type="text/css" href="css/Core.css?v=${CACHEID}">

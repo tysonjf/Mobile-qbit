@@ -46,6 +46,10 @@ On every screen size, **Help → Check for WebUI updates** shows whether a newer
 Mobile-qbit release exists and installs it with one tap (see
 [Updating](INSTALL.md#updating)).
 
+**Add to Home Screen** (Safari, Chrome) gives the WebUI the qBittorrent icon and opens
+it like an app (see [Step 3](INSTALL.md#step-3-open-it-on-your-phone) of the
+installation guide).
+
 Installing
 ---
 
@@ -130,6 +134,11 @@ The first commit of this repository is the unmodified WebUI of qBittorrent v5.2.
 * `private/scripts/client.js`: the details panel starts collapsed on phones, panel
   sizes of the phone layout are not saved over the desktop ones.
 * `public/css/login.css`: responsive login page.
+* `public/manifest.webmanifest`, `public/images/mobile-*.png` (new): web app manifest
+  and icons for *Add to Home Screen*. They are in `public` so that they load before
+  logging in; `public/index.html` and `private/index.html` link them and set the
+  `theme-color`, which `mobile.js` keeps in line with the color scheme chosen in the
+  options.
 * `private/images/mobile-menu.svg`, `private/images/mobile-filter.svg`,
   `private/images/mobile-select.svg` (new).
 * `private/version.json` (new): the version of Mobile-qbit, the qBittorrent version

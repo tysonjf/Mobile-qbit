@@ -8,6 +8,35 @@
         ]
     },
     {
+        "name": "web-app",
+        "steps": [
+            {
+                "eval": "(async () => { const link = document.querySelector('link[rel=manifest]'); const manifest = await (await fetch(link.href, { credentials: 'omit' })).json(); if ((manifest.display !== 'standalone') || (new URL(manifest.start_url, link.href).href !== new URL('./', location.href).href)) throw new Error('unexpected manifest'); const icons = [...manifest.icons.map((icon) => new URL(icon.src, link.href).href), document.querySelector('link[rel=apple-touch-icon]').href]; const statuses = await Promise.all(icons.map(async (src) => (await fetch(src, { credentials: 'omit' })).status)); if (statuses.some((status) => status !== 200)) throw new Error(`icons: ${statuses}`); return [manifest.name, manifest.display, statuses]; })()"
+            },
+            {
+                "eval": "(() => { const toRgb = (color) => { const div = document.createElement('div'); div.style.color = color; document.body.append(div); const rgb = getComputedStyle(div).color; div.remove(); return rgb; }; let top = document.elementFromPoint(innerWidth - 2, 2); while (getComputedStyle(top).backgroundColor === 'rgba(0, 0, 0, 0)') top = top.parentElement; const header = getComputedStyle(top).backgroundColor; const colors = [...document.querySelectorAll('meta[name=theme-color]')].map((meta) => toRgb(meta.content)); if (colors.some((color) => color !== header)) throw new Error(`theme-color ${colors} vs. ${header} of ${top.id}`); return [top.id, header]; })()"
+            },
+            {
+                "js": "document.documentElement.classList.toggle('dark')"
+            },
+            {
+                "wait": 100
+            },
+            {
+                "eval": "(() => { const toRgb = (color) => { const div = document.createElement('div'); div.style.color = color; document.body.append(div); const rgb = getComputedStyle(div).color; div.remove(); return rgb; }; let top = document.elementFromPoint(innerWidth - 2, 2); while (getComputedStyle(top).backgroundColor === 'rgba(0, 0, 0, 0)') top = top.parentElement; const header = getComputedStyle(top).backgroundColor; const colors = [...document.querySelectorAll('meta[name=theme-color]')].map((meta) => toRgb(meta.content)); if (colors.some((color) => color !== header)) throw new Error(`theme-color ${colors} vs. ${header} of ${top.id}`); return [top.id, header]; })()"
+            },
+            {
+                "js": "document.documentElement.classList.toggle('dark')"
+            },
+            {
+                "wait": 100
+            },
+            {
+                "eval": "(() => { const toRgb = (color) => { const div = document.createElement('div'); div.style.color = color; document.body.append(div); const rgb = getComputedStyle(div).color; div.remove(); return rgb; }; let top = document.elementFromPoint(innerWidth - 2, 2); while (getComputedStyle(top).backgroundColor === 'rgba(0, 0, 0, 0)') top = top.parentElement; const header = getComputedStyle(top).backgroundColor; const colors = [...document.querySelectorAll('meta[name=theme-color]')].map((meta) => toRgb(meta.content)); if (colors.some((color) => color !== header)) throw new Error(`theme-color ${colors} vs. ${header} of ${top.id}`); return [top.id, header]; })()"
+            }
+        ]
+    },
+    {
         "name": "menu",
         "steps": [
             {
