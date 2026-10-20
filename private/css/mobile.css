@@ -1747,8 +1747,53 @@
 
     /* Cookies window ------------------------------------------------------------ */
 
-    :root #cookiesPage_content {
-        overflow-x: auto;
+    /* every cookie is a card with labelled fields */
+    :root #manageCookiesTable,
+    :root #manageCookiesTable :is(tbody, tfoot) {
+        display: block;
+    }
+
+    :root #manageCookiesTable thead {
+        display: none;
+    }
+
+    :root #manageCookiesTable tbody tr:not(.invisible) {
+        align-items: center;
+        border: 1px solid var(--color-border-default);
+        border-radius: 8px;
+        display: grid;
+        gap: 6px 8px;
+        grid-template-columns: max-content minmax(0, 1fr);
+        margin-bottom: 8px;
+        padding: 8px;
+    }
+
+    :root #manageCookiesTable tbody td {
+        display: contents;
+    }
+
+    :root #manageCookiesTable tbody td::before {
+        content: attr(data-label);
+    }
+
+    :root #manageCookiesTable tbody td input {
+        width: 100%;
+    }
+
+    :root #manageCookiesTable tbody td .removeCookie {
+        grid-column: 2;
+        justify-self: end;
+    }
+
+    :root #manageCookiesTable tfoot tr {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    :root #manageCookiesTable :is(.addCookie, .removeCookie) {
+        height: 28px;
+        padding: 4px;
+        width: 28px;
     }
 
     /* About window -------------------------------------------------------------- */

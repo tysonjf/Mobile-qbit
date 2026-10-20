@@ -73,10 +73,9 @@ the page. To go back to the built-in WebUI, untick **Use alternative WebUI**.
 > **qBittorrent 5.2.x**. Older or much newer versions may have API differences.
 > You can check your version in *Help → About*.
 
-> [!NOTE]
-> qBittorrent loads translations of an alternative WebUI from the WebUI folder, and
-> only the translation sources (`translations/*.ts`) are included here. The WebUI is
-> therefore shown in English, whatever language qBittorrent is set to.
+The WebUI follows the language set in qBittorrent, like the built-in one: for an
+alternative WebUI qBittorrent loads the compiled translations from the
+`translations` folder, which are included here.
 
 Layout breakpoints
 ---
@@ -116,6 +115,8 @@ The first commit of this repository is the unmodified WebUI of qBittorrent v5.2.
   sizes of the phone layout are not saved over the desktop ones.
 * `public/css/login.css`: responsive login page.
 * `private/images/mobile-menu.svg`, `private/images/mobile-filter.svg` (new).
+* `translations/*.qm` (new): compiled translations, built from the unchanged
+  `translations/*.ts` sources with `tools/build-translations.py`.
 
 Development
 ---
@@ -131,6 +132,13 @@ pnpm run test                     # vitest
 
 To try changes, point qBittorrent's *alternative WebUI* at your working copy; files
 are re-read when they change, so a page reload is enough.
+
+After updating the translation sources, rebuild the `.qm` files (no Qt tools needed;
+the output matches `lrelease -removeidentical`, which qBittorrent uses):
+
+```sh
+python3 tools/build-translations.py
+```
 
 Browser compatibility
 ---
