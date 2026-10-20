@@ -336,7 +336,9 @@
         <file>private/images/mascot.png</file>
         <file>private/images/mobile-back.svg</file>
         <file>private/images/mobile-filter.svg</file>
+        <file>private/images/mobile-maximize.svg</file>
         <file>private/images/mobile-menu.svg</file>
+        <file>private/images/mobile-restore.svg</file>
         <file>private/images/mobile-select.svg</file>
         <file>private/images/name.svg</file>
         <file>private/images/network-connect.svg</file>

@@ -27,6 +27,7 @@
  * Most of the responsive behaviour is pure CSS. This script only handles the
  * parts that MochaUI computes in JavaScript or that need interaction:
  *  - the menu button and the filters drawer of the phone layout
+ *  - the button that shows the details panel at full height
  *  - the "More actions" button of the torrent cards
  *  - no browser menus for buttons and icons on a long press
  *  - fitting MochaUI windows (dialogs) into the viewport
@@ -287,6 +288,58 @@ window.qBittorrent.Mobile ??= (() => {
                 document.querySelector("#torrentsTableDiv tr.selected")?.scrollIntoView({ block: "nearest" });
             }, 50);
         });
+
+        // MochaUI creates the panel once client.js has loaded the preferences
+        if (addDetailsMaximizeButton())
+            return;
+        const observer = new MutationObserver(() => {
+            if (addDetailsMaximizeButton())
+                observer.disconnect();
+        });
+        observer.observe(document.getElementById("pageWrapper"), { childList: true, subtree: true });
+    };
+
+    // A button next to the collapse button gives the details the whole height of the torrent list
+    const addDetailsMaximizeButton = () => {
+        const mainColumn = document.getElementById("mainColumn");
+        const collapseToggle = document.getElementById("propertiesPanel_collapseToggle");
+        if ((mainColumn === null) || (collapseToggle === null))
+            return false;
+
+        const icon = document.createElement("img");
+        icon.alt = "";
+        icon.width = 24;
+        icon.height = 24;
+        const button = document.createElement("button");
+        button.type = "button";
+        button.id = "mobileDetailsMaximize";
+        button.className = "mobileBarButton";
+        button.title = "QBT_TR(Maximize)QBT_TR[CONTEXT=PropertiesWidget]";
+        button.setAttribute("aria-label", button.title);
+        button.append(icon);
+        collapseToggle.before(button);
+
+        const setMaximized = (maximized) => {
+            mainColumn.classList.toggle("mobileDetailsMaximized", maximized);
+            button.setAttribute("aria-pressed", maximized.toString());
+            icon.src = maximized ? "images/mobile-restore.svg" : "images/mobile-maximize.svg";
+        };
+        setMaximized(false);
+
+        button.addEventListener("click", (event) => {
+            const maximize = !mainColumn.classList.contains("mobileDetailsMaximized");
+            // collapsed details open right away at full height
+            if (maximize && collapseToggle.classList.contains("panel-expand"))
+                collapseToggle.click();
+            setMaximized(maximize);
+        });
+        // collapsing the details (arrow or the open tab) brings the torrent list back
+        collapseToggle.addEventListener("click", (event) => {
+            if (collapseToggle.classList.contains("panel-expand"))
+                setMaximized(false);
+        });
+        onLayoutChange(() => setMaximized(false));
+        return true;
     };
 
     /* Selecting several torrents without CTRL/SHIFT keys */
