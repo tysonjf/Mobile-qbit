@@ -852,6 +852,229 @@
         padding: 4px 8px 8px;
     }
 
+    /*
+     * Content tab: every file and folder is a card, indented by its depth in the
+     * tree (--file-tree-depth, set by dynamicTable.js). Check box, name and size
+     * on the first line, progress and priority below the name.
+     */
+    #torrentFilesTableDiv:not(.virtualList) :is(table.dynamicTable, tbody) {
+        display: block;
+        width: 100% !important;
+    }
+
+    #torrentFilesTableDiv:not(.virtualList) colgroup {
+        display: none;
+    }
+
+    #torrentFilesTableDiv:not(.virtualList) table.dynamicTable tbody tr {
+        align-items: flex-start;
+        border-bottom: 1px solid var(--color-border-default);
+        column-gap: 8px;
+        display: flex;
+        flex-wrap: wrap;
+        padding: 7px 10px 8px calc(10px + (var(--file-tree-depth, 0) * 16px));
+    }
+
+    /* ends the first line */
+    #torrentFilesTableDiv:not(.virtualList) table.dynamicTable tbody tr::after {
+        content: "";
+        flex-basis: 100%;
+        order: 3;
+    }
+
+    #torrentFilesTableDiv:not(.virtualList) table.dynamicTable tbody td {
+        display: none;
+        font-size: 12px;
+        line-height: 16px;
+        max-width: none !important;
+        padding: 0 !important;
+        width: auto !important;
+    }
+
+    #torrentFilesTableDiv:not(.virtualList)
+        table.dynamicTable
+        tbody
+        td:is(
+            [data-column="checked"],
+            [data-column="name"],
+            [data-column="size"],
+            [data-column="progress"],
+            [data-column="priority"]
+        ) {
+        display: block;
+        flex: none;
+    }
+
+    #torrentFilesTableDiv:not(.virtualList)
+        table.dynamicTable
+        tbody
+        :is(tr, td).invisible {
+        display: none !important;
+    }
+
+    #torrentFilesTableDiv td[data-column="checked"] {
+        order: 0;
+        width: 22px !important;
+    }
+
+    /* the tree lines of the table */
+    #torrentFilesTableDiv td[data-column="checked"] > img {
+        display: none;
+    }
+
+    #torrentFilesTableDiv td[data-column="checked"] > input {
+        display: block;
+        height: 20px;
+        margin: 0 auto;
+        width: 20px;
+    }
+
+    #torrentFilesTableDiv:not(.virtualList)
+        table.dynamicTable
+        tbody
+        td[data-column="name"] {
+        align-items: flex-start;
+        display: flex;
+        flex: 1 1 0;
+        font-size: 14px;
+        line-height: 20px;
+        min-width: 0;
+        order: 1;
+    }
+
+    /* the indentation is on the card */
+    #torrentFilesTableDiv:not(.virtualList)
+        td[data-column="name"]
+        > :is(.filesTableCollapseIcon, span) {
+        margin-left: 0 !important;
+    }
+
+    #torrentFilesTableDiv:not(.virtualList) .filesTableCollapseIcon {
+        box-sizing: content-box;
+        flex: none;
+        height: 16px;
+        /* a bigger touch target that doesn't make the card taller */
+        margin: -6px -4px -6px -8px;
+        padding: 8px;
+        width: 16px;
+    }
+
+    #torrentFilesTableDiv:not(.virtualList)
+        td[data-column="name"]
+        > img:not(.filesTableCollapseIcon) {
+        flex: none;
+        margin-top: 1px;
+    }
+
+    #torrentFilesTableDiv:not(.virtualList) td[data-column="name"] > span {
+        min-width: 0;
+        overflow-wrap: anywhere;
+        white-space: normal;
+    }
+
+    #torrentFilesTableDiv:not(.virtualList)
+        table.dynamicTable
+        tbody
+        td[data-column="size"] {
+        margin-top: 2px;
+        opacity: 0.75;
+        order: 2;
+        white-space: nowrap;
+    }
+
+    /* below the name, the priority wraps onto a line of its own if they don't fit */
+    #torrentFilesTableDiv:not(.virtualList)
+        table.dynamicTable
+        tbody
+        td[data-column="progress"] {
+        align-self: center;
+        flex: 1 1 0;
+        margin: 6px 0 0 30px;
+        min-width: 64px;
+        order: 4;
+    }
+
+    #torrentFilesTableDiv td[data-column="progress"] progress-bar {
+        border-radius: 3px;
+        overflow: hidden;
+    }
+
+    #torrentFilesTableDiv:not(.virtualList)
+        table.dynamicTable
+        tbody
+        td[data-column="priority"] {
+        margin: 6px 0 0 auto;
+        order: 5;
+    }
+
+    #torrentFilesTableDiv td[data-column="priority"] select {
+        max-width: 100%;
+        min-height: 32px;
+    }
+
+    /* header: the check box for all files and a scrollable row of sort buttons */
+    #torrentFilesTableFixedHeaderDiv:has(+ :not(.virtualList)) {
+        overflow: auto hidden;
+        scrollbar-width: none;
+    }
+
+    #torrentFilesTableFixedHeaderDiv:has(+ :not(.virtualList))
+        :is(table.dynamicTable, thead) {
+        display: block;
+        left: 0 !important;
+        width: max-content !important;
+    }
+
+    #torrentFilesTableFixedHeaderDiv:has(+ :not(.virtualList)) tr {
+        align-items: center;
+        display: flex;
+        gap: 6px;
+        padding: 6px 8px;
+    }
+
+    #torrentFilesTableFixedHeaderDiv:has(+ :not(.virtualList)) th {
+        border: 1px solid var(--color-border-default);
+        border-radius: 999px;
+        flex: none;
+        font-size: 12px;
+        font-weight: normal;
+        max-width: 12em;
+        padding: 5px 12px !important;
+        width: auto !important;
+    }
+
+    #torrentFilesTableFixedHeaderDiv:has(+ :not(.virtualList)) th.invisible {
+        display: none;
+    }
+
+    #torrentFilesTableFixedHeaderDiv:has(+ :not(.virtualList))
+        th.column_checked {
+        border-color: transparent;
+        padding: 0 4px !important;
+    }
+
+    #torrentFilesTableFixedHeaderDiv:has(+ :not(.virtualList)) #tristate_cb {
+        display: block;
+        height: 20px;
+        width: 20px;
+    }
+
+    #torrentFilesTableFixedHeaderDiv:has(+ :not(.virtualList)) th.sorted {
+        background-color: var(--color-background-blue);
+        background-image: url("../images/go-up.svg");
+        background-position: right 8px center;
+        background-size: 12px;
+        border-color: var(--color-background-blue);
+        color: var(--color-text-white);
+        font-weight: bold;
+        padding-right: 26px !important;
+    }
+
+    #torrentFilesTableFixedHeaderDiv:has(+ :not(.virtualList))
+        th.sorted.reverse {
+        background-image: url("../images/go-down.svg");
+    }
+
     /* Tables --------------------------------------------------------------- */
 
     /* Torrents list: every row is shown as a card */

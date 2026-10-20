@@ -37,6 +37,9 @@ What changes on a phone:
   open its details. Tap the open tab again (or the arrow on the right) to close them.
 * Every dialog fits the screen: big ones (Options, Add torrent, RSS Downloader, ...)
   open full screen, small prompts are centered and grow to fit their content.
+* The **Content** tab shows every file and folder as a card, indented like the file
+  tree, with its progress and priority. Tap the check box to (not) download a file,
+  the arrow to open or close a folder.
 * The Options window, Search, RSS, RSS Downloader, Log and all other dialogs reflow
   for narrow screens; text fields use a 16px font so iOS doesn't zoom in.
 * Search results, log messages and blocked IPs are cards too; light and dark themes
@@ -128,9 +131,10 @@ The first commit of this repository is the unmodified WebUI of qBittorrent v5.2.
 * `private/scripts/contextmenu.js`: bottom sheet mode; fixes the position of
   long-press menus on touch screens (touch events have no `pageX`/`pageY`).
 * `private/scripts/dynamicTable.js`: cells get a `data-column` attribute (used by the
-  card layouts); a row is selected on long press instead of on every touch, so
-  scrolling the list no longer changes the selection; a `multiSelect` flag lets a
-  tap toggle a row like CTRL+click (selection mode).
+  card layouts, rows of the Content tab also get their depth in the file tree); a row
+  is selected on long press instead of on every touch, so scrolling the list no
+  longer changes the selection; a `multiSelect` flag lets a tap toggle a row like
+  CTRL+click (selection mode).
 * `private/scripts/client.js`: the details panel starts collapsed on phones, panel
   sizes of the phone layout are not saved over the desktop ones.
 * `public/css/login.css`: responsive login page.

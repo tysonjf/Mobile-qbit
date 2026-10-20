@@ -308,5 +308,106 @@
                 "shot": true
             }
         ]
+    },
+    {
+        "name": "files-cards",
+        "steps": [
+            {
+                "js": "(() => { for (const tr of document.querySelectorAll('#torrentsTableDiv tbody tr')) if (tr.textContent.includes('Sintel')) { torrentsTable.deselectAll(); torrentsTable.selectRow(tr.rowId); } })()"
+            },
+            {
+                "js": "(() => { const tab = document.getElementById('propFilesLink'); if (!tab.classList.contains('selected') || document.getElementById('propertiesPanel_wrapper').classList.contains('collapsed')) tab.click(); })()"
+            },
+            {
+                "wait": 1500
+            },
+            {
+                "js": "for (let i = 0; i < 4; ++i) document.querySelectorAll('#torrentFilesTableDiv .filesTableCollapseIcon.rotate').forEach((icon) => icon.click())"
+            },
+            {
+                "wait": 500
+            },
+            {
+                "js": "document.querySelectorAll('#torrentFilesTableDiv tbody tr').forEach((tr) => { tr.dataset.test = tr.querySelector('span[id^=filesTablefileName]').textContent; })"
+            },
+            {
+                "eval": "(() => { const div = document.getElementById('torrentFilesTableDiv'); const rows = [...div.querySelectorAll('tbody tr')].filter((tr) => tr.checkVisibility()); if (rows.length < 2) throw new Error(`${rows.length} rows`); if (rows.some((tr) => getComputedStyle(tr).display !== 'flex')) throw new Error('not cards'); if (div.scrollWidth > div.clientWidth) throw new Error(`${div.scrollWidth - div.clientWidth}px wider than the panel`); const right = div.getBoundingClientRect().right; for (const tr of rows) { const shown = [...tr.cells].filter((td) => td.checkVisibility()).map((td) => td.dataset.column); const missing = ['checked', 'name', 'size', 'progress', 'priority'].filter((column) => !shown.includes(column)); if (missing.length > 0) throw new Error(`${tr.dataset.test}: not shown: ${missing.join(', ')}`); const outside = [...tr.cells].filter((td) => td.checkVisibility() && (td.getBoundingClientRect().right > right + 0.5)).map((td) => td.dataset.column); if (outside.length > 0) throw new Error(`${tr.dataset.test}: outside the panel: ${outside.join(', ')}`); } const indent = (name) => Number.parseFloat(getComputedStyle(div.querySelector(`tr[data-test=\"${name}\"]`)).paddingLeft); if (!((indent('Sintel Open Movie Collection') < indent('sintel')) && (indent('sintel') < indent('extras')) && (indent('extras') < indent('making-of.mp4')))) throw new Error('not indented by depth'); const header = document.querySelector('#torrentFilesTableFixedHeaderDiv tr'); if ((getComputedStyle(header).display !== 'flex') || !document.getElementById('tristate_cb').checkVisibility()) throw new Error('header is not a row of sort buttons with the check box'); return rows.map((tr) => `${tr.dataset.test}: ${Math.round(tr.getBoundingClientRect().height)}px`); })()"
+            },
+            {
+                "shot": true
+            },
+            {
+                "tap": "#torrentFilesTableDiv tr[data-test=\"sintel\"] .filesTableCollapseIcon"
+            },
+            {
+                "wait": 300
+            },
+            {
+                "eval": "(() => { if (!(!document.querySelector('#torrentFilesTableDiv tr[data-test=\"poster.jpg\"]').checkVisibility() && !document.querySelector('#torrentFilesTableDiv tr[data-test=\"making-of.mp4\"]').checkVisibility())) throw new Error('tapping the arrow did not collapse the folder'); return true; })()"
+            },
+            {
+                "tap": "#torrentFilesTableDiv tr[data-test=\"sintel\"] .filesTableCollapseIcon"
+            },
+            {
+                "wait": 300
+            },
+            {
+                "eval": "(() => { if (!(document.querySelector('#torrentFilesTableDiv tr[data-test=\"poster.jpg\"]').checkVisibility())) throw new Error('tapping the arrow did not expand the folder'); return true; })()"
+            },
+            {
+                "tap": "#torrentFilesTableDiv tr[data-test=\"poster.jpg\"] input[type=checkbox]"
+            },
+            {
+                "wait": 1500
+            },
+            {
+                "eval": "(() => { if (!(!document.querySelector('#torrentFilesTableDiv tr[data-test=\"poster.jpg\"] input[type=checkbox]').checked && (document.querySelector('#torrentFilesTableDiv tr[data-test=\"poster.jpg\"] select').value === '0'))) throw new Error('the check box did not change the priority'); return true; })()"
+            },
+            {
+                "shot": "unchecked"
+            },
+            {
+                "tap": "#torrentFilesTableDiv tr[data-test=\"poster.jpg\"] input[type=checkbox]"
+            },
+            {
+                "wait": 1500
+            },
+            {
+                "eval": "(() => { if (!(document.querySelector('#torrentFilesTableDiv tr[data-test=\"poster.jpg\"] input[type=checkbox]').checked && (document.querySelector('#torrentFilesTableDiv tr[data-test=\"poster.jpg\"] select').value === '1'))) throw new Error('the check box did not change the priority back'); return true; })()"
+            },
+            {
+                "js": "document.querySelector('#torrentFilesTableDiv tr[data-test=\"sintel.mkv\"]').scrollIntoView({ block: 'nearest' })"
+            },
+            {
+                "longpress": "#torrentFilesTableDiv tr[data-test=\"sintel.mkv\"] td[data-column=size]"
+            },
+            {
+                "wait": 500
+            },
+            {
+                "eval": "(() => { if (!(document.getElementById('torrentFilesMenu').classList.contains('visible'))) throw new Error('no menu after a long press'); return true; })()"
+            },
+            {
+                "shot": "menu"
+            },
+            {
+                "js": "document.getElementById('contextMenuBackdrop')?.click()"
+            },
+            {
+                "wait": 300
+            },
+            {
+                "js": "(() => { for (const tr of document.querySelectorAll('#torrentsTableDiv tbody tr')) if (tr.textContent.includes('Public Domain Audiobooks')) { torrentsTable.deselectAll(); torrentsTable.selectRow(tr.rowId); } })()"
+            },
+            {
+                "wait": 2000
+            },
+            {
+                "eval": "(() => { const div = document.getElementById('torrentFilesTableDiv'); const tr = div.querySelector('tbody tr'); const span = tr.querySelector('td[data-column=\"name\"] > span'); if ((window.innerWidth < 600) && (span.offsetHeight < 30)) throw new Error(`the long name doesn't wrap (${span.offsetHeight}px)`); if (span.getBoundingClientRect().right > div.getBoundingClientRect().right) throw new Error('the long name is cut off'); if (div.scrollWidth > div.clientWidth) throw new Error(`${div.scrollWidth - div.clientWidth}px wider than the panel`); return span.offsetHeight; })()"
+            },
+            {
+                "shot": "long-name"
+            }
+        ]
     }
 ]

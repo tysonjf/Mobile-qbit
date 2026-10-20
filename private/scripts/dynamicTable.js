@@ -2760,6 +2760,9 @@ window.qBittorrent.DynamicTable ??= (() => {
                 const node = that.getNode(id);
                 const value = this.getRowValue(row);
 
+                // used by the card layout of css/mobile.css
+                td.parentElement.style.setProperty("--file-tree-depth", node.depth);
+
                 let collapseIcon = td.firstElementChild;
                 if (collapseIcon === null) {
                     collapseIcon = document.createElement("img");
