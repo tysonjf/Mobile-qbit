@@ -2727,6 +2727,18 @@
         margin: 6px 0;
     }
 
+    /* Add torrent window ------------------------------------------------------- */
+
+    /* side by side in landscape: the settings fit their column */
+    :root #uploadForm .column fieldset {
+        min-width: 0;
+    }
+
+    :root #uploadForm .column :is(#rename, #dlLimitText, #upLimitText) {
+        box-sizing: border-box;
+        width: 100%;
+    }
+
     /* Rename files window: options, file list and buttons stacked --------------- */
 
     :root #multiRenamePage_content > div {

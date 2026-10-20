@@ -134,6 +134,32 @@
         ]
     },
     {
+        "name": "addtorrent-columns",
+        "steps": [
+            {
+                "files": [
+                    "#fileselectButton",
+                    "$TORRENTS/extra-series.torrent"
+                ]
+            },
+            {
+                "wait": 3000
+            },
+            {
+                "js": "(() => { const doc = [...document.querySelectorAll('iframe')].find((iframe) => iframe.src.includes('addtorrent.html')).contentDocument; doc.getElementById('rename').closest('fieldset').scrollIntoView(); })()"
+            },
+            {
+                "wait": 300
+            },
+            {
+                "eval": "(() => { const doc = [...document.querySelectorAll('iframe')].find((iframe) => iframe.src.includes('addtorrent.html')).contentDocument; const column = doc.querySelector('.column').getBoundingClientRect(); const outside = [...doc.querySelectorAll('.column:first-child :is(fieldset, table, input, select, textarea)')].filter((el) => (el.offsetWidth > 0) && (el.getBoundingClientRect().right > column.right + 0.5)).map((el) => `${el.tagName}#${el.id}`); if (outside.length > 0) throw new Error(`wider than their column: ${outside.join(', ')}`); return `everything fits the ${Math.round(column.width)}px column`; })()"
+            },
+            {
+                "shot": true
+            }
+        ]
+    },
+    {
         "name": "delete",
         "steps": [
             {
