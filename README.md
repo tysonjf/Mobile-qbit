@@ -42,7 +42,8 @@ What changes on a phone:
 * The Options window, Search, RSS, RSS Downloader, Log and all other dialogs reflow
   for narrow screens; text fields use a 16px font so iOS doesn't zoom in.
 * Search results, log messages and blocked IPs are cards too; light and dark themes
-  both work.
+  both work. A search result's download button opens the download window (like a
+  double tap), its **⋮** button the result's menu.
 
 On every screen size, **Help → Check for WebUI updates** shows whether a newer
 Mobile-qbit release exists and installs it with one tap (see
@@ -106,7 +107,7 @@ which is loaded last by the main page and by every dialog page:
 | Media query | Applies to | What it does |
 | --- | --- | --- |
 | `(width <= 767px), (pointer: coarse) and (height <= 500px)` | phones, portrait and landscape | phone layout |
-| `(600px <= width) and (height <= 500px)` (within the phone layout) | phones in landscape | toolbar shares the top row with the tabs |
+| `(600px <= width) and (height <= 500px)` (within the phone layout) | phones in landscape | toolbar shares the top row with the tabs; the Search tab scrolls as a whole |
 | `(width <= 479px)` | small phones | only the selected main tab shows its name |
 | `(width <= 1100px)` | tablets, small laptops | narrower filter box and status bar |
 | `(pointer: coarse)` | any touch screen | bigger menu, list and tab hit targets; a long press doesn't select text, a double tap doesn't zoom |

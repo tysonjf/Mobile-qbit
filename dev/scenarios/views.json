@@ -29,6 +29,53 @@
         ]
     },
     {
+        "name": "search-quick-download",
+        "steps": [
+            {
+                "js": "document.getElementById('searchTabLink').click()"
+            },
+            {
+                "wait": 1500
+            },
+            {
+                "js": "document.getElementById('searchPattern').value = 'ubuntu'; qBittorrent.Search.startStopSearch()"
+            },
+            {
+                "wait": 5000
+            },
+            {
+                "tap": "#searchResultsTableDiv tbody tr:nth-child(2) .mobileDownloadButton"
+            },
+            {
+                "wait": 2500
+            },
+            {
+                "eval": "(() => { const tr = document.querySelector('#searchResultsTableDiv tbody tr:nth-child(2)'); const name = tr.querySelector('td[data-column=fileName]').textContent; const titles = [...document.querySelectorAll('.mocha .mochaTitle')].map((title) => title.textContent); if (!titles.includes(name) || (document.querySelector('iframe[src*=\"addtorrent.html\"]') === null)) throw new Error(`no download window for ${name}: ${titles.join(', ')}`); if (!tr.classList.contains('selected') || (document.querySelectorAll('#searchResultsTableDiv tr.selected').length !== 1)) throw new Error('the result is not the only selected one'); return titles; })()"
+            },
+            {
+                "shot": "download"
+            },
+            {
+                "js": "for (const windowEl of document.querySelectorAll('.mocha')) MUI.closeWindow(windowEl)"
+            },
+            {
+                "wait": 1000
+            },
+            {
+                "tap": "#searchResultsTableDiv tbody tr:nth-child(3) .mobileMoreButton"
+            },
+            {
+                "wait": 500
+            },
+            {
+                "eval": "(() => { const tr = document.querySelector('#searchResultsTableDiv tbody tr:nth-child(3)'); const menuOpen = document.getElementById('searchResultsTableMenu').classList.contains('visible'); if (!menuOpen || !tr.classList.contains('selected') || (document.querySelectorAll('#searchResultsTableDiv tr.selected').length !== 1)) throw new Error('the menu is not open for the result'); return [menuOpen, document.querySelectorAll('.mocha').length]; })()"
+            },
+            {
+                "shot": "more"
+            }
+        ]
+    },
+    {
         "name": "searchplugins",
         "steps": [
             {
