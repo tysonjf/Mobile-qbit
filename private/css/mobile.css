@@ -1075,7 +1075,69 @@
 
     #desktopFooter table {
         flex: none;
-        margin: 0 0 0 auto !important;
+        margin: 0 auto 0 0 !important;
+    }
+
+    /* transfer speeds first, the rest can be scrolled to */
+    #desktopFooter tbody {
+        display: block;
+    }
+
+    #desktopFooter tr {
+        align-items: center;
+        display: flex;
+    }
+
+    #desktopFooter td:nth-child(11) {
+        order: 1; /* download speed */
+    }
+
+    #desktopFooter td:nth-child(12) {
+        order: 2;
+    }
+
+    #desktopFooter td:nth-child(13) {
+        order: 3; /* upload speed */
+    }
+
+    #desktopFooter td:nth-child(10) {
+        order: 4;
+    }
+
+    #desktopFooter td:nth-child(9) {
+        order: 5; /* alternative speed limits */
+    }
+
+    #desktopFooter td:nth-child(8) {
+        order: 6;
+    }
+
+    #desktopFooter td:nth-child(7) {
+        order: 7; /* connection status */
+    }
+
+    #desktopFooter td:nth-child(6) {
+        order: 8;
+    }
+
+    #desktopFooter td:nth-child(5) {
+        order: 9; /* DHT nodes */
+    }
+
+    #desktopFooter td:nth-child(4) {
+        order: 10;
+    }
+
+    #desktopFooter td:nth-child(3) {
+        order: 11; /* external IPs */
+    }
+
+    #desktopFooter td:nth-child(2) {
+        order: 12;
+    }
+
+    #desktopFooter td:nth-child(1) {
+        order: 13; /* free space */
     }
 
     #desktopFooter td {
@@ -1092,7 +1154,9 @@
     }
 
     td.statusBarSeparator {
+        align-self: stretch;
         background-position: center;
+        min-height: 22px;
         width: 14px;
     }
 
