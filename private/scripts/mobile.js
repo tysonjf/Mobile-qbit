@@ -76,7 +76,6 @@ window.qBittorrent.Mobile ??= (() => {
         const { backdrop, filtersColumn, navbar } = getElements();
         const isOpen = navbar.classList.contains("mobileOpen") || (filtersColumn?.classList.contains("mobileOpen") ?? false);
         backdrop.classList.toggle("invisible", !isOpen);
-        document.documentElement.classList.toggle("mobileOverlayOpen", isOpen);
     };
 
     const closeMenus = () => {

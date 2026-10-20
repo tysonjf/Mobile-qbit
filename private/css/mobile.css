@@ -25,6 +25,16 @@
     display: contents;
 }
 
+/* RSS article descriptions: keep wide images inside the article pane */
+.rssArticle :is(img, video) {
+    height: auto;
+    max-width: 100%;
+}
+
+.rssArticle pre {
+    white-space: pre-wrap;
+}
+
 /* ------------------------------------------------------------------------
  * Narrow screens (tablets, small laptops)
  * --------------------------------------------------------------------- */
