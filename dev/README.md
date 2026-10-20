@@ -199,7 +199,12 @@ Things to know before changing the WebUI
   cookie (`curl -c cookies -b cookies`, a cookie jar in Python).
 * **Strings.** New user-visible text uses `QBT_TR(text)QBT_TR[CONTEXT=...]`. Reuse
   strings that exist in `translations/*.ts` where possible (they are translated
-  already); `python3 tools/build-translations.py` rebuilds the `.qm` files.
+  already). For a new string run `python3 tools/update-translations.py`: it adds it
+  to `translations/mobile/*.ts`, untranslated (`vitest` fails until it is there).
+  Translate it there where you can (remove `type="unfinished"`; Qt Linguist opens
+  these files too); untranslated strings stay English. Don't edit
+  `translations/webui_*.ts`, they are qBittorrent's. `python3
+  tools/build-translations.py` rebuilds the `.qm` files.
 * **Checks before a PR** (from the repository root, after
   `pnpm install --shamefully-hoist`, see the [README](../README.md#development)):
   `npx eslint *.mjs private/*.html private/scripts/*.js private/views/*.html public/*.html public/scripts/*.js test/*/*.js`,
