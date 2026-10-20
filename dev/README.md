@@ -18,7 +18,11 @@ pnpm exec playwright install chromium   # not needed where browsers are preinsta
 # 1. start qbittorrent-nox 5.2.4 serving this repository (keep it running)
 sh start-qbittorrent.sh       # http://127.0.0.1:8080, no login from localhost
 
-# 2. in another shell: torrents, categories, tags, blocked IPs and an offline search plugin
+#    optional, in another shell: a second qbittorrent-nox, a peer for the Peers tab
+QBT_PROFILE=peer QBT_PORT=8081 QBT_BT_PORT=56882 sh start-qbittorrent.sh
+
+# 2. in another shell: torrents, categories, tags, web seeds, blocked IPs and an
+#    offline search plugin; the peer starts downloading a torrent from the first one
 python3 make-test-data.py
 
 # 3. screenshot tours (exit code 1 if anything failed)
@@ -43,6 +47,11 @@ editing the WebUI and reloading the page (or re-running a tour) is enough.
 In Claude Code cloud sessions, run the server as a background command with the
 longest timeout. Background commands are stopped after their timeout; just start
 it again (the profile and data are kept).
+
+The peer (`QBT_PROFILE=peer`, profile and downloads in `.cache/peer`) downloads
+*Big Buck Bunny* from the first qbittorrent-nox at 1 KiB/s, so for about 10 minutes
+that torrent has a peer with progress and speeds. Run `make-test-data.py` again to
+start over. Without the peer, the Peers tabs are empty.
 
 Scenario files
 ---

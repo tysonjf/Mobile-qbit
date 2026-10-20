@@ -1138,7 +1138,9 @@
         #torrentsTableFixedHeaderDiv,
         #searchResultsTableFixedHeaderDiv,
         #logMessageTableFixedHeaderDiv,
-        #logPeerTableFixedHeaderDiv
+        #logPeerTableFixedHeaderDiv,
+        #torrentTrackersTableFixedHeaderDiv,
+        #torrentPeersTableFixedHeaderDiv
     ) {
         overflow: auto hidden;
         scrollbar-width: none;
@@ -1148,7 +1150,9 @@
             #torrentsTableFixedHeaderDiv,
             #searchResultsTableFixedHeaderDiv,
             #logMessageTableFixedHeaderDiv,
-            #logPeerTableFixedHeaderDiv
+            #logPeerTableFixedHeaderDiv,
+            #torrentTrackersTableFixedHeaderDiv,
+            #torrentPeersTableFixedHeaderDiv
         )
         :is(table.dynamicTable, thead) {
         display: block;
@@ -1160,7 +1164,9 @@
             #torrentsTableFixedHeaderDiv,
             #searchResultsTableFixedHeaderDiv,
             #logMessageTableFixedHeaderDiv,
-            #logPeerTableFixedHeaderDiv
+            #logPeerTableFixedHeaderDiv,
+            #torrentTrackersTableFixedHeaderDiv,
+            #torrentPeersTableFixedHeaderDiv
         )
         tr {
         display: flex;
@@ -1172,7 +1178,9 @@
             #torrentsTableFixedHeaderDiv,
             #searchResultsTableFixedHeaderDiv,
             #logMessageTableFixedHeaderDiv,
-            #logPeerTableFixedHeaderDiv
+            #logPeerTableFixedHeaderDiv,
+            #torrentTrackersTableFixedHeaderDiv,
+            #torrentPeersTableFixedHeaderDiv
         )
         th {
         border: 1px solid var(--color-border-default);
@@ -1189,7 +1197,9 @@
             #torrentsTableFixedHeaderDiv,
             #searchResultsTableFixedHeaderDiv,
             #logMessageTableFixedHeaderDiv,
-            #logPeerTableFixedHeaderDiv
+            #logPeerTableFixedHeaderDiv,
+            #torrentTrackersTableFixedHeaderDiv,
+            #torrentPeersTableFixedHeaderDiv
         )
         th.invisible {
         display: none;
@@ -1199,7 +1209,9 @@
             #torrentsTableFixedHeaderDiv,
             #searchResultsTableFixedHeaderDiv,
             #logMessageTableFixedHeaderDiv,
-            #logPeerTableFixedHeaderDiv
+            #logPeerTableFixedHeaderDiv,
+            #torrentTrackersTableFixedHeaderDiv,
+            #torrentPeersTableFixedHeaderDiv
         )
         th.sorted {
         background-color: var(--color-background-blue);
@@ -1216,17 +1228,22 @@
             #torrentsTableFixedHeaderDiv,
             #searchResultsTableFixedHeaderDiv,
             #logMessageTableFixedHeaderDiv,
-            #logPeerTableFixedHeaderDiv
+            #logPeerTableFixedHeaderDiv,
+            #torrentTrackersTableFixedHeaderDiv,
+            #torrentPeersTableFixedHeaderDiv
         )
         th.sorted.reverse {
         background-image: url("../images/go-down.svg");
     }
 
-    /* Search results, log messages and blocked IPs are shown as cards as well */
+    /* Search results, the log, and the Trackers, Peers and HTTP Sources tabs are cards as well */
     :not(.virtualList):is(
             #searchResultsTableDiv,
             #logMessageTableDiv,
-            #logPeerTableDiv
+            #logPeerTableDiv,
+            #torrentTrackersTableDiv,
+            #torrentPeersTableDiv,
+            #torrentWebseedsTableDiv
         )
         :is(table.dynamicTable, tbody) {
         display: block;
@@ -1236,7 +1253,10 @@
     :not(.virtualList):is(
             #searchResultsTableDiv,
             #logMessageTableDiv,
-            #logPeerTableDiv
+            #logPeerTableDiv,
+            #torrentTrackersTableDiv,
+            #torrentPeersTableDiv,
+            #torrentWebseedsTableDiv
         )
         colgroup {
         display: none;
@@ -1245,7 +1265,10 @@
     :not(.virtualList):is(
             #searchResultsTableDiv,
             #logMessageTableDiv,
-            #logPeerTableDiv
+            #logPeerTableDiv,
+            #torrentTrackersTableDiv,
+            #torrentPeersTableDiv,
+            #torrentWebseedsTableDiv
         )
         tbody
         tr {
@@ -1260,7 +1283,10 @@
     :not(.virtualList):is(
             #searchResultsTableDiv,
             #logMessageTableDiv,
-            #logPeerTableDiv
+            #logPeerTableDiv,
+            #torrentTrackersTableDiv,
+            #torrentPeersTableDiv,
+            #torrentWebseedsTableDiv
         )
         table.dynamicTable
         tbody
@@ -1299,7 +1325,34 @@
             [data-column="timestamp"],
             [data-column="blocked"],
             [data-column="reason"]
-        ) {
+        ),
+    #torrentTrackersTableDiv:not(.virtualList)
+        table.dynamicTable
+        tbody
+        td:is(
+            [data-column="url"],
+            [data-column="status"],
+            [data-column="seeds"],
+            [data-column="peers"],
+            [data-column="leeches"],
+            [data-column="message"]
+        ),
+    #torrentPeersTableDiv:not(.virtualList)
+        table.dynamicTable
+        tbody
+        td:is(
+            [data-column="country"],
+            [data-column="ip"],
+            [data-column="port"],
+            [data-column="client"],
+            [data-column="progress"],
+            [data-column="dl_speed"],
+            [data-column="up_speed"]
+        ),
+    #torrentWebseedsTableDiv:not(.virtualList)
+        table.dynamicTable
+        tbody
+        td[data-column="url"] {
         display: block;
     }
 
@@ -1375,6 +1428,158 @@
     #logPeerTableDiv table.dynamicTable tbody td[data-column="timestamp"] {
         margin-left: auto;
         order: 1;
+    }
+
+    /* Trackers: the URL (endpoints indented below their tracker), status, seeds,
+       peers, leeches and the message. HTTP Sources: the URL. */
+    #torrentTrackersTableDiv
+        table.dynamicTable
+        tbody
+        td:is([data-column="url"], [data-column="message"]),
+    #torrentWebseedsTableDiv table.dynamicTable tbody td[data-column="url"] {
+        flex: 1 1 100%;
+        overflow-wrap: anywhere;
+        white-space: normal;
+    }
+
+    #torrentTrackersTableDiv table.dynamicTable tbody td[data-column="url"],
+    #torrentWebseedsTableDiv table.dynamicTable tbody td[data-column="url"] {
+        font-size: 14px;
+    }
+
+    #torrentTrackersTableDiv table.dynamicTable tbody td[data-column="status"] {
+        font-weight: 600;
+    }
+
+    #torrentTrackersTableDiv
+        table.dynamicTable
+        tbody
+        td[data-column="message"] {
+        opacity: 0.75;
+        order: 1;
+    }
+
+    #torrentTrackersTableDiv
+        table.dynamicTable
+        tbody
+        td[data-column="message"]:empty {
+        display: none;
+    }
+
+    /* numbers with the name of their column (data-label, set by mobile.js) */
+    #torrentTrackersTableDiv
+        table.dynamicTable
+        tbody
+        td:is(
+            [data-column="seeds"],
+            [data-column="peers"],
+            [data-column="leeches"]
+        )::before,
+    #torrentPeersTableDiv
+        table.dynamicTable
+        tbody
+        td[data-column="progress"]::before {
+        content: attr(data-label) "\00a0";
+        opacity: 0.75;
+    }
+
+    #torrentWebseedsTableFixedHeaderDiv {
+        display: none;
+    }
+
+    /* Peers: flag, address and client, then progress and speeds */
+    #torrentPeersTableDiv:not(.virtualList) table.dynamicTable tbody tr {
+        row-gap: 0;
+    }
+
+    #torrentPeersTableDiv:not(.virtualList) table.dynamicTable tbody tr::after {
+        content: "";
+        flex-basis: 100%;
+        order: 1;
+    }
+
+    #torrentPeersTableDiv
+        table.dynamicTable
+        tbody
+        td:is(
+            [data-column="progress"],
+            [data-column="dl_speed"],
+            [data-column="up_speed"]
+        ) {
+        margin-top: 4px;
+        order: 2;
+    }
+
+    #torrentPeersTableDiv
+        table.dynamicTable
+        tbody
+        td[data-column="country"]
+        span.flags {
+        display: inline-block;
+        font-size: 0;
+        height: 13px;
+        margin: 0;
+        padding: 0;
+        vertical-align: -2px;
+        width: 18px;
+    }
+
+    #torrentPeersTableDiv
+        table.dynamicTable
+        tbody
+        td:is([data-column="ip"], [data-column="port"]) {
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    #torrentPeersTableDiv table.dynamicTable tbody td[data-column="port"] {
+        margin-left: -12px;
+    }
+
+    #torrentPeersTableDiv
+        table.dynamicTable
+        tbody
+        td[data-column="port"]::before {
+        content: ":";
+    }
+
+    #torrentPeersTableDiv table.dynamicTable tbody td[data-column="client"] {
+        margin-left: auto;
+        opacity: 0.75;
+    }
+
+    #torrentPeersTableDiv
+        table.dynamicTable
+        tbody
+        td:is([data-column="dl_speed"], [data-column="up_speed"]) {
+        background-position: left center;
+        background-repeat: no-repeat;
+        background-size: 13px;
+        padding-left: 17px !important;
+    }
+
+    #torrentPeersTableDiv
+        table.dynamicTable
+        tbody
+        td:is([data-column="dl_speed"], [data-column="up_speed"]):empty {
+        display: none;
+    }
+
+    #torrentPeersTableDiv table.dynamicTable tbody td[data-column="dl_speed"] {
+        background-image: url("../images/downloading.svg");
+        margin-left: auto;
+    }
+
+    #torrentPeersTableDiv table.dynamicTable tbody td[data-column="up_speed"] {
+        background-image: url("../images/upload.svg");
+    }
+
+    #torrentPeersTableDiv
+        table.dynamicTable
+        tbody
+        td[data-column="dl_speed"]:empty
+        + td[data-column="up_speed"] {
+        margin-left: auto;
     }
 
     /* Status bar ------------------------------------------------------------- */
@@ -2237,7 +2442,9 @@
             #torrentsTableFixedHeaderDiv,
             #searchResultsTableFixedHeaderDiv,
             #logMessageTableFixedHeaderDiv,
-            #logPeerTableFixedHeaderDiv
+            #logPeerTableFixedHeaderDiv,
+            #torrentTrackersTableFixedHeaderDiv,
+            #torrentPeersTableFixedHeaderDiv
         )
         tr {
         padding-bottom: 4px;

@@ -33,6 +33,7 @@
  *  - row height of the torrents table when the virtual list is used
  *  - the download and "More actions" buttons of the search result cards
  *  - the browser's theme color (status bar of the app added to the home screen)
+ *  - column names for the cards of the Trackers and Peers tabs
  */
 
 "use strict";
@@ -450,6 +451,30 @@ window.qBittorrent.Mobile ??= (() => {
         };
     };
 
+    /* Details panel: Trackers and Peers tabs */
+
+    // Their cards show some numbers with the name of their column, see css/mobile.css
+    const addColumnLabels = (table, tr) => {
+        const cells = table.getRowCells(tr);
+        for (let i = 0; i < table.columns.length; ++i)
+            cells[i].dataset.label = table.columns[i].caption;
+    };
+
+    const patchDetailsTables = () => {
+        for (const name of ["TorrentTrackersTable", "TorrentPeersTable"]) {
+            const Table = window.qBittorrent.DynamicTable?.[name];
+            if (Table === undefined)
+                continue;
+
+            const updateRowElement = Table.prototype.updateRowElement;
+            Table.prototype.updateRowElement = function(tr, ...args) {
+                const result = updateRowElement.call(this, tr, ...args);
+                addColumnLabels(this, tr);
+                return result;
+            };
+        }
+    };
+
     /* Torrents table */
 
     const updateTorrentsTableRowHeight = (table) => {
@@ -566,6 +591,7 @@ window.qBittorrent.Mobile ??= (() => {
     const init = () => {
         if (window.MUI?.Window !== undefined)
             patchMochaWindows();
+        patchDetailsTables();
         patchTorrentsTable();
         patchSearchResultsTable();
 

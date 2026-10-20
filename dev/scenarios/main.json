@@ -284,6 +284,89 @@
         ]
     },
     {
+        "name": "details-cards",
+        "steps": [
+            {
+                "js": "(() => { for (const tr of document.querySelectorAll('#torrentsTableDiv tbody tr')) if (tr.textContent.includes('Big Buck Bunny')) { torrentsTable.deselectAll(); torrentsTable.selectRow(tr.rowId); } })()"
+            },
+            {
+                "js": "document.getElementById('propTrackersLink').click()"
+            },
+            {
+                "wait": 2000
+            },
+            {
+                "js": "document.querySelector('#torrentTrackersTableDiv img.filesTableCollapseIcon[style*=visible]')?.click()"
+            },
+            {
+                "wait": 1500
+            },
+            {
+                "eval": "(() => { const div = document.getElementById('torrentTrackersTableDiv'); const rows = [...div.querySelectorAll('tbody tr')]; if ((rows.length > 0) && (getComputedStyle(rows[0]).display !== 'flex')) throw new Error('not cards'); if (div.scrollWidth > div.clientWidth) throw new Error(`${div.scrollWidth - div.clientWidth}px wider than the panel`); const shown = rows.slice(0, 1).flatMap((tr) => [...tr.cells].filter((td) => td.checkVisibility()).map((td) => td.dataset.column + (td.dataset.label ? `=${td.dataset.label}` : ''))); const missing = ['url', 'status', 'peers=', 'seeds=', 'leeches='].filter((column) => (rows.length > 0) && !shown.some((entry) => entry.startsWith(column))); if (missing.length > 0) throw new Error(`not shown: ${missing.join(', ')}`); return [rows.length, shown]; })()"
+            },
+            {
+                "shot": "trackers"
+            },
+            {
+                "longpress": "#torrentTrackersTableDiv tbody tr:first-child"
+            },
+            {
+                "wait": 500
+            },
+            {
+                "eval": "(() => { if (!document.getElementById('torrentTrackersMenu').classList.contains('visible')) throw new Error('no menu'); return 'torrentTrackersMenu'; })()"
+            },
+            {
+                "js": "document.getElementById('contextMenuBackdrop')?.click()"
+            },
+            {
+                "wait": 300
+            },
+            {
+                "js": "document.getElementById('propPeersLink').click()"
+            },
+            {
+                "wait": 2500
+            },
+            {
+                "eval": "(() => { const div = document.getElementById('torrentPeersTableDiv'); const rows = [...div.querySelectorAll('tbody tr')]; if ((rows.length > 0) && (getComputedStyle(rows[0]).display !== 'flex')) throw new Error('not cards'); if (div.scrollWidth > div.clientWidth) throw new Error(`${div.scrollWidth - div.clientWidth}px wider than the panel`); const shown = rows.slice(0, 1).flatMap((tr) => [...tr.cells].filter((td) => td.checkVisibility()).map((td) => td.dataset.column + (td.dataset.label ? `=${td.dataset.label}` : ''))); const missing = ['country', 'ip', 'port', 'client', 'progress='].filter((column) => (rows.length > 0) && !shown.some((entry) => entry.startsWith(column))); if (missing.length > 0) throw new Error(`not shown: ${missing.join(', ')}`); return [rows.length, shown]; })()"
+            },
+            {
+                "shot": "peers"
+            },
+            {
+                "js": "(() => { for (const tr of document.querySelectorAll('#torrentsTableDiv tbody tr')) if (tr.textContent.includes('Sintel')) { torrentsTable.deselectAll(); torrentsTable.selectRow(tr.rowId); } })()"
+            },
+            {
+                "js": "document.getElementById('propWebSeedsLink').click()"
+            },
+            {
+                "wait": 2000
+            },
+            {
+                "eval": "(() => { const div = document.getElementById('torrentWebseedsTableDiv'); const rows = [...div.querySelectorAll('tbody tr')]; if ((rows.length > 0) && (getComputedStyle(rows[0]).display !== 'flex')) throw new Error('not cards'); if (div.scrollWidth > div.clientWidth) throw new Error(`${div.scrollWidth - div.clientWidth}px wider than the panel`); const shown = rows.slice(0, 1).flatMap((tr) => [...tr.cells].filter((td) => td.checkVisibility()).map((td) => td.dataset.column + (td.dataset.label ? `=${td.dataset.label}` : ''))); const missing = ['url'].filter((column) => (rows.length > 0) && !shown.some((entry) => entry.startsWith(column))); if (missing.length > 0) throw new Error(`not shown: ${missing.join(', ')}`); return [rows.length, shown]; })()"
+            },
+            {
+                "shot": "webseeds"
+            },
+            {
+                "longpress": "#torrentWebseedsTableDiv tbody tr:first-child"
+            },
+            {
+                "wait": 500
+            },
+            {
+                "eval": "(() => { if (!document.getElementById('torrentWebseedsMenu').classList.contains('visible')) throw new Error('no menu'); return 'torrentWebseedsMenu'; })()"
+            },
+            {
+                "js": "document.getElementById('contextMenuBackdrop')?.click()"
+            },
+            {
+                "wait": 300
+            }
+        ]
+    },
+    {
         "name": "prop-files",
         "steps": [
             {
