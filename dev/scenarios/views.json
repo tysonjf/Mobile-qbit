@@ -139,6 +139,119 @@
         ]
     },
     {
+        "name": "rss-pages",
+        "steps": [
+            {
+                "js": "document.getElementById('rssTabLink').click()"
+            },
+            {
+                "wait": 2000
+            },
+            {
+                "eval": "(() => { const view = document.getElementById('rssView'); const page = view.dataset.mobilePage; const shown = ['leftRssColumn', 'centerRssColumn', 'rightRssColumn'].filter((id) => document.getElementById(id).offsetHeight > 0); const back = document.getElementById('mobileRssBack').textContent; const title = document.getElementById('mobileRssTitle').textContent; const content = document.getElementById('rssContentView').getBoundingClientRect().height; if ((page !== 'feeds') || (shown.join() !== 'leftRssColumn')) throw new Error(`page ${page}, shown ${shown}, back '${back}', title '${title}'`); const height = document.getElementById('leftRssColumn').getBoundingClientRect().height; if (height < content - 12) throw new Error(`leftRssColumn is ${height}px of ${content}px`); return `${page}: back '${back}', title '${title}'`; })()"
+            },
+            {
+                "shot": true
+            },
+            {
+                "tap": "#rssFeedTableDiv tbody tr:has-text('Linux ISOs')"
+            },
+            {
+                "wait": 800
+            },
+            {
+                "eval": "(() => { const view = document.getElementById('rssView'); const page = view.dataset.mobilePage; const shown = ['leftRssColumn', 'centerRssColumn', 'rightRssColumn'].filter((id) => document.getElementById(id).offsetHeight > 0); const back = document.getElementById('mobileRssBack').textContent; const title = document.getElementById('mobileRssTitle').textContent; const content = document.getElementById('rssContentView').getBoundingClientRect().height; if ((page !== 'articles') || (shown.join() !== 'centerRssColumn') || (title !== 'Linux ISOs') || (back !== 'RSS feeds')) throw new Error(`page ${page}, shown ${shown}, back '${back}', title '${title}'`); const height = document.getElementById('centerRssColumn').getBoundingClientRect().height; if (height < content - 12) throw new Error(`centerRssColumn is ${height}px of ${content}px`); return `${page}: back '${back}', title '${title}'`; })()"
+            },
+            {
+                "shot": "articles"
+            },
+            {
+                "tap": "#rssArticleTableDiv tbody tr:has-text('Fedora Workstation')"
+            },
+            {
+                "wait": 1200
+            },
+            {
+                "eval": "(() => { const view = document.getElementById('rssView'); const page = view.dataset.mobilePage; const shown = ['leftRssColumn', 'centerRssColumn', 'rightRssColumn'].filter((id) => document.getElementById(id).offsetHeight > 0); const back = document.getElementById('mobileRssBack').textContent; const title = document.getElementById('mobileRssTitle').textContent; const content = document.getElementById('rssContentView').getBoundingClientRect().height; if ((page !== 'article') || (shown.join() !== 'rightRssColumn') || (back !== 'Linux ISOs') || document.getElementById('mobileRssDownload').hidden || !document.getElementById('rssTorrentDetailsName')?.textContent.includes('Fedora')) throw new Error(`page ${page}, shown ${shown}, back '${back}', title '${title}'`); const height = document.getElementById('rightRssColumn').getBoundingClientRect().height; if (height < content - 12) throw new Error(`rightRssColumn is ${height}px of ${content}px`); return `${page}: back '${back}', title '${title}'`; })()"
+            },
+            {
+                "shot": "article"
+            },
+            {
+                "tap": "#mobileRssDownload"
+            },
+            {
+                "wait": 1500
+            },
+            {
+                "eval": "(() => { const frame = [...document.querySelectorAll('iframe')].find((iframe) => iframe.src.includes('addtorrent.html')); if (frame === undefined) throw new Error('no add torrent window'); MochaUI.closeWindow(frame.closest('.mocha')); return 'add torrent window opened'; })()"
+            },
+            {
+                "wait": 800
+            },
+            {
+                "tap": "#mobileRssBack"
+            },
+            {
+                "wait": 500
+            },
+            {
+                "eval": "(() => { const view = document.getElementById('rssView'); const page = view.dataset.mobilePage; const shown = ['leftRssColumn', 'centerRssColumn', 'rightRssColumn'].filter((id) => document.getElementById(id).offsetHeight > 0); const back = document.getElementById('mobileRssBack').textContent; const title = document.getElementById('mobileRssTitle').textContent; const content = document.getElementById('rssContentView').getBoundingClientRect().height; if ((page !== 'articles') || (shown.join() !== 'centerRssColumn') || (title !== 'Linux ISOs')) throw new Error(`page ${page}, shown ${shown}, back '${back}', title '${title}'`); const height = document.getElementById('centerRssColumn').getBoundingClientRect().height; if (height < content - 12) throw new Error(`centerRssColumn is ${height}px of ${content}px`); return `${page}: back '${back}', title '${title}'`; })()"
+            },
+            {
+                "tap": "#mobileRssBack"
+            },
+            {
+                "wait": 500
+            },
+            {
+                "eval": "(() => { const view = document.getElementById('rssView'); const page = view.dataset.mobilePage; const shown = ['leftRssColumn', 'centerRssColumn', 'rightRssColumn'].filter((id) => document.getElementById(id).offsetHeight > 0); const back = document.getElementById('mobileRssBack').textContent; const title = document.getElementById('mobileRssTitle').textContent; const content = document.getElementById('rssContentView').getBoundingClientRect().height; if ((page !== 'feeds') || (shown.join() !== 'leftRssColumn')) throw new Error(`page ${page}, shown ${shown}, back '${back}', title '${title}'`); const height = document.getElementById('leftRssColumn').getBoundingClientRect().height; if (height < content - 12) throw new Error(`leftRssColumn is ${height}px of ${content}px`); return `${page}: back '${back}', title '${title}'`; })()"
+            },
+            {
+                "tap": "#rssFeedTableDiv tbody tr:has-text('Example Series')"
+            },
+            {
+                "wait": 800
+            },
+            {
+                "js": "(() => { const div = document.getElementById('rssArticleTableDiv'); div.scrollTop = div.scrollHeight; window.mobileRssScrollTop = div.scrollTop; })()"
+            },
+            {
+                "tap": "#rssArticleTableDiv tbody tr:last-child"
+            },
+            {
+                "wait": 800
+            },
+            {
+                "tap": "#mobileRssBack"
+            },
+            {
+                "wait": 500
+            },
+            {
+                "eval": "(() => { const top = document.getElementById('rssArticleTableDiv').scrollTop; if (Math.abs(top - window.mobileRssScrollTop) > 1) throw new Error(`the articles scrolled from ${window.mobileRssScrollTop} to ${top}`); return `articles kept their scroll position (${top}px)`; })()"
+            },
+            {
+                "tap": "#mobileRssBack"
+            },
+            {
+                "wait": 500
+            },
+            {
+                "longpress": "#rssFeedTableDiv tbody tr:has-text('Open Movies')"
+            },
+            {
+                "wait": 500
+            },
+            {
+                "eval": "(() => { const menu = document.getElementById('rssFeedMenu'); const page = document.getElementById('rssView').dataset.mobilePage; if (!menu.classList.contains('visible') || (page !== 'feeds')) throw new Error(`menu visible: ${menu.classList.contains('visible')}, page ${page}`); return 'long press: menu, still the feeds'; })()"
+            },
+            {
+                "shot": "menu"
+            }
+        ]
+    },
+    {
         "name": "rssnewfeed",
         "steps": [
             {
