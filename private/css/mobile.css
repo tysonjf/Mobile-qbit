@@ -9,6 +9,7 @@
  *    (phones in portrait and landscape). Keep in sync with scripts/mobile.js.
  *  - Narrow screens: `(max-width: 1100px)` small laptops and tablets.
  *  - Touch screens: `(pointer: coarse)` bigger hit targets.
+ *  - Reduced motion: `(prefers-reduced-motion: reduce)` no drawer animation.
  *
  * MochaUI sizes most of the layout with inline styles from JavaScript, which is
  * why some rules have to use `!important`.
@@ -331,6 +332,16 @@
 
     .mobileBarButton[aria-expanded="true"] img {
         filter: var(--color-icon-hover);
+    }
+
+    /* style.css hides the focus; show it for the keyboard (mobile.js moves it into the panels) */
+    :is(
+        .mobileBarButton,
+        #desktopNavbar.mobileOpen *,
+        #filtersColumn.mobileOpen *
+    ):focus-visible {
+        outline: 2px solid var(--color-accent-blue);
+        outline-offset: -2px;
     }
 
     /* the filters only apply to the Transfers tab */
@@ -675,8 +686,10 @@
         display: none;
     }
 
+    /* visible right away when it opens, so that focus can move into it (mobile.js) */
     #filtersColumn.mobileOpen {
         transform: none;
+        transition: transform 0.2s ease-out;
         visibility: visible;
     }
 
@@ -2173,5 +2186,16 @@
     #mainWindowTabsList li:not(.selected) a {
         font-size: 0;
         gap: 0;
+    }
+}
+
+/* ------------------------------------------------------------------------
+ * Reduced motion: the filters drawer and the menu panel don't animate
+ * --------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+    #filtersColumn,
+    #desktopNavbar > ul > li > a::after {
+        transition: none !important;
     }
 }

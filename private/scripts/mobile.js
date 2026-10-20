@@ -80,11 +80,88 @@ window.qBittorrent.Mobile ??= (() => {
         backdrop.classList.toggle("invisible", !isOpen);
     };
 
+    // Keyboard and screen reader access. The entries of the menu panel and of the
+    // filters drawer are links without href and spans, which can't be focused.
+    // While a panel is open they get a tabindex, Enter and Space activate them,
+    // focus moves into the panel and Tab keeps it there. Closing the panel brings
+    // focus back to its button.
+    const panelEntries = {
+        desktopNavbar: ":scope > ul > li > a, li li > a, li li > div.anchor > label",
+        filtersColumn: ".filterTitle, .filterList li > span.link"
+    };
+    let focusedPanel = null;
+
+    const makeEntriesFocusable = (panel) => {
+        for (const entry of panel.querySelectorAll(panelEntries[panel.id])) {
+            // links without href report a tabIndex of 0, but can't be focused
+            if (!entry.hasAttribute("tabindex") && !entry.matches("a[href]")) {
+                entry.tabIndex = 0;
+                entry.dataset.mobileFocusable = "";
+            }
+        }
+    };
+
+    const getFocusableElements = (panel) => {
+        return [...panel.querySelectorAll("a[href], button, input, select, textarea, [tabindex]")]
+            .filter((element) => (element.tabIndex >= 0) && !element.disabled && (element.getClientRects().length > 0));
+    };
+
+    const focusPanel = (panel, button) => {
+        makeEntriesFocusable(panel);
+        // the filter lists are rebuilt when categories, tags or trackers change
+        const observer = new MutationObserver(() => makeEntriesFocusable(panel));
+        observer.observe(panel, { childList: true, subtree: true });
+        focusedPanel = { panel, button, observer };
+
+        getFocusableElements(panel)[0]?.focus({ preventScroll: true });
+    };
+
+    const releasePanelFocus = () => {
+        if (focusedPanel === null)
+            return;
+
+        const { panel, button, observer } = focusedPanel;
+        focusedPanel = null;
+        observer.disconnect();
+        // not if an entry moved the focus elsewhere, e.g. into a dialog
+        const active = document.activeElement;
+        if ((active === null) || (active === document.body) || panel.contains(active))
+            button.focus({ preventScroll: true });
+
+        for (const entry of panel.querySelectorAll("[data-mobile-focusable]")) {
+            entry.removeAttribute("tabindex");
+            delete entry.dataset.mobileFocusable;
+        }
+    };
+
+    const onPanelKeyDown = (event) => {
+        if (focusedPanel === null)
+            return;
+
+        const { panel } = focusedPanel;
+        if (event.key === "Tab") {
+            const elements = getFocusableElements(panel);
+            const index = elements.indexOf(document.activeElement);
+            const next = event.shiftKey
+                ? ((index <= 0) ? elements.at(-1) : null)
+                : (((index === -1) || (index === (elements.length - 1))) ? elements[0] : null);
+            if ((next !== null) || (elements.length === 0)) {
+                event.preventDefault();
+                next?.focus();
+            }
+        }
+        else if (((event.key === "Enter") || (event.key === " ")) && (event.target.dataset?.mobileFocusable !== undefined) && panel.contains(event.target)) {
+            event.preventDefault();
+            event.target.click();
+        }
+    };
+
     const closeMenus = () => {
         const { filtersButton, filtersColumn, menuButton, navbar } = getElements();
         if (navbar === null)
             return;
 
+        releasePanelFocus();
         navbar.classList.remove("mobileOpen");
         for (const item of navbar.querySelectorAll(".mobileOpen"))
             item.classList.remove("mobileOpen");
@@ -104,6 +181,7 @@ window.qBittorrent.Mobile ??= (() => {
             navbar.classList.add("mobileOpen");
             navbar.scrollTop = 0;
             menuButton.setAttribute("aria-expanded", "true");
+            focusPanel(navbar, menuButton);
         }
         updateBackdrop();
     };
@@ -118,6 +196,7 @@ window.qBittorrent.Mobile ??= (() => {
         if (open) {
             filtersColumn.classList.add("mobileOpen");
             filtersButton.setAttribute("aria-expanded", "true");
+            focusPanel(filtersColumn, filtersButton);
         }
         updateBackdrop();
     };
@@ -171,6 +250,7 @@ window.qBittorrent.Mobile ??= (() => {
             if (event.key === "Escape")
                 closeMenus();
         });
+        document.addEventListener("keydown", onPanelKeyDown);
     };
 
     const setupFiltersDrawer = () => {
