@@ -275,6 +275,69 @@
 }
 
 /* ------------------------------------------------------------------------
+ * Touch screens: long press and taps
+ * --------------------------------------------------------------------- */
+
+/*
+ * A long press opens the WebUI's own menus. It must not also select text or
+ * show the browser's callout (copy, look up, open link, save image), so with
+ * touch only text fields and text worth copying can be selected. The stock
+ * WebUI makes menus, tabs and table rows unselectable with "user-select", but
+ * Safari only knows "-webkit-user-select": on iPhones and iPads a long press
+ * selected the text anyway. Browsers that show their own menu for links and
+ * images (Android) are handled in mobile.js.
+ */
+@media (pointer: coarse) {
+    html {
+        /* a double tap is the WebUI's double click (torrents, search results), not a zoom */
+        touch-action: manipulation;
+    }
+
+    body {
+        -webkit-touch-callout: none;
+        /* stylelint-disable-next-line property-no-vendor-prefix -- Safari has no user-select */
+        -webkit-user-select: none;
+        user-select: none;
+    }
+
+    img {
+        -webkit-user-drag: none;
+    }
+
+    input[type="search"],
+    input[type="text"],
+    input[type="number"],
+    input[type="password"],
+    input[type="url"],
+    input[type="email"],
+    input[type="datetime-local"],
+    input:not([type]),
+    textarea,
+    #propGeneral,
+    #rssDetailsView,
+    .aboutTabContent,
+    #torrentInfoSection,
+    #mobileUpdateNotes {
+        -webkit-touch-callout: default;
+        /* stylelint-disable-next-line property-no-vendor-prefix -- Safari has no user-select */
+        -webkit-user-select: text;
+        user-select: text;
+    }
+
+    a[href^="http"] {
+        -webkit-touch-callout: default;
+    }
+
+    /* These show a tap with their selection or :active state */
+    .dynamicTableDiv,
+    .contextMenu,
+    ul.filterList,
+    .tab-menu {
+        -webkit-tap-highlight-color: transparent;
+    }
+}
+
+/* ------------------------------------------------------------------------
  * Phone layout: main window
  * --------------------------------------------------------------------- */
 

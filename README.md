@@ -28,7 +28,9 @@ What changes on a phone:
   reverse.
 * **Long press** a torrent (or a filter, tracker, peer, file, RSS item, ...) for its
   context menu, shown as a bottom sheet. Entries with a ▾ expand in place. The **⋮**
-  button on a torrent card opens the same menu with a tap.
+  button on a torrent card opens the same menu with a tap. On touch screens a long
+  press doesn't select text or bring up the browser's own menu (also on iPhones and
+  iPads); text fields, the General tab and RSS articles can still be selected.
 * **Select several torrents**: the ☑ button next to the torrent filter turns on the
   selection mode (on every touch screen, as there are no CTRL/SHIFT keys). Tap
   torrents to tick them, or use *Select All* / *Clear*; the toolbar buttons and the
@@ -107,7 +109,7 @@ which is loaded last by the main page and by every dialog page:
 | `(600px <= width) and (height <= 500px)` (within the phone layout) | phones in landscape | toolbar shares the top row with the tabs |
 | `(width <= 479px)` | small phones | only the selected main tab shows its name |
 | `(width <= 1100px)` | tablets, small laptops | narrower filter box and status bar |
-| `(pointer: coarse)` | any touch screen | bigger menu, list and tab hit targets |
+| `(pointer: coarse)` | any touch screen | bigger menu, list and tab hit targets; a long press doesn't select text, a double tap doesn't zoom |
 | `(hover: none)` | touch-only screens | no "sticky" hover highlight after a tap |
 
 The login page has its own media queries in [`public/css/login.css`](public/css/login.css).
@@ -120,13 +122,15 @@ The first commit of this repository is the unmodified WebUI of qBittorrent v5.2.
 
 * `private/css/mobile.css` (new): all responsive styles.
 * `private/scripts/mobile.js` (new): menu button, filters drawer, selection mode,
-  the ⋮ button of torrent cards, fitting MochaUI windows into the screen, card row
-  height for the virtual list option.
+  the ⋮ button of torrent cards, no browser menus for buttons and icons on a long
+  press, fitting MochaUI windows into the screen, card row height for the virtual
+  list option.
 * `private/index.html`: menu/filter buttons, a wrapper around the toolbar buttons,
   loads `mobile.css` and `mobile.js`.
 * `private/*.html` dialog pages: load `mobile.css`.
 * `private/scripts/contextmenu.js`: bottom sheet mode; fixes the position of
-  long-press menus on touch screens (touch events have no `pageX`/`pageY`).
+  long-press menus on touch screens (touch events have no `pageX`/`pageY`); the click
+  that can follow a long press doesn't close its menu again.
 * `private/scripts/dynamicTable.js`: cells get a `data-column` attribute (used by the
   card layouts); a row is selected on long press instead of on every touch, so
   scrolling the list no longer changes the selection; a `multiSelect` flag lets a

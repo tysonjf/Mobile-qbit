@@ -75,6 +75,19 @@ window.qBittorrent.ContextMenu ??= (() => {
         sheetBackdrop?.remove();
     };
 
+    // Without a "contextmenu" event (iOS) a long press opens the menu on "touchend",
+    // and lifting the finger can still be followed by a click. That click must not
+    // close the menu again, choose one of its entries or change the selection.
+    let longPressMenuShownAt = -Infinity;
+    document.addEventListener("click", (event) => {
+        if ((performance.now() - longPressMenuShownAt) >= 400)
+            return;
+
+        longPressMenuShownAt = -Infinity;
+        event.preventDefault();
+        event.stopPropagation();
+    }, true);
+
     class ContextMenu {
         constructor(options) {
             this.options = {
@@ -197,8 +210,11 @@ window.qBittorrent.ContextMenu ??= (() => {
                 this.touchStartEvent = null;
 
                 const isTargetUnchanged = (Math.abs(e.changedTouches[0].pageX - touchStartEvent.changedTouches[0].pageX) <= 10) && (Math.abs(e.changedTouches[0].pageY - touchStartEvent.changedTouches[0].pageY) <= 10);
-                if (((now - touchStartAt) >= this.options.touchTimer) && isTargetUnchanged)
+                if (((now - touchStartAt) >= this.options.touchTimer) && isTargetUnchanged) {
                     this.triggerMenu(touchStartEvent, elem);
+                    if (this.menu.classList.contains("visible"))
+                        longPressMenuShownAt = performance.now();
+                }
             }, { passive: true });
         }
 
