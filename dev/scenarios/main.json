@@ -97,6 +97,67 @@
         ]
     },
     {
+        "name": "more-actions",
+        "steps": [
+            {
+                "tap": "#torrentsTableDiv tbody tr:nth-child(3) .mobileMoreButton"
+            },
+            {
+                "wait": 500
+            },
+            {
+                "eval": "[torrentsTable.selectedRowsIds().length, torrentsTable.getSelectedRowId() === document.querySelector('#torrentsTableDiv tbody tr:nth-child(3)').rowId, document.getElementById('torrentsTableMenu').classList.contains('visible')]"
+            },
+            {
+                "shot": true
+            },
+            {
+                "js": "document.getElementById('contextMenuBackdrop').click()"
+            },
+            {
+                "wait": 300
+            },
+            {
+                "tap": "#torrentsTableDiv tbody tr:nth-child(5) td[data-column='size']"
+            },
+            {
+                "wait": 300
+            },
+            {
+                "eval": "[torrentsTable.getSelectedRowId() === document.querySelector('#torrentsTableDiv tbody tr:nth-child(5)').rowId, document.getElementById('torrentsTableMenu').classList.contains('visible')]"
+            },
+            {
+                "shot": "card-tap"
+            }
+        ]
+    },
+    {
+        "name": "more-actions-select-mode",
+        "steps": [
+            {
+                "tap": "#mobileSelectButton"
+            },
+            {
+                "wait": 300
+            },
+            {
+                "tap": "#torrentsTableDiv tbody tr:nth-child(2)"
+            },
+            {
+                "tap": "#torrentsTableDiv tbody tr:nth-child(4) .mobileMoreButton"
+            },
+            {
+                "wait": 500
+            },
+            {
+                "eval": "[document.getElementById('mobileSelectionCount').textContent, document.getElementById('torrentsTableMenu').classList.contains('visible')]"
+            },
+            {
+                "shot": true
+            }
+        ]
+    },
+    {
         "name": "sort-chips",
         "steps": [
             {

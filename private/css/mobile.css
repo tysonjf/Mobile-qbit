@@ -18,7 +18,8 @@
 #mobileBar,
 #mobileBackdrop,
 #mobileSelectButton,
-#mobileSelectionBar {
+#mobileSelectionBar,
+.mobileMoreCell {
     display: none;
 }
 
@@ -950,6 +951,45 @@
         overflow: hidden;
         overflow-wrap: anywhere;
         white-space: normal;
+    }
+
+    /* "More actions" button (⋮) next to the name, opens the torrent menu (mobile.js) */
+    #torrentsTableDiv table.dynamicTable tbody td.mobileMoreCell {
+        align-self: flex-start;
+        display: block;
+        flex: none;
+        /* a big touch target that doesn't make the card taller */
+        margin: -9px -12px -8px -6px;
+        order: 1;
+    }
+
+    .mobileMoreButton {
+        align-items: center;
+        background: none;
+        border: 0;
+        border-radius: 50%;
+        color: inherit;
+        display: flex;
+        height: 36px;
+        justify-content: center;
+        padding: 0;
+        touch-action: manipulation;
+        width: 40px;
+    }
+
+    .mobileMoreButton::before {
+        background-color: currentcolor;
+        border-radius: 50%;
+        box-shadow:
+            0 -6px currentcolor,
+            0 6px currentcolor;
+        content: "";
+        height: 4px;
+        width: 4px;
+    }
+
+    .mobileMoreButton:active {
+        background-color: var(--color-border-default);
     }
 
     #transferList #torrentsTableDiv td[data-column="name"] .stateIcon {
