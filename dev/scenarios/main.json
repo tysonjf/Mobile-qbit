@@ -348,6 +348,62 @@
         ]
     },
     {
+        "name": "details-maximize",
+        "steps": [
+            {
+                "js": "(() => { const trs = document.querySelectorAll('#torrentsTableDiv tbody tr'); const tr = trs[3]; torrentsTable.deselectAll(); torrentsTable.selectRow(tr.rowId); })()"
+            },
+            {
+                "js": "document.getElementById('propGeneralLink').click()"
+            },
+            {
+                "wait": 1000
+            },
+            {
+                "tap": "#mobileDetailsMaximize"
+            },
+            {
+                "wait": 500
+            },
+            {
+                "eval": "(() => { const list = document.getElementById('transferList_wrapper').offsetHeight; const panel = document.getElementById('propertiesPanel_wrapper').getBoundingClientRect().height; const column = document.getElementById('mainColumn').getBoundingClientRect().height; const pressed = document.getElementById('mobileDetailsMaximize').getAttribute('aria-pressed'); const filter = document.getElementById('torrentsFilterToolbar').offsetHeight; if ((list !== 0) || (filter !== 0) || (Math.abs(panel - column) > 1) || (pressed !== 'true')) throw new Error(`not maximized: list ${list}, filter ${filter}, panel ${panel} of ${column}, pressed ${pressed}`); return `panel ${Math.round(panel)}px`; })()"
+            },
+            {
+                "shot": true
+            },
+            {
+                "tap": "#propertiesPanel_collapseToggle"
+            },
+            {
+                "wait": 500
+            },
+            {
+                "eval": "(() => { const list = document.getElementById('transferList_wrapper').offsetHeight; const panel = document.getElementById('propertiesPanel_wrapper').getBoundingClientRect().height; const column = document.getElementById('mainColumn').getBoundingClientRect().height; const pressed = document.getElementById('mobileDetailsMaximize').getAttribute('aria-pressed'); const filter = document.getElementById('torrentsFilterToolbar').offsetHeight; if ((list === 0) || (filter === 0) || (pressed !== 'false') || !document.getElementById('propertiesPanel_wrapper').classList.contains('collapsed')) throw new Error(`collapsing didn't restore the list: list ${list}, filter ${filter}, pressed ${pressed}`); return `list ${list}px`; })()"
+            },
+            {
+                "tap": "#mobileDetailsMaximize"
+            },
+            {
+                "wait": 1000
+            },
+            {
+                "eval": "(() => { const list = document.getElementById('transferList_wrapper').offsetHeight; const panel = document.getElementById('propertiesPanel_wrapper').getBoundingClientRect().height; const column = document.getElementById('mainColumn').getBoundingClientRect().height; const pressed = document.getElementById('mobileDetailsMaximize').getAttribute('aria-pressed'); const filter = document.getElementById('torrentsFilterToolbar').offsetHeight; if ((list !== 0) || (Math.abs(panel - column) > 1) || (pressed !== 'true') || document.getElementById('propertiesPanel_wrapper').classList.contains('collapsed')) throw new Error(`collapsed details didn't open maximized: list ${list}, panel ${panel} of ${column}, pressed ${pressed}`); return 'opened maximized'; })()"
+            },
+            {
+                "tap": "#mobileDetailsMaximize"
+            },
+            {
+                "wait": 500
+            },
+            {
+                "eval": "(() => { const list = document.getElementById('transferList_wrapper').offsetHeight; const panel = document.getElementById('propertiesPanel_wrapper').getBoundingClientRect().height; const column = document.getElementById('mainColumn').getBoundingClientRect().height; const pressed = document.getElementById('mobileDetailsMaximize').getAttribute('aria-pressed'); const filter = document.getElementById('torrentsFilterToolbar').offsetHeight; if ((list === 0) || (filter === 0) || (pressed !== 'false') || (panel > column * 0.7)) throw new Error(`not restored: list ${list}, filter ${filter}, panel ${panel} of ${column}, pressed ${pressed}`); return `panel ${Math.round(panel)}px`; })()"
+            },
+            {
+                "shot": "restored"
+            }
+        ]
+    },
+    {
         "name": "prop-trackers",
         "steps": [
             {

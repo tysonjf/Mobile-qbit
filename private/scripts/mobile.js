@@ -27,12 +27,14 @@
  * Most of the responsive behaviour is pure CSS. This script only handles the
  * parts that MochaUI computes in JavaScript or that need interaction:
  *  - the menu button and the filters drawer of the phone layout
+ *  - the button that shows the details panel at full height
  *  - the "More actions" button of the torrent cards
  *  - no browser menus for buttons and icons on a long press
  *  - fitting MochaUI windows (dialogs) into the viewport
  *  - the switch of the search plugin cards
  *  - row height of the torrents table when the virtual list is used
  *  - the download and "More actions" buttons of the search result cards
+ *  - the RSS tab as pages: feeds, articles of a feed, an article
  *  - the browser's theme color (status bar of the app added to the home screen)
  *  - column names for the cards of the Trackers and Peers tabs
  */
@@ -286,6 +288,58 @@ window.qBittorrent.Mobile ??= (() => {
                 document.querySelector("#torrentsTableDiv tr.selected")?.scrollIntoView({ block: "nearest" });
             }, 50);
         });
+
+        // MochaUI creates the panel once client.js has loaded the preferences
+        if (addDetailsMaximizeButton())
+            return;
+        const observer = new MutationObserver(() => {
+            if (addDetailsMaximizeButton())
+                observer.disconnect();
+        });
+        observer.observe(document.getElementById("pageWrapper"), { childList: true, subtree: true });
+    };
+
+    // A button next to the collapse button gives the details the whole height of the torrent list
+    const addDetailsMaximizeButton = () => {
+        const mainColumn = document.getElementById("mainColumn");
+        const collapseToggle = document.getElementById("propertiesPanel_collapseToggle");
+        if ((mainColumn === null) || (collapseToggle === null))
+            return false;
+
+        const icon = document.createElement("img");
+        icon.alt = "";
+        icon.width = 24;
+        icon.height = 24;
+        const button = document.createElement("button");
+        button.type = "button";
+        button.id = "mobileDetailsMaximize";
+        button.className = "mobileBarButton";
+        button.title = "QBT_TR(Maximize)QBT_TR[CONTEXT=PropertiesWidget]";
+        button.setAttribute("aria-label", button.title);
+        button.append(icon);
+        collapseToggle.before(button);
+
+        const setMaximized = (maximized) => {
+            mainColumn.classList.toggle("mobileDetailsMaximized", maximized);
+            button.setAttribute("aria-pressed", maximized.toString());
+            icon.src = maximized ? "images/mobile-restore.svg" : "images/mobile-maximize.svg";
+        };
+        setMaximized(false);
+
+        button.addEventListener("click", (event) => {
+            const maximize = !mainColumn.classList.contains("mobileDetailsMaximized");
+            // collapsed details open right away at full height
+            if (maximize && collapseToggle.classList.contains("panel-expand"))
+                collapseToggle.click();
+            setMaximized(maximize);
+        });
+        // collapsing the details (arrow or the open tab) brings the torrent list back
+        collapseToggle.addEventListener("click", (event) => {
+            if (collapseToggle.classList.contains("panel-expand"))
+                setMaximized(false);
+        });
+        onLayoutChange(() => setMaximized(false));
+        return true;
     };
 
     /* Selecting several torrents without CTRL/SHIFT keys */
@@ -733,6 +787,105 @@ window.qBittorrent.Mobile ??= (() => {
         };
     };
 
+    /* RSS tab: the feeds, the articles of a feed and an article one after the other */
+
+    const setupRssPages = (feedTable, articleTable) => {
+        const view = document.getElementById("rssView");
+        if ((view === null) || (document.getElementById("mobileRssBar") !== null))
+            return;
+
+        const backIcon = document.createElement("img");
+        backIcon.src = "images/mobile-back.svg";
+        backIcon.alt = "";
+        backIcon.width = 20;
+        backIcon.height = 20;
+        const backLabel = document.createElement("span");
+        const back = document.createElement("button");
+        back.type = "button";
+        back.id = "mobileRssBack";
+        back.append(backIcon, backLabel);
+
+        const title = document.createElement("span");
+        title.id = "mobileRssTitle";
+
+        const downloadIcon = document.createElement("img");
+        downloadIcon.src = "images/downloading.svg";
+        downloadIcon.alt = "";
+        downloadIcon.width = 16;
+        downloadIcon.height = 16;
+        const download = document.createElement("button");
+        download.type = "button";
+        download.id = "mobileRssDownload";
+        download.append(downloadIcon, "QBT_TR(Download torrent)QBT_TR[CONTEXT=RSSWidget]");
+
+        const bar = document.createElement("div");
+        bar.id = "mobileRssBar";
+        bar.append(back, title, download);
+        view.prepend(bar);
+
+        let feedName = "";
+        let articlesScrollTop = 0;
+        const selectedArticle = () => articleTable.getRow(articleTable.getSelectedRowId())?.full_data;
+
+        const showPage = (page) => {
+            if (view.dataset.mobilePage === "articles")
+                articlesScrollTop = articleTable.dynamicTableDiv.scrollTop;
+            view.dataset.mobilePage = page;
+            backLabel.textContent = (page === "article") ? feedName : "QBT_TR(RSS feeds)QBT_TR[CONTEXT=FeedListWidget]";
+            title.textContent = (page === "articles") ? feedName : "";
+            download.hidden = (page !== "article") || !selectedArticle()?.torrentURL;
+            if (page === "articles")
+                articleTable.dynamicTableDiv.scrollTop = articlesScrollTop;
+        };
+        showPage("feeds");
+
+        // the tables select the row first
+        feedTable.dynamicTableDiv.addEventListener("click", (event) => {
+            const tr = event.target.closest("tr");
+            if (!isMobileLayout() || (tr === null))
+                return;
+
+            feedName = feedTable.getRow(tr.rowId)?.full_data.name ?? "";
+            articlesScrollTop = 0;
+            showPage("articles");
+        });
+        articleTable.dynamicTableDiv.addEventListener("click", (event) => {
+            if (isMobileLayout() && (event.target.closest("tr") !== null))
+                showPage("article");
+        });
+        back.addEventListener("click", (event) => {
+            showPage((view.dataset.mobilePage === "article") ? "articles" : "feeds");
+        });
+        download.addEventListener("click", (event) => {
+            const article = selectedArticle();
+            if (article?.torrentURL)
+                window.qBittorrent.Client.createAddTorrentWindow(article.name, article.torrentURL);
+        });
+    };
+
+    const patchRssTables = () => {
+        const RssFeedTable = window.qBittorrent.DynamicTable?.RssFeedTable;
+        const RssArticleTable = window.qBittorrent.DynamicTable?.RssArticleTable;
+        if ((RssFeedTable === undefined) || (RssArticleTable === undefined))
+            return;
+
+        // views/rss.html sets up the feeds table, then the articles table
+        let feedTable = null;
+        const feedSetup = RssFeedTable.prototype.setup;
+        RssFeedTable.prototype.setup = function(...args) {
+            const result = feedSetup.apply(this, args);
+            feedTable = this;
+            return result;
+        };
+        const articleSetup = RssArticleTable.prototype.setup;
+        RssArticleTable.prototype.setup = function(...args) {
+            const result = articleSetup.apply(this, args);
+            if (feedTable !== null)
+                setupRssPages(feedTable, this);
+            return result;
+        };
+    };
+
     /* Initialization */
 
     const init = () => {
@@ -742,6 +895,7 @@ window.qBittorrent.Mobile ??= (() => {
         patchDetailsTables();
         patchTorrentsTable();
         patchSearchResultsTable();
+        patchRssTables();
 
         mobileLayoutQuery.addEventListener("change", () => {
             for (const listener of layoutChangeListeners)

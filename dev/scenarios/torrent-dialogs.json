@@ -37,6 +37,68 @@
         ]
     },
     {
+        "name": "addtorrent-files-cards",
+        "steps": [
+            {
+                "files": [
+                    "#fileselectButton",
+                    "$TORRENTS/extra-series.torrent"
+                ]
+            },
+            {
+                "wait": 3000
+            },
+            {
+                "js": "(() => { const doc = [...document.querySelectorAll('iframe')].find((iframe) => iframe.src.includes('addtorrent.html')).contentDocument; doc.getElementById('filesColumn').scrollIntoView(); })()"
+            },
+            {
+                "wait": 300
+            },
+            {
+                "eval": "(() => { const doc = [...document.querySelectorAll('iframe')].find((iframe) => iframe.src.includes('addtorrent.html')).contentDocument; const div = doc.getElementById('addTorrentFilesTableDiv'); const rows = [...div.querySelectorAll('tbody tr')]; if (div.scrollWidth > div.clientWidth) throw new Error(`${div.scrollWidth - div.clientWidth}px wider than the dialog`); if (rows.some((tr) => doc.defaultView.getComputedStyle(tr).display !== 'flex')) throw new Error('not cards'); const cut = rows.map((tr) => tr.querySelector('td[data-column=name] span')).filter((span) => span.scrollWidth > span.clientWidth); if (cut.length > 0) throw new Error(`names cut off: ${cut.map((span) => span.textContent).join(', ')}`); const outside = rows.filter((tr) => tr.querySelector('td[data-column=priority] select').getBoundingClientRect().right > div.getBoundingClientRect().right + 1); if (outside.length > 0) throw new Error(`${outside.length} priority selects outside the card`); return `${rows.length} cards`; })()"
+            },
+            {
+                "shot": true
+            },
+            {
+                "tap": "#addTorrentFilesTableDiv tr:has-text('Behind the scenes') td[data-column='checked'] input",
+                "frame": "iframe[src*='addtorrent.html']"
+            },
+            {
+                "wait": 300
+            },
+            {
+                "eval": "(() => { const doc = [...document.querySelectorAll('iframe')].find((iframe) => iframe.src.includes('addtorrent.html')).contentDocument; const row = (text) => [...doc.querySelectorAll('#addTorrentFilesTableDiv tbody tr')].find((tr) => tr.textContent.includes(text)); const file = row('Behind the scenes').querySelector('input[type=checkbox]'); const folder = row('Extras').querySelector('input[type=checkbox]'); if (file.checked || folder.checked) throw new Error(`file checked: ${file.checked}, folder checked: ${folder.checked}`); return 'unchecked'; })()"
+            },
+            {
+                "tap": "#addTorrentFilesTableDiv tr:has-text('Season 1') .filesTableCollapseIcon",
+                "frame": "iframe[src*='addtorrent.html']"
+            },
+            {
+                "wait": 300
+            },
+            {
+                "eval": "(() => { const doc = [...document.querySelectorAll('iframe')].find((iframe) => iframe.src.includes('addtorrent.html')).contentDocument; const row = (text) => [...doc.querySelectorAll('#addTorrentFilesTableDiv tbody tr')].find((tr) => tr.textContent.includes(text)); const episode = row('Episode 01'); if ((episode !== undefined) && (episode.offsetHeight > 0)) throw new Error('Season 1 did not collapse'); return 'collapsed'; })()"
+            },
+            {
+                "shot": "collapsed"
+            },
+            {
+                "longpress": "#addTorrentFilesTableDiv tr:has-text('cover.jpg') td[data-column='name']",
+                "frame": "iframe[src*='addtorrent.html']"
+            },
+            {
+                "wait": 500
+            },
+            {
+                "eval": "(() => { const doc = [...document.querySelectorAll('iframe')].find((iframe) => iframe.src.includes('addtorrent.html')).contentDocument; const menu = doc.getElementById('torrentFilesMenu'); if (!menu.classList.contains('visible') && (menu.getBoundingClientRect().top < 0)) throw new Error('no menu'); return [...menu.querySelectorAll('li')].filter((li) => li.offsetHeight > 0).map((li) => li.firstElementChild.textContent.trim()).join(' | '); })()"
+            },
+            {
+                "shot": "menu"
+            }
+        ]
+    },
+    {
         "name": "addtorrent-long-press-text",
         "steps": [
             {
@@ -65,6 +127,32 @@
             },
             {
                 "wait": 2000
+            },
+            {
+                "shot": true
+            }
+        ]
+    },
+    {
+        "name": "addtorrent-columns",
+        "steps": [
+            {
+                "files": [
+                    "#fileselectButton",
+                    "$TORRENTS/extra-series.torrent"
+                ]
+            },
+            {
+                "wait": 3000
+            },
+            {
+                "js": "(() => { const doc = [...document.querySelectorAll('iframe')].find((iframe) => iframe.src.includes('addtorrent.html')).contentDocument; doc.getElementById('rename').closest('fieldset').scrollIntoView(); })()"
+            },
+            {
+                "wait": 300
+            },
+            {
+                "eval": "(() => { const doc = [...document.querySelectorAll('iframe')].find((iframe) => iframe.src.includes('addtorrent.html')).contentDocument; const column = doc.querySelector('.column').getBoundingClientRect(); const outside = [...doc.querySelectorAll('.column:first-child :is(fieldset, table, input, select, textarea)')].filter((el) => (el.offsetWidth > 0) && (el.getBoundingClientRect().right > column.right + 0.5)).map((el) => `${el.tagName}#${el.id}`); if (outside.length > 0) throw new Error(`wider than their column: ${outside.join(', ')}`); return `everything fits the ${Math.round(column.width)}px column`; })()"
             },
             {
                 "shot": true
