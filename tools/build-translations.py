@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 
 # Compiles the WebUI translation sources (translations/*.ts) into the binary
-# Qt .qm files qBittorrent loads for an alternative WebUI.
+# Qt .qm files qBittorrent loads for an alternative WebUI. The translations of
+# Mobile-qbit's own strings (translations/mobile/*.ts, see
+# tools/update-translations.py) go into the same .qm files.
 #
 # This does what `lrelease -removeidentical` does for qBittorrent's WebUI
 # translations, so Qt's tools are not needed. Usage:
@@ -74,11 +76,11 @@ def read_messages(ts_path: Path):
             yield context_name, source, message.findtext("comment", default=""), text
 
 
-def compile_ts(ts_path: Path, qm_path: Path) -> int:
+def compile_ts(ts_paths, qm_path: Path) -> int:
     messages = bytearray()
     offsets = []
     seen = set()
-    for context, source, comment, translation in read_messages(ts_path):
+    for context, source, comment, translation in (message for path in ts_paths for message in read_messages(path)):
         key = (context, source, comment)
         if key in seen:
             continue
@@ -97,7 +99,8 @@ def compile_ts(ts_path: Path, qm_path: Path) -> int:
 def main() -> None:
     folder = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).resolve().parent.parent / "translations"
     for ts_path in sorted(folder.glob("webui_*.ts")):
-        count = compile_ts(ts_path, ts_path.with_suffix(".qm"))
+        mobile_path = folder / "mobile" / ts_path.name
+        count = compile_ts([ts_path] + ([mobile_path] if mobile_path.exists() else []), ts_path.with_suffix(".qm"))
         print(f"{ts_path.with_suffix('.qm').name}: {count} translations")
 
 
