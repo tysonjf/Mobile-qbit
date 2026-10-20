@@ -101,6 +101,7 @@ jobs:
           echo
 
       - name: Make the test data
+        id: setup
         run: python3 make-test-data.py
 
       - name: Tours at phone sizes
@@ -114,14 +115,15 @@ jobs:
           done
           exit $status
 
+      # the following steps also run when an earlier tour step failed
       - name: Tours at tablet sizes
-        if: ${{ !cancelled() && hashFiles('dev/scenarios/tablet.json') != '' }}
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' && hashFiles('dev/scenarios/tablet.json') != '' }}
         run: |
           node tour.js scenarios/tablet.json 768x1024
           TOUCH=1 node tour.js scenarios/tablet.json 1024x768
 
       - name: Updater
-        if: ${{ !cancelled() }}
+        if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
         run: |
           nohup python3 fake-github.py > .cache/fake-github.log 2>&1 &
           # it builds the fake releases before it listens
