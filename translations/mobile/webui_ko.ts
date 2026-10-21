@@ -2,6 +2,13 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="ko">
 <context>
+    <name>Login</name>
+    <message>
+        <source>Keep me logged in</source>
+        <translation>로그인 상태 유지</translation>
+    </message>
+</context>
+<context>
     <name>MainWindow</name>
     <message>
         <source>Menu</source>

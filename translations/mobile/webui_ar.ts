@@ -2,6 +2,13 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="ar">
 <context>
+    <name>Login</name>
+    <message>
+        <source>Keep me logged in</source>
+        <translation>إبقائي مسجلاً للدخول</translation>
+    </message>
+</context>
+<context>
     <name>MainWindow</name>
     <message>
         <source>Menu</source>

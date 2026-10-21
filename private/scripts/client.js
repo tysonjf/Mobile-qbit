@@ -122,8 +122,13 @@ window.qBittorrent.Client ??= (() => {
 
     const getSyncMainDataInterval = () => {
         // Sync at half of the session timeout (in ms), to prevent timing out
-        if (document.hidden)
-            return (window.qBittorrent.Cache.preferences.get().web_ui_session_timeout * 1000) / 2;
+        if (document.hidden) {
+            // 0 never times out, and setTimeout() can't wait longer than 2^31 - 1 ms (it would
+            // sync without any pause instead)
+            const maxInterval = (2 ** 31) - 1;
+            const sessionTimeout = window.qBittorrent.Cache.preferences.get().web_ui_session_timeout;
+            return (sessionTimeout > 0) ? Math.min(((sessionTimeout * 1000) / 2), maxInterval) : maxInterval;
+        }
         return customSyncMainDataInterval ? customSyncMainDataInterval : serverSyncMainDataInterval;
     };
 
@@ -1184,6 +1189,12 @@ window.addEventListener("DOMContentLoaded", async (event) => {
                             // re-select previously selected rows
                             torrentsTable.reselectRows(torrentsTableSelectedRows);
                     }
+                    else if (response.status === 403) {
+                        // qBittorrent forgot the login (session timeout, restart): show the login
+                        // page instead of the last data, "Keep me logged in" logs in again there
+                        location.reload();
+                        return;
+                    }
 
                     syncRequestInProgress = false;
                     syncData(window.qBittorrent.Client.getSyncMainDataInterval());
@@ -1194,7 +1205,7 @@ window.addEventListener("DOMContentLoaded", async (event) => {
                         errorDiv.textContent = "QBT_TR(qBittorrent client is not reachable)QBT_TR[CONTEXT=HttpServer]";
                     syncRequestInProgress = false;
                     syncData(document.hidden
-                        ? (window.qBittorrent.Cache.preferences.get().web_ui_session_timeout * 1000) / 2
+                        ? window.qBittorrent.Client.getSyncMainDataInterval()
                         : 2000);
                 });
     };

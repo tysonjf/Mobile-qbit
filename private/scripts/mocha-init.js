@@ -1355,6 +1355,9 @@ const initializeWindows = () => {
         e.preventDefault();
         e.stopPropagation();
 
+        // forget the login of "Keep me logged in" (login.js), the login page would use it right away
+        localPreferences.remove("qbt_mobileSavedLogin");
+
         fetch("api/v2/auth/logout", {
                 method: "POST"
             })

@@ -228,6 +228,20 @@ to its built-in WebUI by itself when it can't find the files.
 qBittorrent refuses symbolic links inside the folder. Copy the files instead of
 linking them.
 
+**I have to log in again all the time.**
+qBittorrent forgets a login when the **Session timeout** passes without requests from
+the WebUI (3600 s, one hour, by default) and whenever qBittorrent restarts. A phone
+sends no requests while it is locked or the WebUI is in the background, so after an
+hour the login is gone. Two ways around it, they work well together:
+* Tick **Keep me logged in** on the login page. The browser then saves the username
+  and password and logs in again by itself when qBittorrent asks for them, also after
+  a restart. Do it once in every browser, and once more in the home screen app on an
+  iPhone. **Logout** forgets them again. The password is saved unencrypted in the
+  browser's storage of that device, so only use it on your own devices.
+* Raise **Session timeout** in *Options → WebUI* (desktop app: *Tools → Options → Web
+  UI*), e.g. to `604800` (one week). `0` never times out. This doesn't help after a
+  restart of qBittorrent.
+
 **"Check for WebUI updates" says GitHub doesn't list any release.**
 Either no release has been published yet, or the repository is private: GitHub hides
 private repositories from checks without a login. Update by hand in that case.

@@ -65,6 +65,13 @@ On every screen size, **Help → Check for WebUI updates** shows whether a newer
 Mobile-qbit release exists and installs it with one tap (see
 [Updating](INSTALL.md#updating)).
 
+**Keep me logged in** on the login page saves the login in the browser and logs in
+again by itself when qBittorrent has forgotten it: after the session timeout (one hour
+without requests by default, e.g. while the phone is locked) or a restart of
+qBittorrent. **Logout** forgets it again (see
+[Troubleshooting](INSTALL.md#troubleshooting)). An open WebUI that lost its login shows
+the login page instead of the last data.
+
 **Add to Home Screen** (Safari, Chrome) gives the WebUI the qBittorrent icon and opens
 it like an app (see [Step 3](INSTALL.md#step-3-open-it-on-your-phone) of the
 installation guide).
@@ -162,7 +169,11 @@ The first commit of this repository is the unmodified WebUI of qBittorrent v5.2.
   longer changes the selection; a `multiSelect` flag lets a tap toggle a row like
   CTRL+click (selection mode).
 * `private/scripts/client.js`: the details panel starts collapsed on phones, panel
-  sizes of the phone layout are not saved over the desktop ones.
+  sizes of the phone layout are not saved over the desktop ones; the page reloads (to
+  the login page) when qBittorrent answers that the login is gone; a hidden page
+  doesn't sync without a pause when the session timeout is 0 (never) or very long.
+* `private/scripts/mocha-init.js`: *Logout* forgets the login of *Keep me logged in*.
+* `public/index.html`, `public/scripts/login.js`: *Keep me logged in*.
 * `public/css/login.css`: responsive login page.
 * `public/manifest.webmanifest`, `public/images/mobile-*.png` (new): web app manifest
   and icons for *Add to Home Screen*. They are in `public` so that they load before

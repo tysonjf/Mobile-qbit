@@ -2,6 +2,13 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="ms_MY">
 <context>
+    <name>Login</name>
+    <message>
+        <source>Keep me logged in</source>
+        <translation>Kekal daftar masuk</translation>
+    </message>
+</context>
+<context>
     <name>MainWindow</name>
     <message>
         <source>Menu</source>
